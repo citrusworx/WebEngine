@@ -342,6 +342,18 @@ export type {
     KeyboardAvoiderOptions,
     KeyboardAvoiderState
 } from "./src/keyboard-avoider/keyboard-avoider-runtime.js";
+export {
+    createSheet,
+    initSheet,
+    startSheetRuntime,
+    stopSheetRuntime
+} from "./src/sheet/sheet-runtime.js";
+export type {
+    SheetController,
+    SheetDetent,
+    SheetOptions,
+    SheetState
+} from "./src/sheet/sheet-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {

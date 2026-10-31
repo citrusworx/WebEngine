@@ -79,11 +79,11 @@
 //
 // html[keyboard-open] shrinks the sheet max-height by
 // --juice-keyboard-inset. The keyboard-avoider runtime sets that
-// attribute on <html> while open and writes the inset there. The
-// footer max() already tracks the inset when the attribute is absent
-// (the env() fallback on Chromium). The max-height shrink is the
-// extra cap so a tall detent cannot stay full-viewport tall over the
-// keyboard.
+// attribute on <html> while open and writes the inset there. Under
+// that attribute the footer and a trailing body drop the keyboard
+// term and keep the safe-area terms, so the inset is applied once.
+// While the attribute is absent, the footer max() still includes the
+// inset for the env() fallback.
 //
 // [dragging] on the sheet, or on the overlay, sets transition: none
 // so a slice B drag can write height without fighting the detent
@@ -213,6 +213,8 @@ $_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
 
 [sheet-handle],
 [theme] [sheet-handle] {
+    position: relative;
+    z-index: 1;
     display: block;
     flex: 0 0 auto;
     align-self: center;
@@ -228,6 +230,20 @@ $_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
     box-shadow: none;
     touch-action: none;
     user-select: none;
+}
+
+// The visible bar stays --juice-sheet-handle-height. This pseudo is
+// only a hit target, at least 44px tall, and does not paint. z-index
+// on the handle keeps that target above the header.
+[sheet-handle]::before,
+[theme] [sheet-handle]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 44px;
+    transform: translate(-50%, -50%);
 }
 
 [sheet-header] {
@@ -298,14 +314,21 @@ $_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
     outline-offset: 2px;
 }
 
-// The sheet stays bottom-anchored. Max-height is the only keyboard
-// adjustment on the box. Footer padding still uses the inset, so the
-// footer content clears the keyboard while the extra cap keeps a full
-// detent from remaining viewport-tall. See the file header.
+// The sheet stays bottom-anchored. Max-height shrinks by the keyboard
+// inset. Footer and trailing-body padding drop that same term while
+// the attribute is set so the inset is not applied twice. Safe-area
+// padding stays. See the file header.
 
 html[keyboard-open] [sheet],
 html[keyboard-open] [theme] [sheet] {
     max-height: calc(var(--juice-sheet-max-height) - var(--juice-keyboard-inset));
+}
+
+html[keyboard-open] [sheet] > [sheet-body]:last-child,
+html[keyboard-open] [theme] [sheet] > [sheet-body]:last-child,
+html[keyboard-open] [sheet-footer],
+html[keyboard-open] [theme] [sheet-footer] {
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px));
 }
 
 [sheet][dragging],

@@ -1529,9 +1529,15 @@ describe("Juice build artifacts", () => {
 
             const handle = ruleAt("[sheet-handle],");
             expect(handle).toContain("touch-action: none");
+            expect(handle).toContain("position: relative");
             expect(handle).toContain("width: var(--juice-sheet-handle-width)");
             expect(handle).toContain("height: var(--juice-sheet-handle-height)");
             expect(handle).toContain("border-radius: 999px");
+            const handleHit = ruleAt("[sheet-handle]::before,");
+            expect(handleHit).toContain("content: \"\"");
+            expect(handleHit).toContain("position: absolute");
+            expect(handleHit).toContain("height: 44px");
+            expect(handleHit).not.toContain("background");
 
             const body = ruleAt("[sheet-body] {");
             expect(body).toContain("overflow: auto");
@@ -1546,6 +1552,12 @@ describe("Juice build artifacts", () => {
             const keyboard = ruleAt("html[keyboard-open] [sheet],");
             expect(keyboard).toContain("max-height: calc(var(--juice-sheet-max-height) - var(--juice-keyboard-inset))");
             expect(keyboard).toContain("html[keyboard-open] [theme] [sheet]");
+            const keyboardSafe = "max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px))";
+            const keyboardPad = ruleAt("html[keyboard-open] [sheet] > [sheet-body]:last-child,");
+            expect(keyboardPad).toContain("html[keyboard-open] [sheet-footer]");
+            expect(keyboardPad).toContain("html[keyboard-open] [theme] [sheet-footer]");
+            expect(keyboardPad).toContain(`padding-bottom: ${keyboardSafe}`);
+            expect(keyboardPad).not.toContain("--juice-keyboard-inset");
 
             const dragging = ruleAt("[sheet][dragging],");
             expect(dragging).toContain("[sheet-overlay][dragging] [sheet]");
@@ -3771,9 +3783,13 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initKeyboardAvoider");
         expect(module).toHaveProperty("startKeyboardAvoiderRuntime");
         expect(module).toHaveProperty("stopKeyboardAvoiderRuntime");
+        expect(module).toHaveProperty("createSheet");
+        expect(module).toHaveProperty("initSheet");
+        expect(module).toHaveProperty("startSheetRuntime");
+        expect(module).toHaveProperty("stopSheetRuntime");
         expect(
             Object.keys(module).filter((key) => key.startsWith("start") && key.endsWith("Runtime"))
-        ).toHaveLength(31);
+        ).toHaveLength(32);
         expect(module).toHaveProperty("tokens");
     });
 

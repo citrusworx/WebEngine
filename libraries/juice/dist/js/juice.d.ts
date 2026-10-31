@@ -60,6 +60,8 @@ export { createTouchableRow, initTouchableRow, startTouchableRowRuntime, stopTou
 export type { TouchableRowController, TouchableRowOptions, TouchableRowState } from "./src/touchable-row/touchable-row-runtime.js";
 export { createKeyboardAvoider, initKeyboardAvoider, startKeyboardAvoiderRuntime, stopKeyboardAvoiderRuntime } from "./src/keyboard-avoider/keyboard-avoider-runtime.js";
 export type { KeyboardAvoiderController, KeyboardAvoiderOptions, KeyboardAvoiderState } from "./src/keyboard-avoider/keyboard-avoider-runtime.js";
+export { createSheet, initSheet, startSheetRuntime, stopSheetRuntime } from "./src/sheet/sheet-runtime.js";
+export type { SheetController, SheetDetent, SheetOptions, SheetState } from "./src/sheet/sheet-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./src/shared/motion.js";
