@@ -1,42 +1,37 @@
-# Sig.js Troubleshooting
+# Troubleshooting
 
-Issues that show up when the mental model and the runtime disagree. All of these follow from `libraries/sig/src/signal.ts` and `jsx-runtime.ts`.
+When a `set` seems to do nothing, the read was usually outside an effect or a function child. The cases below are the ones the 1.0.0 runtime actually produces.
 
 ## Reactivity
 
 ### The DOM does not change when I `set`
 
-**Cause:** the value was read once at create time, not inside an `effect` or a function child.
+The value was read once, while the component function ran.
 
 ```tsx
-// Static text from the first get()
-const count = Signal(0);
 <div>Count: {count.get()}</div>
-
-// Live text
 <div>Count: {() => String(count.get())}</div>
 ```
 
-### I returned JSX from a function child and got `[object HTMLDivElement]`
+The second line is live. The first is not.
 
-**Cause:** function children become text nodes: `textNode.textContent = String(child())`.
+### A function child printed `[object HTMLDivElement]`
+
+Function children assign `String(child())` to a text node. Returning an element stringifies it. `null` from that function becomes the text `null`.
 
 ```tsx
-// Wrong
-{() => (open.get() ? <Panel /> : null)}
+const panel = <aside hidden>Notes</aside> as HTMLElement;
 
-// Right — effect rewrites children or toggles hidden
-const panel = <div>…</div> as HTMLElement;
 effect(() => {
   panel.hidden = !open.get();
 });
 ```
 
-Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect when rebuilding rows is fine, or `bindList` when a key should keep its node. See [JSX and the DOM](./sig-jsx.md), [Patterns](./sig-patterns.md), and [Examples](./sig-examples.md).
+`{() => items.get().map(...)}` stringifies the array. Rebuild with `replaceChildren`, or keep nodes with `bindList`. See [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
 
-### `className={flag.get()}` / `value={name.get()}` / `disabled={!ready.get()}` stay frozen
+### `className`, `value`, or `disabled` stayed frozen
 
-**Cause:** `get()` ran at create time. The assigned value is a snapshot.
+`flag.get()` at create time is a snapshot. Pass a function:
 
 ```tsx
 <div className={() => (on.get() ? "on" : "off")} />
@@ -44,38 +39,23 @@ Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `re
 <button disabled={() => !ready.get()} />
 ```
 
-`ref` + `effect` is still valid when one subscription should write several properties. `ref` and `on*` functions are not reactive getters.
+`on*` and `ref` are not getters. One effect can write several properties if a single getter is not enough.
+
+### `style={{ color: "red" }}` did nothing
+
+The type allows a style object. The runtime assigns that object to the DOM `style` property, which does not copy CSS fields. A string works: `style="color: red"` or `style={() => "color: red"}`. For more than one property, set `el.style.color` from an effect.
 
 ### The effect never re-runs
 
-**Cause:** the callback never called `.get()` on the signal you expected, or you `dispose`d it.
+It did not call `.get()` on that signal, or you already disposed it. A `get()` inside a branch that did not run is not a dependency for that run. See [Dependencies are rebuilt every run](./sig-effects.md#dependencies-are-rebuilt-every-run).
 
-```ts
-effect(() => {
-  console.log("no signal read — runs once");
-});
+### Several `set` calls run work several times
 
-effect(() => {
-  console.log(count.get()); // subscribed
-});
-```
+Wrap them in `batch`. Nested `batch` still flushes once, when the outer call finishes. See [Batching](./sig-batch.md).
 
-### Several `set`s flicker or run work N times
+### An interval or fetch keeps running
 
-Use `batch`:
-
-```ts
-batch(() => {
-  loading.set(true);
-  error.set(null);
-});
-```
-
-Nested `batch` is safe (depth counter). One outer `batch` is still the clearer style.
-
-### Memory leak / interval keeps firing
-
-Return a cleanup from the effect, and create the effect **inside** the component function so the router can dispose it.
+Return a cleanup from the effect, and create the effect inside the component so `mount` or the router can dispose it.
 
 ```ts
 effect(() => {
@@ -84,43 +64,53 @@ effect(() => {
 });
 ```
 
-If you construct `<Page />` once and pass that node to `router.set`, cleanup on navigate will dispose those effects and they will not come back.
+`router.set("/about", <About />)` disposes those effects on the first leave and does not rebuild them. Pass `About`, not `<About />`.
+
+### I mutated an object and nothing updated
+
+`user.get().name = "Ada"` does not notify. `user.set({ ...user.get(), name: "Ada" })` does. `Signal.set` of the same value still notifies. See [Arrays, objects, and identity](./sig-signals.md#arrays-objects-and-identity).
 
 ## Rendering
 
-### Event handler never fires
+### The click handler never fires
 
-Handlers must be `on*` functions in JSX (`onClick`, `onInput`, `onKeyDown`). Assigning `onclick` later works as a DOM property, but a non-function `onClick` is ignored.
+Use an `on*` function: `onClick`, `onInput`, `onKeyDown`. A non-function `onClick` is ignored. The runtime lowercases the event name and calls `addEventListener`. `disposeTree` does not remove that listener.
 
-### Juice styles missing
+### Juice styles are missing
 
-Import `@citrusworx/juiceui/styles` (and a theme) **before** `mount`. Set `theme="…"` on the document root. See [Juice integration](./sig-juice-integration.md).
+Import `@citrusworx/juiceui/styles` and a theme before `mount`. Set `theme` on the document root. See [Sig.js + Juice](./sig-juice-integration.md).
 
-### `ref` runs but later updates do not
+### `bind` throws before I call it
 
-`ref` is called once after create. Put the `effect` **inside** the ref callback (or close over the element) so it can subscribe.
+Importing `@citrusworx/sigjs/juice` against Juice 0.9.1 fails because `startDisclosureRuntime` is not exported. Juice 0.9.2 loads.
+
+Binding icon button, avatar, or table on 0.9.2 throws `needs a newer @citrusworx/juiceui`. Use Juice 0.9.3 or newer for those three. See [Runtime binding](./sig-juice-integration.md#runtime-binding).
+
+### `ref` ran once and then stopped
+
+That is the contract. Subscribe inside the ref callback, or close over the element from an effect created in the same component.
 
 ## Router
 
-### Links reload the page or do nothing
+### Links reload the page
 
-Call `router.start()` after `set`. Hrefs must match registered paths exactly (`/about`, not `/About`).
+Call `start()` after `set`. The href must match a registered path. Modifier-clicks are still intercepted, so Command-click does not open a new tab.
 
-### `navigate` is a no-op
+### `navigate` does nothing
 
-The path is not in the map, and there is no `"*"` fallback. `navigate` returns without pushing history. Leading slashes are normalized: `navigate("about")` finds `/about` if that route exists.
+The path is not registered and there is no `"*"`. `navigate` returns without `pushState`. `navigate("about")` finds a route stored as `/about`. `/about?x=1` does not match `/about`.
 
-### Back button clears the view
+### The Back button clears the view
 
-`popstate` renders `location.pathname`. If that path was never `set` and you did not register `"*"`, the container is emptied.
+`popstate` renders `location.pathname`. An unregistered path with no `"*"` empties the target. `navigate` to that same path would have been a no-op instead.
 
 ### Two routers fight
 
-Create one `SigRouter` at the app edge. Do not construct it inside a component that re-runs.
+Create one `SigRouter` for the app. A second `start()` on the same instance re-renders. It does not stack listeners. A second instance adds another click listener.
 
 ## TypeScript
 
-### JSX is an error
+### JSX fails to type-check
 
 ```json
 {
@@ -131,39 +121,26 @@ Create one `SigRouter` at the app edge. Do not construct it inside a component t
 }
 ```
 
-### `new Signal` does not type-check (or does the wrong thing)
+Details are in [TypeScript](./sig-typescript.md).
 
-Use the factory: `const count = Signal(0)` or `Signal<number>(0)`.
+### `new Signal` is not a constructor
 
-### Event target types
+Call `Signal(0)` or `Signal<number>(0)`.
+
+### The event target has no `value`
 
 ```tsx
-onInput={(e) => name.set((e.target as HTMLInputElement).value)}
+onInput={(event) => {
+  name.set((event.target as HTMLInputElement).value);
+}}
 ```
 
-## Debug habits
+## Where to look
 
-```ts
-effect(() => {
-  console.log("count", count.get());
-});
-```
-
-```ts
-const dispose = effect(() => {
-  return () => console.log("cleanup");
-});
-```
-
-Inspect the real DOM: function children are text nodes, not comment anchors.
-
-## Help
-
-- [Getting Started](./sig-getting-started.md)
-- [Page Tutorial](./sig-page-tutorial.md)
-- [Signals](./sig-signals.md) · [Effects](./sig-effects.md) · [JSX](./sig-jsx.md)
-- [Anti-Patterns](./sig-anti-patterns.md) — the usual React / VDOM mistakes
-- [API](./sig-api.md)
-- [Examples](./sig-examples.md)
-- [Router](./sig-router.md)
-- [Status](./sig-status.md)
+| Symptom | Page |
+|---|---|
+| Snapshot reads, element children | [Anti-patterns](./sig-anti-patterns.md) |
+| Signatures | [API reference](./sig-api.md) |
+| A full page | [Page tutorial](./sig-page-tutorial.md) |
+| Forms, lists, fetch | [Patterns](./sig-patterns.md) |
+| Routes | [Router](./sig-router.md) |

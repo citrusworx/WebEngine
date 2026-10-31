@@ -1,221 +1,107 @@
 # Signals
 
-How `Signal` actually works in `libraries/sig/src/signal.ts`. This is the mental model for values in Sig.js — not a React state hook, not a proxy, and not a class.
+A signal is a value plus a subscriber set. `get` reads it. `set` replaces it and notifies every subscriber. Create one with `Signal(initial)`.
 
-Related:
+Use a signal for something that changes after the first paint: a count, a field, a list of records. Do not use one for a constant.
 
-- [Effects](./sig-effects.md) — what happens after `set`
-- [API Reference](./sig-api.md) — the type signature
-- [Page tutorial](./sig-page-tutorial.md) — a tally built on one signal
+| | |
+|---|---|
+| Since | 0.2.0 |
+| Import | `import { Signal } from "@citrusworx/sigjs"` |
+| Status | Stable |
 
-## What a signal is
-
-A signal is a box:
-
-```ts
-function Signal<T>(value: T): { get(): T; set(newValue: T): void }
-```
+## Use it
 
 ```ts
-import { Signal } from "@citrusworx/sigjs";
+import { Signal, effect } from "@citrusworx/sigjs";
 
 const count = Signal(0);
-
-count.get(); // 0
-count.set(1); // value is now 1; every subscriber is notified
-```
-
-`Signal` is a **factory**. It closes over `value` and a `Set` of subscribers, then returns `{ get, set }`. It is not a constructor:
-
-```ts
-const count = Signal(0);       // correct
-// const count = new Signal(0); // not the API
-```
-
-There is no `.peek()`, no `.update()`, no `.subscribe()`, and no equality check. Those names do not exist on the object.
-
-## What `get` does
-
-`get()` always returns the current value.
-
-If it is called while an effect or memo is running, it also **registers that effect/memo as a subscriber**:
-
-```ts
-function getter() {
-  if (currentSubscriber) {
-    subscribers.add(currentSubscriber);
-    currentSubscriber.addDependency(subscribers);
-  }
-  return value;
-}
-```
-
-That is the entire tracking rule. Read a signal outside an effect or memo, and you get the value with no subscription:
-
-```ts
-const count = Signal(0);
-
-count.get(); // 0, no subscriber registered
 
 effect(() => {
-  console.log(count.get()); // subscribed; re-runs on set
+  console.log(count.get());
 });
+
+count.set(1);
 ```
 
-This is why `{count.get()}` in JSX is static. The component function is not an effect. `get()` runs once while the tree is being built, produces a string/number child, and never runs again. Wrap it:
-
-```tsx
-<p>{() => String(count.get())}</p>
-```
-
-The function child is installed as an effect by the JSX runtime. That effect's `get()` is the subscription.
-
-`untrack(fn)` reads inside `fn` without subscribing the surrounding effect or memo. `bindList` uses it so the list effect does not subscribe to per-row signals while it is creating rows.
-
-## What `set` does
-
-`set(newValue)` assigns the value, then notifies **every current subscriber**.
+`Signal` is a factory. It is not a class.
 
 ```ts
-function setter(newValue: T) {
-  value = newValue;
-  [...subscribers].forEach((subscriber) => scheduleSubscriber(subscriber));
-}
+const count = Signal(0);
 ```
 
-Important consequences:
+`new Signal(0)` is not the API. There is no exported `Signal<T>` type. The return value is `{ get(): T; set(newValue: T): void }`.
 
-1. **No equality check.** `count.set(1)` followed by `count.set(1)` notifies twice. If you need “only when it changes,” compare yourself before calling `set`.
-2. **Synchronous by default.** Unless you are inside `batch`, each subscriber's `notify()` runs before `set` returns.
-3. **Snapshot of subscribers.** The copy `[...subscribers]` means a subscriber that disposes mid-loop is still safe; a subscriber added during notify will not run until a later `set`.
+## Rules
+
+| Call | What happens |
+|---|---|
+| `get()` outside an effect or memo | Returns the value. Subscribes nothing |
+| `get()` inside an effect or memo | Returns the value and subscribes that computation |
+| `get()` inside `untrack` | Returns the value. Does not subscribe the surrounding effect or memo |
+| `set(next)` | Stores `next`, then notifies every current subscriber |
+| `set` with the same value | Still notifies. There is no equality check. Frozen for 1.0 |
+
+`{count.get()}` in JSX is a snapshot. The component function is not an effect. Wrap the read: `{() => count.get()}`.
+
+## Sharing
+
+Pass the signal object. Do not copy `.get()` into another variable and expect it to stay live.
 
 ```ts
-const ready = Signal(false);
+const count = Signal(0);
 
-ready.set(false); // still notifies — effects re-run even though the value did not change
-```
-
-That is useful when you want to bounce a derivation. It is a footgun when a noisy writer sits in a timer.
-
-## When updates fire
-
-A write becomes a DOM update only if something that **subscribed** does work:
-
-| Read site | Subscribed? | What happens on `set` |
-|---|---|---|
-| Bare `count.get()` in a component body | No | Nothing. The text/attribute is already on the node. |
-| `{() => String(count.get())}` | Yes — function-child effect | That text node’s `textContent` is rewritten. |
-| `effect(() => { el.textContent = String(count.get()); })` | Yes | Your callback runs again. |
-| `memo(() => count.get() * 2)` after a `get()` | The memo’s invalidator is subscribed | Memo is marked dirty; *its* subscribers are notified. |
-| `count.get()` inside an `if` that was false this run | No, for this run | See [dynamic dependencies](./sig-effects.md#dependencies-are-rebuilt-every-run). |
-
-Sig.js does **not** re-call your component function. `Desk()` in the tutorial runs once per mount. The tally updates because a text node’s effect re-ran, not because `Desk` rendered again.
-
-## Sharing signals
-
-Signals are plain objects. Pass them into child factories, close over them, or keep them at module scope.
-
-```tsx
-function Tally(count: { get(): number; set(n: number): void }) {
-  return (
-    <p>
-      {() => String(count.get())}
-      <button type="button" onClick={() => count.set(count.get() + 1)}>
-        +
-      </button>
-    </p>
-  );
-}
-
-function App() {
-  const count = Signal(0);
-  return (
-    <div stack gap="1rem">
-      {Tally(count)}
-      {Tally(count)}
-    </div>
-  );
+function label(count: { get(): number }) {
+  return () => String(count.get());
 }
 ```
 
-Both tallies subscribe to the same box. One `set` updates both text nodes.
+Several components can close over the same signal. They subscribe only when their effect or function child reads it.
 
-Module-scope signals survive route changes. That can be what you want (auth, theme) and it can leak (a timer signal that nobody disposes). Prefer creating signals **inside** the view function so they die with the view, unless you truly need them to outlive it.
+## Objects and arrays
 
-## Arrays, objects, and identity
-
-The box holds whatever you put in it. Mutating an array in place does **not** notify:
+`set` replaces the stored reference. It does not deep-watch properties. Mutating `user.name` or `items.push` does not notify.
 
 ```ts
 const items = Signal<string[]>(["a"]);
 
-items.get().push("b"); // subscribers never run
-items.set(items.get()); // notifies, because set always notifies (frozen for v1)
-items.set([...items.get(), "b"]); // the usual pattern: replace the value
+items.set([...items.get(), "b"]);
 ```
 
-Same for objects:
+Same-reference writes still notify if you call `set`, because `Signal.set` does not compare. `bindList` is different: it skips `set` on a row when `Object.is` says the item did not change. See [arrays, objects, and identity](#arrays-objects-and-identity).
 
-```ts
-const job = Signal({ id: 1, title: "Deploy" });
+## Arrays, objects, and identity
 
-job.get().title = "Hold";       // silent
-job.set({ ...job.get(), title: "Hold" }); // notifies
-```
+Store the next value, not a mutation of the current one.
 
-Treat signal values as immutable from the outside. Replace them. Let effects read the new snapshot.
+| Update | Notifies a `Signal` subscriber |
+|---|---|
+| `count.set(count.get())` | Yes |
+| `user.set({ ...user.get(), name: "Ada" })` | Yes |
+| `user.get().name = "Ada"` | No |
+| `items.get().push("b")` | No |
+| `items.set(items.get())` after that push | Yes, because `set` always notifies |
 
-## Several signals, one fact
+`memo` and Juice `bind` both skip work when the next value is equal. `Signal.set` does not. If you need "only when it changed," compare before you call `set`.
 
-If two writes describe one user action, use `batch` so subscribers run once. That is an effect concern — see [Batch](./sig-effects.md#batch) — but the rule starts here: **each `set` is a notification**.
-
-```ts
-batch(() => {
-  jobs.set([...jobs.get(), next]);
-  draft.set("");
-});
-```
-
-## Derived values are memos, not more signals
-
-Do not keep a second signal in sync with the first:
-
-```ts
-// Fragile — two sources of truth
-const name = Signal("");
-const greeting = Signal("operator");
-
-effect(() => {
-  greeting.set(name.get().trim() || "operator");
-});
-```
-
-Use `memo`:
-
-```ts
-const name = Signal("");
-const greeting = memo(() => name.get().trim() || "operator");
-```
-
-`memo` exposes `{ get }`. It tracks the signals *it* reads, caches until they notify, and can itself be a dependency of an effect. Details in [Effects — memo](./sig-effects.md#memo).
+Two `set` calls are two notifications unless you wrap them in `batch`. See [Batching](./sig-batch.md).
 
 ## What a signal is not
 
-- **Not a proxy.** `user.name = "Ada"` does not deep-track. Replace the object.
-- **Not React state.** There is no render, no hook rules, no `setCount(c => c + 1)` updater form. Read with `get`, write with `set`.
-- **Not an observable with operators.** No `map`, `filter`, `combineLatest`. Derive with `memo` or read several signals in one effect.
-- **Not serialized.** There is no persistence helper. Write `localStorage` from an effect if you need it.
+| Not available | Use instead |
+|---|---|
+| `.peek()` | `untrack(() => signal.get())` |
+| `.update(fn)` | `signal.set(fn(signal.get()))` |
+| `.subscribe` | `effect` |
+| A class constructor | `Signal(value)` |
+| Deep proxies | Replace the object |
 
-## A compact picture
+Derived values belong in `memo`, not in a second signal that an effect keeps in sync. See [Derived values](./sig-memo.md).
 
-```
-Signal(0)
-  └─ subscribers: Set<effect | memo invalidator>
+## Related
 
-count.get()  ──inside effect──►  subscribe
-count.set(1) ─────────────────►  each subscriber.notify()
-                                  ├─ effect: run cleanup, run fn again
-                                  └─ memo:   mark dirty, notify *its* subscribers
-```
-
-Once this picture is solid, [effects](./sig-effects.md) are just “the things in that set,” and [JSX](./sig-jsx.md) is “how a function child puts one of those things on a text node.”
+| | |
+|---|---|
+| [Effects](./sig-effects.md) | Who gets notified |
+| [Batching](./sig-batch.md) | Several writes, one flush |
+| [API: Signal](./sig-api.md#signal) | Signature and edge cases |

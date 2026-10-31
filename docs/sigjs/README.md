@@ -1,427 +1,97 @@
 # Sig.js
 
-Signals-based DOM reactivity for CitrusWorx apps.
-
-Sig.js keeps the page static by default and updates only the nodes you wire to a signal. There is no virtual DOM, no compiler, and no component-tree re-render. You write TypeScript (or JSX that compiles to the Sig runtime) and talk to the real DOM.
-
-The current model is:
-
-- **Signals** own values. `get()` reads; `set()` notifies subscribers.
-- **Effects** own side effects. An effect that reads a signal re-runs when that signal changes.
-- **JSX** creates real `HTMLElement`s once. Reactivity is opt-in: a function child becomes a live text node, a function-valued prop becomes a live attribute, or you hold an element and update it from an effect.
-- **Juice** owns structure and style. Sig.js owns behavior.
-
-Sig.js is strongest when you treat most of the page as static markup and apply reactivity only where something actually changes.
-
-## Who it is for
-
-- App authors who need toggles, counters, forms, lists, fetch, and route-aware UI on top of Juice (or plain HTML)
-- Anyone who wants fine-grained DOM updates without adopting a virtual-DOM framework
-- WebEngine apps, and any project that can import `@citrusworx/sigjs`
-
-It is not a full UI framework. It does not ship components, SSR, or a form library.
-
-## Why it exists
-
-CitrusWorx split UI into two jobs:
-
-- **Juice** expresses layout and identity in markup (`stack`, `row`, `gap`, `card`, `surface`)
-- **Sig.js** expresses *change* — the few values and effects that should move after first paint
-
-Most modern UI stacks re-evaluate a component tree when state changes. That is the wrong default for Juice pages, which are mostly static structure. A hero, a card grid, and a footer do not need to be recreated because a counter incremented. Sig.js exists so you do not have to pull in a heavyweight runtime just to increment a tally, open a disclosure, rewrite a list, or swap a view.
-
-The design bets:
-
-- **Static first** — everything renders once and stays put unless you subscribe
-- **Surgical updates** — only the node you touch is rewritten
-- **No virtual DOM** — writes go to the real DOM
-- **No compiler** — JSX is a thin factory, not a compile-time reactive transform
-- **Small API** — `Signal`, `effect`, `batch`, `memo`, `mount`, and `SigRouter`
-
-That split is healthier than stuffing behavior into CSS, or stuffing layout into a component runtime. Juice already knows how to place things. Sig.js only needs to know how values move.
-
-If you have already built a page with the [Juice tutorial](../juice/juice-page-tutorial.md), Sig.js is the next layer: the same markup, plus the handful of live values the page actually needs.
-
-## Current setup shape
-
-```ts
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-```
-
-```json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@citrusworx/sigjs"
-  }
-}
-```
-
-`Signal` is a **factory**, not a class. Call `Signal(0)`, not `new Signal(0)`.
-
-## What it can do
-
-The sections below are the capability showcase. Every snippet matches `libraries/sig/src`. If a pattern is not here, it is probably not in the library — check [Status](./sig-status.md) before assuming a React-shaped API.
-
-### 1. A value and a live text node
-
-Function children are the smallest reactive surface. The JSX runtime turns `() => …` into a text node and re-runs the function when signals it reads change.
-
-```tsx
-import { Signal, mount } from "@citrusworx/sigjs";
-
-function Counter() {
-  const count = Signal(0);
-
-  return (
-    <div>
-      <p>Count: {() => String(count.get())}</p>
-      <button type="button" onClick={() => count.set(count.get() + 1)}>
-        Increment
-      </button>
-    </div>
-  );
-}
-
-mount(<Counter />, document.getElementById("root")!);
-```
-
-The button and the wrapping `div` are created once. Only the text node after `Count:` updates. That is the whole trick: the page is a real DOM tree, and one text node is subscribed.
-
-### 2. An effect that owns one element
-
-When you need more than one live attribute — `textContent` plus `className` plus `aria-*`, a list rewrite — capture the element and update it from an `effect`. A single `className={() => …}` or `disabled={() => …}` can stay in JSX.
-
-```tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function Toggle() {
-  const on = Signal(false);
-
-  const button = (
-    <button type="button" onClick={() => on.set(!on.get())}>
-      Off
-    </button>
-  ) as HTMLButtonElement;
-
-  effect(() => {
-    const value = on.get();
-    button.textContent = value ? "On" : "Off";
-    button.setAttribute("aria-pressed", String(value));
-  });
-
-  return button;
-}
-
-mount(<Toggle />, document.getElementById("root")!);
-```
-
-This is the pattern the library is built around: **create the node once, subscribe once, write to that node**. Juice's own accordion component uses the same shape — a `Signal` for expanded state, an `effect` that writes `hidden` and `aria-expanded`.
-
-### 3. Conditional UI without a virtual DOM
-
-There is no `{open && <Panel />}`. Returning an element from a function child stringifies it. Show and hide with the DOM you already have:
-
-```tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function Notes() {
-  const open = Signal(false);
-  const panel = (
-    <aside panel padding="1.25rem" hidden>
-      Shift notes stay mounted. Only `hidden` flips.
-    </aside>
-  ) as HTMLElement;
-
-  effect(() => {
-    panel.hidden = !open.get();
-  });
-
-  return (
-    <section stack gap="1rem">
-      <button type="button" onClick={() => open.set(!open.get())}>
-        {() => (open.get() ? "Hide notes" : "Show notes")}
-      </button>
-      {panel}
-    </section>
-  );
-}
-
-mount(<Notes />, document.getElementById("root")!);
-```
-
-The panel is created on first render. The effect toggles `hidden`. For swapping *which* children exist, use `replaceChildren` — see [JSX and the DOM](./sig-jsx.md).
-
-### 4. Lists you rewrite yourself
-
-`replaceChildren` is the simple, non-keyed list. The snippet below rebuilds every `<li>`. When a row should keep its DOM node, focus, and effects, use `bindList` ([keyed todo](./sig-patterns.md#keyed-todo-list-bindlist)). `{() => items.map(...)}` is still text.
-
-```tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function Queue() {
-  const items = Signal<string[]>(["Review the deploy window"]);
-  const list = <ul stack gap="0.5rem"></ul> as HTMLUListElement;
-
-  effect(() => {
-    list.replaceChildren(
-      ...items.get().map((text) => <li>{text}</li>),
-    );
-  });
-
-  return (
-    <section stack gap="1rem">
-      <button
-        type="button"
-        onClick={() =>
-          items.set([...items.get(), `Item ${items.get().length + 1}`])
-        }
-      >
-        Add
-      </button>
-      {list}
-    </section>
-  );
-}
-
-mount(<Queue />, document.getElementById("root")!);
-```
-
-`{() => items.get().map((text) => <li>{text}</li>)}` does **not** produce a list. Function children become `String(child())` text. The [tutorial](./sig-page-tutorial.md) builds a real queue this way.
-
-### 5. A form field that is not two-way bound
-
-Inputs are platform controls. Read from the event; write back from an effect if you need a controlled value. Derive labels with `memo` when several readers share one computation.
-
-```tsx
-import { Signal, effect, memo, mount } from "@citrusworx/sigjs";
-
-function OperatorName() {
-  const name = Signal("");
-  const greeting = memo(() => name.get().trim() || "operator");
-
-  const input = (
-    <input
-      type="text"
-      onInput={(e) => name.set((e.target as HTMLInputElement).value)}
-    />
-  ) as HTMLInputElement;
-
-  effect(() => {
-    if (input.value !== name.get()) {
-      input.value = name.get();
-    }
-  });
-
-  return (
-    <label stack gap="0.5rem">
-      Name
-      {input}
-      <p>Hello, {() => greeting.get()}</p>
-    </label>
-  );
-}
-
-mount(<OperatorName />, document.getElementById("root")!);
-```
-
-### 6. Batch related writes
-
-Without `batch`, each `set()` notifies effects immediately. Group related updates so dependents run once.
-
-```ts
-import { Signal, batch, effect } from "@citrusworx/sigjs";
-
-const first = Signal("");
-const last = Signal("");
-
-effect(() => {
-  console.log(`${first.get()} ${last.get()}`);
-});
-
-batch(() => {
-  first.set("Ada");
-  last.set("Lovelace");
-});
-// the effect runs once after the batch, not twice
-```
-
-`batch` uses a depth counter: nested calls flush once, when the outermost `batch` finishes. A throw inside `fn` still resets the depth. Details in [Effects](./sig-effects.md).
-
-### 7. Memoized derived values
-
-`memo` caches a computation and invalidates when its signal dependencies change. It is lazy: the function runs on `get()`, not at creation.
-
-```ts
-import { Signal, memo } from "@citrusworx/sigjs";
-
-const items = Signal([1, 2, 3, 4, 5]);
-const total = memo(() => items.get().reduce((sum, n) => sum + n, 0));
-
-total.get(); // 15
-total.get(); // cached
-items.set([1, 2, 3]);
-total.get(); // 6
-```
-
-`set()` on a signal always notifies, even if the value is unchanged. `memo` has no `set` and no public `dispose`.
-
-### 8. Fetch with abort on the next tick
-
-Effects may return a cleanup. It runs before the next execution and again when the effect is disposed — including when `SigRouter` leaves a view.
-
-```tsx
-import { Signal, effect, batch } from "@citrusworx/sigjs";
-
-function StatusLine() {
-  const path = Signal("/health");
-  const body = <pre></pre> as HTMLPreElement;
-
-  effect(() => {
-    const url = path.get();
-    const controller = new AbortController();
-
-    fetch(url, { signal: controller.signal })
-      .then((res) => res.text())
-      .then((text) => {
-        body.textContent = text;
-      })
-      .catch((err: unknown) => {
-        if (controller.signal.aborted) return;
-        body.textContent = String(err);
-      });
-
-    return () => controller.abort();
-  });
-
-  return body;
-}
-```
-
-### 9. Client-side routes
-
-`SigRouter` matches **exact paths** first, then `:param` segments, then optional `"*"`. Keys without a leading slash become named routes (`about` → `/about`). Prefer component functions so each visit builds a fresh tree; the router disposes the previous view's effects.
-
-```tsx
-import { SigRouter } from "@citrusworx/sigjs";
-
-const router = new SigRouter("#root");
-
-router.set({
-  "/": Home,
-  about: About,
-  contact: Contact,
-  "/user/:id": UserPage,
-});
-
-router.start();
-```
-
-```html
-<nav>
-  <a href="/">Home</a>
-  <a href="/about">About</a>
-</nav>
-```
-
-A view function receives params as its first argument: `function UserPage(params: { id: string })`. `navigate("about")` normalizes to `/about`, same as `set` / `has`. Register `"*"` if you want an unknown-path view; without it, `navigate` to a missing path is a no-op and `popstate` empties the target.
+Sig.js updates the DOM a node at a time. Signals hold values. Effects and JSX getters write the nodes that read them. The rest of the page is created once and left alone.
+
+Use it when a page is mostly static and only a few values change: a counter, a form field, a list, a route. It is not a component framework. It does not ship widgets, server rendering, or a form library.
+
+**1.0.0** is the stable release (npm, 2026-10-29). The public API is the **0.7.2** API with no additions. `Signal.set` always notifies, including when the value is unchanged. `bindList` stays experimental.
+
+## Start here
+
+| Page | What it covers |
+|---|---|
+| [Getting started](./sig-getting-started.md) | Install, JSX, first page, Juice, WebEngine |
+| [Page tutorial](./sig-page-tutorial.md) | One Juice page: tally, disclosure, queue, form, route |
+| [What's new in 1.0](./sig-whats-new.md) | What the stable release freezes |
+| [Migrating from 0.x](./sig-migrating.md) | Breaks from 0.2 through 0.7.2 |
+
+## Concepts
+
+| Page | What it covers |
+|---|---|
+| [Signals](./sig-signals.md) | `Signal`, `get`, `set`, identity |
+| [Derived values](./sig-memo.md) | `memo` |
+| [Effects](./sig-effects.md) | Tracking, cleanup, dynamic dependencies |
+| [Batching](./sig-batch.md) | `batch` |
+| [Templating](./sig-jsx.md) | JSX, text children, live props, lists |
+| [Lifecycle](./sig-lifecycle.md) | `mount`, `disposeTree`, component cleanup |
+| [Router](./sig-router.md) | Exact paths, `:param`, `"*"` |
+
+## API reference
+
+| Page | What it covers |
+|---|---|
+| [API reference](./sig-api.md) | Every public export: signature, parameters, example, edge cases |
+| [API surface](./api-surface.md) | Stable, experimental, and internal classification |
+| [TypeScript](./sig-typescript.md) | `jsxImportSource`, events, and the types that are not exported |
+
+## Guides
+
+| Page | What it covers |
+|---|---|
+| [Patterns](./sig-patterns.md) | Forms, lists, fetch, routes |
+| [Examples](./sig-examples.md) | Longer pages built from those patterns |
+| [Best practices](./sig-best-practices.md) | How to keep a Sig page small |
+| [Anti-patterns](./sig-anti-patterns.md) | Snapshot reads, element children, in-place mutation |
+| [Troubleshooting](./sig-troubleshooting.md) | Why a `set` did not update the DOM |
+
+## Integration
+
+| Page | What it covers |
+|---|---|
+| [Sig.js + Juice](./sig-juice-integration.md) | Attributes, and `bind` against Juice 0.9.1–0.9.5 |
+| [Juice](../juice/README.md) | Layout and themes |
+| [WebEngine](../webengine/webengine-getting-started.md) | Why the engine does not bootstrap Sig |
+
+## Reference
+
+| Page | What it covers |
+|---|---|
+| [Status](./sig-status.md) | What is stable, emerging, or absent |
+| [Roadmap](./sig-roadmap.md) | What would change the library, and what would not |
+| [Release checklist](./release-checklist.md) | Semver and publish rules |
 
 ## Mental model
 
-| You want… | Use |
+| You want | Use |
 |---|---|
 | A reactive value | `Signal(initial)` |
-| Live **text** in JSX | `{() => String(signal.get())}` |
-| Live **attributes** in JSX | `className={() => …}`, `value={() => …}`, `checked={() => …}` |
-| Several writes, or lists / structure | Hold the element; update it in `effect` |
-| Show / hide existing structure | `hidden={() => …}` or `hidden` from an effect |
-| Swap list children, and rebuilding rows is fine | `replaceChildren` from an effect |
-| Keyed rows (keep the node, focus, and row effects) | `bindList(parent, source, key, render)` |
-| Several writes, one notification | `batch(() => { … })` |
-| A cached derivation | `memo(() => …)` |
-| To put a tree on the page | `mount(node, target)` |
-| SPA navigation | `new SigRouter("#root")` |
+| Live text | `{() => signal.get()}` |
+| One live attribute | `className={() => ...}`, `hidden={() => ...}` |
+| Several writes, or a rebuilt list | An element plus `effect` |
+| Keyed rows | `bindList` |
+| One flush for several writes | `batch` |
+| A cached derivation | `memo` |
+| A tree on the page | `mount(node, target)` |
+| Client routes | `new SigRouter("#root")` |
 
-Function children are **text only**. The runtime does `textNode.textContent = String(child())`. Returning an element from a function child stringifies it; it does not swap subtrees. Function-valued **props** (except `ref` and `on*`) are live getters. `disabled={busy.get()}` is still a snapshot.
+Component functions run once per mount. They build DOM. They are not render functions. `{count.get()}` without a function wrapper is frozen at that moment.
 
-Component functions run **once** per mount (or per router visit). They are factories for DOM, not render functions. That is why `{count.get()}` without a function wrapper is a static snapshot.
+## What is not in 1.0.0
 
-## Using with Juice
-
-Juice styles the tree. Sig.js moves values inside it. Import Juice core + a theme, then write attributes on the same elements Sig creates:
-
-```tsx
-import "@citrusworx/juiceui/styles";
-import "./generated/my-theme.css";
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function App() {
-  const count = Signal(0);
-  const label = <span>0</span> as HTMLSpanElement;
-
-  effect(() => {
-    label.textContent = String(count.get());
-  });
-
-  return (
-    <main stack gap="2rem" padding="2rem">
-      <section card padding="1.25rem" stack gap="1rem">
-        <h1>Clicks</h1>
-        <p>Count: {label}</p>
-        <button type="button" onClick={() => count.set(count.get() + 1)}>
-          Add one
-        </button>
-      </section>
-    </main>
-  );
-}
-
-mount(<App />, document.getElementById("root")!);
-```
-
-Juice does not export a `Button` component for Sig to import. Use HTML plus Juice attributes. The [page tutorial](./sig-page-tutorial.md) builds a whole operator desk this way — hero, cards, form fields, a live queue, and a second route.
-
-## Suggested reading order
-
-1. [Getting Started](./sig-getting-started.md) — install, JSX setup, first reactive page
-2. [Page Tutorial](./sig-page-tutorial.md) — guided build: counter → disclosure → list → form → route
-3. [Signals](./sig-signals.md) — `get` / `set`, when updates fire, sharing values
-4. [Effects](./sig-effects.md) — tracking, cleanup, `batch`, `memo`
-5. [JSX and the DOM](./sig-jsx.md) — static first, function children, lists, conditionals
-6. [Patterns](./sig-patterns.md) — truthful cookbook for common UI
-7. [Best Practices](./sig-best-practices.md) — how to compose Sig so it stays small
-8. [Anti-Patterns](./sig-anti-patterns.md) — React habits, snapshot props, VDOM assumptions
-9. [Examples](./sig-examples.md) — longer showcases (forms, lists, fetch, router)
-10. [Router Guide](./sig-router.md) — exact paths, `:param` routes, named routes, cleanup
-11. [Sig.js + Juice](./sig-juice-integration.md) — behavior vs structure
-12. [API Reference](./sig-api.md) — the public surface, one page
-13. [API surface](./api-surface.md) — v1 freeze inventory: stable, experimental, internal
-14. [Troubleshooting](./sig-troubleshooting.md) — the usual “why didn’t it update?” cases
-15. [Status](./sig-status.md) — Stable maturity matrix
-16. [Roadmap](./sig-roadmap.md) — what would move Sig upward, and what would not
+| Not shipped | What to do instead |
+|---|---|
+| Virtual DOM, `<For>`, `<Show>` | Function children for text. `hidden`, `replaceChildren`, or `bindList` for structure |
+| SSR or hydration | Client DOM only |
+| `useState`, `peek`, `update` | `Signal(value)` and `get` / `set` |
+| Two-way inputs | Read the event. Write `value` back from an effect if you need a controlled field |
+| Live `style={{}}` objects | A `style` string works. An object is in the types and does not apply CSS |
+| Error boundaries, DevTools | Not implemented |
 
 ## Status
 
-**Stable** (workspace `@citrusworx/sigjs` **1.0.0**). npm `latest` is **1.0.0** (published 2026-10-29). The API matches that cut. Core reactivity is implemented and tested:
+Workspace and npm are both **1.0.0**. Core reactivity, the JSX factory, `mount`, and `SigRouter` are stable. `bindList` and `ListItem` are experimental.
 
-- `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
-- JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
-- `mount` and tree dispose
-- `SigRouter` — exact paths, `:param` segments, named routes, link interception, view cleanup
-- optional `@citrusworx/sigjs/juice` `bind` for twenty-eight Juice hosts (`{ state, dispose }`), including icon-button, avatar, and table. Write-back adds icon-button (`pressed`, `[toggle]` hosts only). Avatar and table are read-only. Those three need a Juice publish that exports their start functions; published `@citrusworx/juiceui` 0.9.2 does not, and binding one of them then throws `needs a newer @citrusworx/juiceui`. Juice works without this subpath. The subpath shipped in 0.4.0. The three names are in npm `@citrusworx/sigjs@0.7.2`. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
+The optional Juice adapter binds 28 runtime names. See [Status](./sig-status.md) for the matrix.
 
-Not shipped:
-
-- Function children that return elements or lists
-- Live `style={{}}` object bindings
-- SSR / hydration
-- Error boundaries
-
-**1.0.0** freezes this API. `Signal.set` always notifies, including when the value is unchanged. SSR, a virtual DOM, `<For>`, and `<Show>` are non-goals for 1.0. See [Status](./sig-status.md) for the area-by-area matrix and [Roadmap](./sig-roadmap.md) for what is worth building next.
-
-## Sibling packages
-
-- [Juice](../juice/README.md) — attribute-first styling
-- [Nectarine](../nectarine/README.md) — YAML models and database adapters
-- [Seltzer](../seltzer/README.md) — HTTP runtime
-- [Grapevine](../grapevine/README.md) — DigitalOcean provisioning
+Sibling libraries: [Juice](../juice/README.md), [Nectarine](../nectarine/README.md), [Seltzer](../seltzer/README.md), [Grapevine](../grapevine/README.md).
