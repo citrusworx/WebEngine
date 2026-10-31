@@ -1,0 +1,369 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+@use '../../styles/animations/motion' as motion;
+
+// Sheet chrome is structural. Color comes from an optional sheet role
+// that falls through to the drawer role of the same name:
+//   --juice-sheet-overlay       -> --juice-drawer-overlay
+//   --juice-sheet-panel         -> --juice-drawer-panel
+//   --juice-sheet-panel-border  -> --juice-drawer-panel-border
+//   --juice-sheet-panel-shadow  -> --juice-drawer-panel-shadow
+//   --juice-sheet-close         -> --juice-drawer-close
+//   --juice-sheet-close-color   -> --juice-drawer-close-color
+//   --juice-sheet-close-hover   -> --juice-drawer-close-hover
+//   --juice-sheet-focus-ring    -> --juice-drawer-focus-ring
+// Shipped themes already bind the drawer names. A sheet override is
+// optional, so this file does not declare --juice-sheet-* color roles
+// on :root or [theme]. Declaring them would block the drawer fallback.
+// There is no REQUIRED_SHEET_ROLES entry and no theme edit in this slice.
+// The aqua / kw / cm / tide / jx alias chain stays inside drawer chrome.
+// Drawer roles are the contract those aliases already satisfy.
+//
+// Markup:
+//   [sheet-overlay] > [sheet role="dialog"]
+//     [sheet-handle] [sheet-header] [sheet-body] [sheet-footer] [sheet-close]
+// The sheet is anchored to the bottom edge of the overlay. This is not
+// the surface `overlay="frost|tint"` utility and not [drawer].
+//
+// Closed vs open matches drawer. Native `hidden` on the overlay is
+// display: none. Markup without [hidden] stays visible so static demos
+// keep working. Runtime (slice B) removes [hidden] before the enter
+// motion and sets it only after the exit motion. data-motion-state is
+// entering | entered | exiting | exited. Optional surfaceTone on
+// [sheet] is allowed; do not force it.
+//
+// Detents. sheet-detents is the allowed set, words compose with ~=,
+// same as [keyboard-avoider~="footer"]. The default set, when the
+// attribute is absent, is "half full". The current detent is [detent]
+// on the sheet: peek, half, or full. This slice only styles the
+// states. It does not pick a detent in JS.
+//   no [detent]                         height is half (the default rest)
+//   [sheet-detents~="peek"] alone       height is peek
+//   [sheet-detents~="full"] without half  height is full
+//   [detent="peek|half|full"]           that height, and it wins
+//
+// Overlay modes. [sheet-overlay] matches every value, so none is
+// excluded from the backdrop rule and restated after it.
+//   [sheet-overlay]              modal backdrop, pointer-events auto
+//   [sheet-overlay="static"]     same backdrop. Click-to-close is
+//                                runtime. This slice only accepts the
+//                                value and keeps the paint.
+//   [sheet-overlay="none"]       no backdrop, pointer-events none on
+//                                the overlay, auto on the sheet, so
+//                                the page behind stays clickable.
+//
+// Layout roles, on :root only. Not color, so they are not restated
+// on [theme]. Lengths do not depend on the theme.
+//   --juice-sheet-offset        top gap for the full detent
+//   --juice-sheet-peek          ~25dvh, with a vh fallback
+//   --juice-sheet-half          50dvh, with a vh fallback
+//   --juice-sheet-full          100dvh minus the offset, vh first
+//   --juice-sheet-max-height    same cap as full
+//   --juice-sheet-radius        top corners
+//   --juice-sheet-handle-width
+//   --juice-sheet-handle-height
+// A browser that does not understand dvh drops that declaration and
+// keeps the vh line above it.
+//
+// z-index is 1000 on the overlay, same as modal and drawer. There is
+// no layer system. The sheet itself does not set z-index.
+//
+// Footer bottom padding is the keyboard-avoider safe-area composition,
+// the same max() that file emits. It is not a sum: the home indicator
+// must not stack on the keyboard.
+//   max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))
+// [sheet-body]:last-child uses it too, so a sheet with no footer still
+// clears the inset. A body that is followed by a footer keeps its own
+// padding; the footer owns the inset.
+//
+// html[keyboard-open] shrinks the sheet max-height by
+// --juice-keyboard-inset. The keyboard-avoider runtime sets that
+// attribute on <html> while open and writes the inset there. The
+// footer max() already tracks the inset when the attribute is absent
+// (the env() fallback on Chromium). The max-height shrink is the
+// extra cap so a tall detent cannot stay full-viewport tall over the
+// keyboard.
+//
+// [dragging] on the sheet, or on the overlay, sets transition: none
+// so a slice B drag can write height without fighting the detent
+// transition. The enter/exit motion is animation, not transition.
+// prefers-reduced-motion sets transition: none on the sheet and the
+// close control. Durations also collapse through --juice-motion-*.
+
+@function -juice-sheet-role($name, $fallback) {
+    @return var(
+        --juice-sheet-#{$name},
+        var(--juice-drawer-#{$name}, #{$fallback})
+    );
+}
+
+$_juice-sheet-overlay: -juice-sheet-role(overlay, #{rgba($black-900, 0.55)});
+$_juice-sheet-panel: -juice-sheet-role(panel, #{$white-100});
+$_juice-sheet-panel-border: -juice-sheet-role(panel-border, #{rgba($gray-300, 0.85)});
+$_juice-sheet-panel-shadow: -juice-sheet-role(panel-shadow, 0 24px 56px -24px #{rgba($black-900, 0.42)});
+$_juice-sheet-close: -juice-sheet-role(close, #{$white-100});
+$_juice-sheet-close-color: -juice-sheet-role(close-color, #{$black-700});
+$_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
+
+:root {
+    --juice-sheet-offset: max(env(safe-area-inset-top, 0px), 1.5rem);
+    --juice-sheet-peek: 25vh;
+    --juice-sheet-peek: 25dvh;
+    --juice-sheet-half: 50vh;
+    --juice-sheet-half: 50dvh;
+    --juice-sheet-full: calc(100vh - var(--juice-sheet-offset));
+    --juice-sheet-full: calc(100dvh - var(--juice-sheet-offset));
+    --juice-sheet-max-height: calc(100vh - var(--juice-sheet-offset));
+    --juice-sheet-max-height: calc(100dvh - var(--juice-sheet-offset));
+    --juice-sheet-radius: 1rem;
+    --juice-sheet-handle-width: 2.5rem;
+    --juice-sheet-handle-height: 0.25rem;
+}
+
+// [theme] [sheet…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(section, article) and generic
+// :where(button) CTA paint. Themes realize color through the roles.
+
+[sheet-overlay],
+[theme] [sheet-overlay] {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+[sheet-overlay][hidden],
+[theme] [sheet-overlay][hidden] {
+    display: none;
+}
+
+[sheet-overlay]:not([sheet-overlay="none"]),
+[sheet-overlay="static"],
+[theme] [sheet-overlay]:not([sheet-overlay="none"]),
+[theme] [sheet-overlay="static"] {
+    background-color: $_juice-sheet-overlay;
+    pointer-events: auto;
+}
+
+[sheet-overlay="none"],
+[theme] [sheet-overlay="none"] {
+    background-color: transparent;
+    pointer-events: none;
+}
+
+[sheet-overlay="none"] [sheet],
+[theme] [sheet-overlay="none"] [sheet] {
+    pointer-events: auto;
+}
+
+[sheet] {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: var(--juice-sheet-half);
+    max-height: var(--juice-sheet-max-height);
+    box-sizing: border-box;
+    border-radius: var(--juice-sheet-radius) var(--juice-sheet-radius) 0 0;
+    overflow: hidden;
+    transition:
+        height var(--juice-motion-duration-base) var(--juice-motion-ease-enter),
+        max-height var(--juice-motion-duration-base) var(--juice-motion-ease-enter);
+}
+
+[sheet],
+[theme] [sheet]:not([surfaceTone]) {
+    background-color: $_juice-sheet-panel;
+    border: 1px solid $_juice-sheet-panel-border;
+    box-shadow: $_juice-sheet-panel-shadow;
+}
+
+// Lists that name half, including the default "half full", keep the
+// half height from [sheet]. These two only fire when half is absent,
+// so a peek-only list rests at peek and a full list rests at full.
+[sheet][sheet-detents~="half"]:not([detent]) {
+    height: var(--juice-sheet-half);
+}
+
+[sheet][sheet-detents~="peek"]:not([detent]):not([sheet-detents~="half"]):not([sheet-detents~="full"]) {
+    height: var(--juice-sheet-peek);
+}
+
+[sheet][sheet-detents~="full"]:not([detent]):not([sheet-detents~="half"]) {
+    height: var(--juice-sheet-full);
+}
+
+[sheet][detent="peek"] {
+    height: var(--juice-sheet-peek);
+}
+
+[sheet][detent="half"] {
+    height: var(--juice-sheet-half);
+}
+
+[sheet][detent="full"] {
+    height: var(--juice-sheet-full);
+}
+
+[sheet-handle],
+[theme] [sheet-handle] {
+    display: block;
+    flex: 0 0 auto;
+    align-self: center;
+    width: var(--juice-sheet-handle-width);
+    height: var(--juice-sheet-handle-height);
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background-color: $_juice-sheet-close-color;
+    background-image: none;
+    box-shadow: none;
+    touch-action: none;
+    user-select: none;
+}
+
+[sheet-header] {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+    text-align: start;
+    padding: 0.25rem 3.5rem 0.75rem 1.25rem;
+    box-sizing: border-box;
+}
+
+[sheet-body] {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 0 1.25rem 1.25rem;
+    box-sizing: border-box;
+}
+
+[sheet] > [sheet-body]:last-child {
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+[sheet-footer] {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    padding-top: 0.75rem;
+    padding-right: 1.25rem;
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+    padding-left: 1.25rem;
+}
+
+[sheet-close],
+[theme] [sheet-close] {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: $_juice-sheet-close;
+    background-image: none;
+    color: $_juice-sheet-close-color;
+    box-shadow: none;
+    transform: none;
+    @include motion.overlay-close-transition;
+}
+
+[sheet-close]:hover,
+[theme] [sheet-close]:hover {
+    background-color: $_juice-sheet-close-hover;
+    background-image: none;
+    color: $_juice-sheet-close-color;
+    transform: none;
+}
+
+[sheet-close]:focus-visible,
+[theme] [sheet-close]:focus-visible {
+    outline: 2px solid -juice-sheet-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+// The sheet stays bottom-anchored. Max-height is the only keyboard
+// adjustment on the box. Footer padding still uses the inset, so the
+// footer content clears the keyboard while the extra cap keeps a full
+// detent from remaining viewport-tall. See the file header.
+
+html[keyboard-open] [sheet],
+html[keyboard-open] [theme] [sheet] {
+    max-height: calc(var(--juice-sheet-max-height) - var(--juice-keyboard-inset));
+}
+
+[sheet][dragging],
+[theme] [sheet][dragging],
+[sheet-overlay][dragging] [sheet],
+[theme] [sheet-overlay][dragging] [sheet] {
+    transition: none;
+}
+
+@keyframes juice-sheet-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes juice-sheet-overlay-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes juice-sheet-panel-in {
+    from { transform: translateY(100%); }
+    to { transform: none; }
+}
+
+@keyframes juice-sheet-panel-out {
+    from { transform: none; }
+    to { transform: translateY(100%); }
+}
+
+[sheet-overlay][data-motion-state="entering"] {
+    animation: juice-sheet-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[sheet-overlay][data-motion-state="entering"] [sheet] {
+    animation: juice-sheet-panel-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[sheet-overlay][data-motion-state="exiting"] {
+    animation: juice-sheet-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[sheet-overlay][data-motion-state="exiting"] [sheet] {
+    animation: juice-sheet-panel-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[sheet-overlay][data-motion-state="exited"] {
+    opacity: 0;
+}
+
+[sheet-overlay][data-motion-state="exited"] [sheet] {
+    transform: translateY(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [sheet],
+    [theme] [sheet],
+    [sheet-close],
+    [theme] [sheet-close] {
+        transition: none;
+    }
+}

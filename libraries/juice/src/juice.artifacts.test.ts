@@ -1248,7 +1248,9 @@ describe("Juice build artifacts", () => {
         it("includes keyboard-avoider layout chrome in core CSS", () => {
             const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
             const start = css.indexOf("@property --juice-keyboard-inset");
-            const end = css.indexOf("[search-panel]", start);
+            const sheetVars = css.indexOf("--juice-sheet-offset", start);
+            expect(sheetVars).toBeGreaterThan(start);
+            const end = css.lastIndexOf(":root", sheetVars);
             expect(start).toBeGreaterThan(-1);
             expect(end).toBeGreaterThan(start);
             const slice = css.slice(start, end);
@@ -1358,7 +1360,9 @@ describe("Juice build artifacts", () => {
         it("resets bottom on a fixed nav in footer mode and still sticks a normal footer", () => {
             const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
             const start = css.indexOf("@property --juice-keyboard-inset");
-            const end = css.indexOf("[search-panel]", start);
+            const sheetVars = css.indexOf("--juice-sheet-offset", start);
+            expect(sheetVars).toBeGreaterThan(start);
+            const end = css.lastIndexOf(":root", sheetVars);
             expect(start).toBeGreaterThan(-1);
             expect(end).toBeGreaterThan(start);
             const slice = css.slice(start, end);
@@ -1424,6 +1428,162 @@ describe("Juice build artifacts", () => {
             expect(stuck.some((block) => fixedContainer.test(block.selector))).toBe(true);
             expect(stuck.some((block) => new RegExp(`(^|,)\\s*${footerWord}`).test(block.selector))).toBe(true);
             expect(slice).not.toMatch(stickyHost);
+        });
+    });
+
+    describe("sheet structural chrome", () => {
+        it("includes sheet layout chrome in core CSS", () => {
+            const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+            const marker = css.indexOf("--juice-sheet-offset");
+            expect(marker).toBeGreaterThan(-1);
+            const start = css.lastIndexOf(":root", marker);
+            const end = css.indexOf("[search-panel]", start);
+            expect(start).toBeGreaterThan(-1);
+            expect(end).toBeGreaterThan(start);
+            const slice = css.slice(start, end);
+
+            const ruleAt = (needle: string) => {
+                const at = slice.indexOf(needle);
+                expect(at).toBeGreaterThan(-1);
+                const open = slice.indexOf("{", at);
+                const close = slice.indexOf("}", open);
+                return slice.slice(at, close + 1);
+            };
+
+            expect(slice).toContain("[sheet-overlay]");
+            expect(slice).toContain("[sheet]");
+            expect(slice).toContain("[sheet-handle]");
+            expect(slice).toContain("[sheet-header]");
+            expect(slice).toContain("[sheet-body]");
+            expect(slice).toContain("[sheet-footer]");
+            expect(slice).toContain("[sheet-close]");
+            expect(slice).toMatch(/\[theme\]\s+\[sheet-overlay\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[sheet\]:not\(\[surfaceTone\]\)/);
+            expect(slice).toMatch(/\[theme\]\s+\[sheet-close\]/);
+            expect(slice).toMatch(/\[sheet-overlay\]\[hidden\]/);
+            expect(slice).toMatch(/\[sheet-overlay=["']?none["']?\]/);
+            expect(slice).toMatch(/\[sheet-overlay=["']?static["']?\]/);
+            expect(slice).toMatch(/\[sheet-overlay\]:not\(\[sheet-overlay=["']?none["']?\]\)/);
+            expect(slice).toMatch(/\[sheet\]\[detent=["']?peek["']?\]/);
+            expect(slice).toMatch(/\[sheet\]\[detent=["']?half["']?\]/);
+            expect(slice).toMatch(/\[sheet\]\[detent=["']?full["']?\]/);
+            expect(slice).toMatch(/\[sheet-detents~=["']?peek["']?\]/);
+            expect(slice).toMatch(/\[sheet-detents~=["']?half["']?\]/);
+            expect(slice).toMatch(/\[sheet-detents~=["']?full["']?\]/);
+            expect(slice).toMatch(/\[sheet-close\]:focus-visible/);
+            expect(slice).toMatch(/\[data-motion-state=["']?entering["']?\]/);
+            expect(slice).toMatch(/\[data-motion-state=["']?exiting["']?\]/);
+            expect(slice).toMatch(/\[data-motion-state=["']?exited["']?\]/);
+            expect(slice).toContain("@keyframes juice-sheet-overlay-in");
+            expect(slice).toContain("@keyframes juice-sheet-overlay-out");
+            expect(slice).toContain("@keyframes juice-sheet-panel-in");
+            expect(slice).toContain("@keyframes juice-sheet-panel-out");
+            expect(slice).toContain("translateY(100%)");
+            expect(slice).toContain("animation: juice-sheet-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both");
+            expect(slice).toContain("animation: juice-sheet-panel-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both");
+            expect(slice).toContain("animation: juice-sheet-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both");
+            expect(slice).toContain("animation: juice-sheet-panel-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both");
+
+            const overlay = ruleAt("[sheet-overlay],");
+            expect(overlay).toContain("position: fixed");
+            expect(overlay).toContain("inset: 0");
+            expect(overlay).toContain("z-index: 1000");
+            expect(overlay).not.toContain("background-color");
+
+            const hidden = ruleAt("[sheet-overlay][hidden],");
+            expect(hidden).toContain("display: none");
+
+            const backdrop = ruleAt('[sheet-overlay]:not([sheet-overlay=none]),');
+            expect(backdrop).toContain("[sheet-overlay=static]");
+            expect(backdrop).toContain("pointer-events: auto");
+            expect(backdrop).toContain("var(--juice-sheet-overlay, var(--juice-drawer-overlay");
+
+            const none = ruleAt("[sheet-overlay=none],");
+            expect(none).toContain("background-color: transparent");
+            expect(none).toContain("pointer-events: none");
+            expect(none).not.toContain("--juice-drawer-overlay");
+
+            const noneSheet = ruleAt("[sheet-overlay=none] [sheet],");
+            expect(noneSheet).toContain("pointer-events: auto");
+
+            const sheet = slice.match(/(?:^|\n)\[sheet\] \{[^}]*\}/);
+            expect(sheet?.[0]).toContain("position: absolute");
+            expect(sheet?.[0]).toContain("bottom: 0");
+            expect(sheet?.[0]).toContain("left: 0");
+            expect(sheet?.[0]).toContain("right: 0");
+            expect(sheet?.[0]).toContain("height: var(--juice-sheet-half)");
+            expect(sheet?.[0]).toContain("max-height: var(--juice-sheet-max-height)");
+            expect(sheet?.[0]).toContain("overflow: hidden");
+            expect(sheet?.[0]).not.toContain("z-index");
+
+            expect(slice).toContain("height: var(--juice-sheet-peek)");
+            expect(slice).toContain("height: var(--juice-sheet-half)");
+            expect(slice).toContain("height: var(--juice-sheet-full)");
+            expect(slice).toContain("var(--juice-sheet-panel, var(--juice-drawer-panel");
+            expect(slice).toContain("var(--juice-sheet-panel-border, var(--juice-drawer-panel-border");
+            expect(slice).toContain("var(--juice-sheet-panel-shadow, var(--juice-drawer-panel-shadow");
+            expect(slice).toContain("var(--juice-sheet-close, var(--juice-drawer-close");
+            expect(slice).toContain("var(--juice-sheet-close-color, var(--juice-drawer-close-color");
+            expect(slice).toContain("var(--juice-sheet-close-hover, var(--juice-drawer-close-hover");
+            expect(slice).toContain("var(--juice-sheet-focus-ring, var(--juice-drawer-focus-ring");
+
+            const handle = ruleAt("[sheet-handle],");
+            expect(handle).toContain("touch-action: none");
+            expect(handle).toContain("width: var(--juice-sheet-handle-width)");
+            expect(handle).toContain("height: var(--juice-sheet-handle-height)");
+            expect(handle).toContain("border-radius: 999px");
+
+            const body = ruleAt("[sheet-body] {");
+            expect(body).toContain("overflow: auto");
+            expect(body).toContain("overscroll-behavior: contain");
+
+            const footerPad = "max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))";
+            const footer = ruleAt("[sheet-footer] {");
+            expect(footer).toContain(`padding-bottom: ${footerPad}`);
+            const lastBody = ruleAt("[sheet] > [sheet-body]:last-child");
+            expect(lastBody).toContain(`padding-bottom: ${footerPad}`);
+
+            const keyboard = ruleAt("html[keyboard-open] [sheet],");
+            expect(keyboard).toContain("max-height: calc(var(--juice-sheet-max-height) - var(--juice-keyboard-inset))");
+            expect(keyboard).toContain("html[keyboard-open] [theme] [sheet]");
+
+            const dragging = ruleAt("[sheet][dragging],");
+            expect(dragging).toContain("[sheet-overlay][dragging] [sheet]");
+            expect(dragging).toContain("transition: none");
+
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-offset:\s*max\(env\(safe-area-inset-top,\s*0px\),\s*1\.5rem\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-peek:\s*25vh/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-peek:\s*25dvh/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-half:\s*50vh/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-half:\s*50dvh/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-full:\s*calc\(100vh - var\(--juice-sheet-offset\)\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-full:\s*calc\(100dvh - var\(--juice-sheet-offset\)\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-max-height:\s*calc\(100vh - var\(--juice-sheet-offset\)\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-max-height:\s*calc\(100dvh - var\(--juice-sheet-offset\)\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-radius:\s*1rem/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-handle-width:\s*2\.5rem/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-sheet-handle-height:\s*0\.25rem/);
+            expect(slice).not.toMatch(/:root\s*\{[^}]*--juice-sheet-panel:/);
+            expect(slice).not.toMatch(/:root\s*\{[^}]*--juice-sheet-overlay:/);
+            for (const name of ["offset", "peek", "half", "full", "max-height", "radius", "handle-width", "handle-height"]) {
+                expect(css).not.toMatch(new RegExp(`:root,\\s*\\[theme\\]\\s*\\{[^}]*--juice-sheet-${name}:`));
+            }
+
+            const reduced = reducedMotionBlocks(css).filter((block) => block.includes("[sheet"));
+            expect(reduced.length).toBeGreaterThan(0);
+            expect(reduced.some((block) => block.includes("[sheet]") && block.includes("transition: none"))).toBe(true);
+            expect(reduced.some((block) => block.includes("[sheet-close]") && block.includes("transition: none"))).toBe(true);
+
+            const contract = readFileSync(join(PACKAGE_ROOT, "src", "juice.theme-contract.ts"), "utf-8");
+            expect(contract).not.toContain("REQUIRED_SHEET_ROLES");
+            expect(slice).not.toContain("REQUIRED_SHEET_ROLES");
+
+            for (const id of readBundledThemeIds()) {
+                const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+                expect(themeCss).not.toContain("--juice-sheet-");
+                expect(themeCss).not.toContain("[sheet-overlay]");
+                expect(themeCss).not.toContain("[sheet-handle]");
+            }
         });
     });
 
