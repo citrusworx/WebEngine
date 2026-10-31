@@ -2,11 +2,11 @@
 
 Use this before publishing `@citrusworx/sigjs`.
 
-Workspace `libraries/sig/package.json` is **1.0.0**. `libraries/sig/CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**. npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). **1.0.0** is the **0.7.2** API (published 2026-10-27, `gitHead` `c794c06f`, PR #295). Do **not** republish `1.0.0`, `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`.
+Workspace `libraries/sig/package.json` is **1.1.0** (not published yet). `libraries/sig/CHANGELOG.md` records **1.1.0**, **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**. npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). **1.0.0** is the **0.7.2** API (published 2026-10-27, `gitHead` `c794c06f`, PR #295). **1.1.0** adds pressable, touchable-row, and keyboard-avoider to `JuiceRuntimeName`. Do **not** republish `1.0.0`, `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`. Do **not** publish **1.1.0** from this checklist until Drew does.
 
 **0.7.0** was published 2026-10-21 (`gitHead` `747f2f71`, PR #270). **0.7.1** (2026-10-27, `gitHead` `b2f2b287`) is a stale build: the tarball matches **0.7.0** except the `version` field, and its published `dist/juice.d.ts` does not name icon-button, avatar, or table. **0.7.2** does. **1.0.0** keeps that **0.7.2** surface.
 
-`.changeset/sig-juice-icon-avatar-table.md` (minor, the PR #295 `bind` work) and `.changeset/sigjs-npm-072-docs.md` (patch, the published-version notes from PR #298) are **consumed**. Do not re-add them. Do **not** add a new Sig changeset for **1.0.0**. Do **not** run `yarn version-packages`. Other packages still have pending changesets, and that command would version them. A Sig changeset would also move the manifest off **1.0.0**.
+`.changeset/sig-juice-icon-avatar-table.md` (minor, the PR #295 `bind` work) and `.changeset/sigjs-npm-072-docs.md` (patch, the published-version notes from PR #298) are **consumed**. Do not re-add them. Do **not** add a new Sig changeset for **1.1.0**. Drew set that version by hand. Do **not** run `yarn version-packages`. Other packages still have pending changesets, and that command would version them. A Sig changeset would also move the manifest off **1.1.0** the next time that command runs.
 
 `yarn changeset status` (what Juice Package CI runs, with no `--since`) does not require a changeset for a hand-set version. `yarn changeset status --since=origin/master` exits 1 on a diff that touches `libraries/sig` and adds no changeset. `@changesets/cli` 2.29.6 does not treat a hand-set `package.json` version as covering that diff. Do not add a changeset to silence `--since`. Juice Package CI does not pass `--since`.
 
@@ -54,9 +54,9 @@ Juice Package CI is the path-filter gate (`libraries/sig/**` → `yarn verify:ju
 
 ## This version
 
-The workspace version is **1.0.0**. npm `latest` is **1.0.0**. Do not bump `libraries/sig/package.json` in a docs-only change. Do not run `yarn version-packages` while other packages have pending changesets. Do not add a Sig changeset for work already in **1.0.0**. A Sig changeset would move the manifest off **1.0.0** the next time that command runs.
+The workspace version is **1.1.0**, not published yet. npm `latest` is **1.0.0**. Do not bump `libraries/sig/package.json` in a docs-only change. Do not run `yarn version-packages` while other packages have pending changesets. Do not add a Sig changeset for **1.1.0**. A Sig changeset would move the manifest off **1.1.0** the next time that command runs.
 
-Confirm with `npm view @citrusworx/sigjs version` before writing install lines. `npm install @citrusworx/sigjs` installs **1.0.0**. Add a Changeset only for work that is **not** already in **1.0.0**.
+Confirm with `npm view @citrusworx/sigjs version` before writing install lines. `npm install @citrusworx/sigjs` installs **1.0.0**. Do not add a Changeset to cover the hand-set **1.1.0**.
 
 Workspace packages that publish (`@citrusworx/juiceui`, `@citrusworx/sugar`) declare `@citrusworx/sigjs` `^1.0.0` so Yarn links `libraries/sig`. `^0.7.0` does not. **1.0.0** is on npm, so a published manifest that requires `^1.0.0` can resolve. Private apps may keep `workspace:*` (MiaMakes front and KiwiPress front do) or `workspace:^` (Drew Winkles does). Blackwater front is private and declares `^1.0.0`.
 
@@ -64,10 +64,10 @@ Workspace packages that publish (`@citrusworx/juiceui`, `@citrusworx/sugar`) dec
 
 Drew publishes. This checklist does not publish.
 
-1. Do not add a Sig changeset. **1.0.0** is already in `package.json` and `CHANGELOG.md`.
+1. Do not add a Sig changeset. **1.1.0** is already in `package.json` and `CHANGELOG.md`, set by hand. A changeset would bump it again on the next `yarn version-packages`.
 2. Merge with Juice Package CI green (`yarn install --immutable`, `yarn verify:juice`, `yarn changeset status`).
-3. On a clean `master`, do not run `yarn version-packages`. That command versions every package with a pending changeset (grapevine, kiwipress, nectarine, webengine, juice, sugar, and the rest) and would move `@citrusworx/sigjs` off **1.0.0** if a Sig changeset existed.
-4. Review `libraries/sig/package.json` and `CHANGELOG.md` against `npm view @citrusworx/sigjs version`. The manifest, the changelog, and the registry `latest` tag are **1.0.0**. Do not republish **1.0.0**.
+3. On a clean `master`, do not run `yarn version-packages`. That command versions every package with a pending changeset (grapevine, kiwipress, nectarine, webengine, juice, sugar, and the rest) and would move `@citrusworx/sigjs` off **1.1.0** if a Sig changeset existed.
+4. Review `libraries/sig/package.json` and `CHANGELOG.md` against `npm view @citrusworx/sigjs version`. The manifest and the changelog are **1.1.0** (not published). The registry `latest` tag is **1.0.0**. Do not republish **1.0.0**. Do not publish **1.1.0** until that cut is intended.
 5. Do not publish from a dirty worktree.
 6. Build is `prepack` (`tsc`). Publish **Sig only**:
 

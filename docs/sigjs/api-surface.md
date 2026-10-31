@@ -1,6 +1,6 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs` at **1.0.0**. This page describes the workspace tree (`libraries/sig/package.json` **1.0.0**). npm `latest` is **1.0.0** (published 2026-10-29). The API matches **0.7.2** (2026-10-27, PR #295): no public change. **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
+Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. This page describes the workspace tree (`libraries/sig/package.json` **1.1.0**, not published yet). npm `latest` is **1.0.0** (published 2026-10-29). **1.1.0** adds `pressable`, `touchable-row`, and `keyboard-avoider` to `JuiceRuntimeName`. That is additive. **1.0.0** matches **0.7.2** (2026-10-27, PR #295). **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
 Two root names came off the public entry: `captureCleanupScope` (internal module only) and `jsxDEV` (still on `./jsx-dev-runtime`). `Signal.set` always notifies, including when the value is unchanged, and that is frozen for v1. `bindList` and `ListItem` stay experimental.
 
@@ -119,14 +119,14 @@ Not re-exported from `.`. The main entry does not import Juice.
 
 | Export | Entry point | Kind | Classification | Reason | Notes |
 |---|---|---|---|---|---|
-| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. Twenty-eight names, including icon-button, avatar, and table, are in npm 0.7.2. Throws if the runtime cannot be inferred or `getState()` is null. Binding icon-button, avatar, or table when that start function is missing throws `needs a newer @citrusworx/juiceui`. |
+| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. Thirty-one names, through `keyboard-avoider`. The names through table are in npm 0.7.2. Throws if the runtime cannot be inferred or `getState()` is null. Binding icon-button, avatar, table, pressable, touchable-row, or keyboard-avoider when that start function is missing throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. `sheet` is not a name until juiceui publishes it. |
 | `JuiceBinding` | `./juice` | type | stable | Return type of `bind`. | |
 | `JuiceBinding.state` | `./juice` | property | stable | Host state copied into a signal-shaped object. | A `JuiceSignal`, not the object `Signal()` returns. |
 | `JuiceBinding.dispose` | `./juice` | method | stable | Drops the host listeners. A second call does nothing. | A `bind` during Sig render also disposes on unmount, through `effect` and the internal cleanup scope. |
 | `JuiceSignal` | `./juice` | type | stable | `{ get, set }` used by the binding. | Close to `Signal`'s return shape. There is still no shared `Signal<T>` type. |
 | `JuiceSignal.get` | `./juice` | method | stable | Reads the latest copied state. | |
-| `JuiceSignal.set` | `./juice` | method | stable | Publishes a new state through the binding. | Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back). Avatar, table, and the other read-only names do not call a controller. |
-| `JuiceRuntimeName` | `./juice` | type | stable | The twenty-eight runtime names `bind` accepts, including `icon-button`, `avatar`, and `table`. | Adding a name is additive. Renaming one is breaking. Binding one of those three when Juice does not export its start function throws `needs a newer @citrusworx/juiceui`. |
+| `JuiceSignal.set` | `./juice` | method | stable | Publishes a new state through the binding. | Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back). Pressable, touchable-row, keyboard-avoider, avatar, table, and the other read-only names do not call a controller. |
+| `JuiceRuntimeName` | `./juice` | type | stable | The thirty-one runtime names `bind` accepts, through `keyboard-avoider`, including `pressable`, `touchable-row`, `keyboard-avoider`, `icon-button`, `avatar`, and `table`. | Adding a name is additive. Renaming one is breaking. Binding one of those six when Juice does not export its start function throws `needs a newer @citrusworx/juiceui`. `sheet` is not in this union. |
 | `JuiceRuntimeState` | `./juice` | type | stable | Maps each runtime name to the Juice state type. | Follows `@citrusworx/juiceui`. A breaking Juice state change breaks this type. |
 
 ## Smells
@@ -161,7 +161,7 @@ These are decisions, not this cleanup. `bindList` stays experimental until they 
 4. **Name the missing types in [API](./sig-api.md)** (`ListItem`, `RouteMap`, the Juice types) or keep this page as the only inventory. The API page's root sentence already points here.
 5. **Do not add `./node-cleanup` or `./cleanup-scope`.** `attachNodeCleanup` and `captureCleanupScope` stay off the public map.
 6. **Freeze router `get` and `has`.** `get` returns the pattern. `has` is registration only. A param URL helper is a new function, not a quiet change to `get`. A future splat must not redefine `"*"`.
-7. **Freeze Juice write-back** at switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Avatar and table stay read-only. `state.set` on the other read-only runtimes does not call a controller. Teaching another runtime to write back is a behavior change.
+7. **Freeze Juice write-back** at switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table stay read-only. `state.set` on the other read-only runtimes does not call a controller. Teaching another runtime to write back is a behavior change.
 8. **Keep the names.** Do not rename `Signal` to `signal`. Do not split `jsxs` from `jsx`. Do not add `memo` dispose.
 
 ## What this cleanup changed

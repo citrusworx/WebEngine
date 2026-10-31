@@ -13,7 +13,7 @@ const tsc = require.resolve("typescript/bin/tsc");
 const newer = (runtime: string, exportName: string) =>
     `Sig juice bind: "${runtime}" needs a newer @citrusworx/juiceui that exports ${exportName}.`;
 
-test("older Juice still imports the adapter, binds switch, and refuses the three new runtimes", () => {
+test("older Juice still imports the adapter, binds switch, and refuses the six newer runtimes", () => {
     execFileSync(process.execPath, [tsc, "-p", sigRoot, "--pretty", "false"], {
         encoding: "utf8",
     });
@@ -23,10 +23,17 @@ test("older Juice still imports the adapter, binds switch, and refuses the three
         .split("\n")
         .find((line) => line.startsWith("import type"));
     expect(imported).toBeTruthy();
-    expect(imported).not.toMatch(/\b(IconButtonState|AvatarState|TableState)\b/);
+    expect(imported).not.toMatch(
+        /\b(IconButtonState|AvatarState|TableState|PressableState|TouchableRowState|KeyboardAvoiderState)\b/
+    );
     expect(declarations).toContain("pressed: boolean");
+    expect(declarations).toContain("longPressed: boolean");
     expect(declarations).toContain("fallback: boolean");
     expect(declarations).toContain('direction: "ascending" | "descending" | "none"');
+    expect(declarations).toContain("inset: number");
+    expect(declarations).toContain('"pressable"');
+    expect(declarations).toContain('"touchable-row"');
+    expect(declarations).toContain('"keyboard-avoider"');
 
     const result = spawnSync(
         process.execPath,
@@ -58,5 +65,17 @@ test("older Juice still imports the adapter, binds switch, and refuses the three
         "avatar:inferred": newer("avatar", "startAvatarRuntime"),
         table: newer("table", "startTableRuntime"),
         "table:inferred": newer("table", "startTableRuntime"),
+        pressable: newer("pressable", "startPressableRuntime"),
+        "pressable:inferred": newer("pressable", "startPressableRuntime"),
+        "touchable-row": newer("touchable-row", "startTouchableRowRuntime"),
+        "touchable-row:inferred": newer(
+            "touchable-row",
+            "startTouchableRowRuntime"
+        ),
+        "keyboard-avoider": newer("keyboard-avoider", "startKeyboardAvoiderRuntime"),
+        "keyboard-avoider:inferred": newer(
+            "keyboard-avoider",
+            "startKeyboardAvoiderRuntime"
+        ),
     });
 });

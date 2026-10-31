@@ -13,11 +13,14 @@ import {
     stopDisclosureRuntime,
     stopIconButtonRuntime,
     stopInputRuntime,
+    stopKeyboardAvoiderRuntime,
     stopModalRuntime,
+    stopPressableRuntime,
     stopSelectRuntime,
     stopSwitchRuntime,
     stopTableRuntime,
     stopTextareaRuntime,
+    stopTouchableRowRuntime,
 } from "@citrusworx/juiceui";
 
 const bindings: Array<{ dispose: () => void }> = [];
@@ -52,6 +55,10 @@ const stopRuntimes = () => {
     stopIconButtonRuntime();
     stopAvatarRuntime();
     stopTableRuntime();
+    stopPressableRuntime();
+    stopTouchableRowRuntime();
+    stopKeyboardAvoiderRuntime();
+    restoreKeyboardHarness();
 };
 
 test.afterEach(() => {
@@ -718,4 +725,449 @@ test("does not write table sort back to the host", () => {
     expect(document.getElementById("name")?.getAttribute("aria-sort")).toBe("none");
     expect(document.getElementById("age")?.getAttribute("aria-sort")).toBe("none");
     expect(host.querySelectorAll("tbody tr")[0]?.id).toBe("grace");
+});
+
+const pressableRest = { pressed: false, longPressed: false };
+
+// Sig's jsdom register copies MouseEvent and not PointerEvent. Juice's
+// pressable runtime checks `instanceof PointerEvent` against the global.
+const DomPointerEvent = window.PointerEvent;
+if (typeof globalThis.PointerEvent === "undefined") {
+    (globalThis as { PointerEvent?: typeof PointerEvent }).PointerEvent = DomPointerEvent;
+}
+
+const pointer = (type: string, init: PointerEventInit = {}) =>
+    new DomPointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        button: 0,
+        buttons: type === "pointerup" ? 0 : 1,
+        pointerId: 1,
+        pointerType: "mouse",
+        isPrimary: true,
+        clientX: 0,
+        clientY: 0,
+        ...init,
+    });
+
+const requireElement = (selector: string) => {
+    const host = document.querySelector(selector);
+    if (!(host instanceof HTMLElement)) throw new Error(`missing ${selector}`);
+    return host;
+};
+
+test("seeds a pressable signal from getState", () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    const host = requireElement("#go");
+
+    expect(track(bind(host, "pressable")).state.get()).toEqual(pressableRest);
+    expect(host.hasAttribute("pressed")).toBe(false);
+});
+
+test("updates a pressable signal when the pointer goes down and up", () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    const host = requireElement("#go");
+    const binding = track(bind(host, "pressable"));
+    const seen = watch(binding.state);
+
+    host.dispatchEvent(pointer("pointerdown"));
+
+    expect(binding.state.get()).toEqual({ pressed: true, longPressed: false });
+    expect(host.hasAttribute("pressed")).toBe(true);
+    expect(seen.count).toBe(2);
+
+    host.dispatchEvent(pointer("pointerup"));
+
+    expect(binding.state.get()).toEqual(pressableRest);
+    expect(host.hasAttribute("pressed")).toBe(false);
+    expect(seen.count).toBe(3);
+    seen.stop();
+});
+
+test("follows a pressable long-press through juice:change", async () => {
+    document.body.innerHTML =
+        '<button type="button" pressable pressable-longpress="0" id="hold">Hold</button>';
+    const host = requireElement("#hold");
+    const binding = track(bind(host, "pressable"));
+    const longPresses: Event[] = [];
+    host.addEventListener("juice:longpress", (event) => longPresses.push(event));
+
+    host.dispatchEvent(pointer("pointerdown"));
+    expect(binding.state.get()).toEqual({ pressed: true, longPressed: false });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(longPresses).toHaveLength(1);
+    expect((longPresses[0] as CustomEvent).detail).toEqual({
+        pressed: true,
+        longPressed: true,
+    });
+    expect(binding.state.get()).toEqual({ pressed: true, longPressed: true });
+});
+
+test("does not treat juice:longpress as the pressable state channel", () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    const host = requireElement("#go");
+    const binding = track(bind(host, "pressable"));
+    const seen = watch(binding.state);
+
+    host.dispatchEvent(
+        new CustomEvent("juice:longpress", {
+            bubbles: true,
+            cancelable: true,
+            detail: { pressed: true, longPressed: true },
+        })
+    );
+
+    expect(binding.state.get()).toEqual(pressableRest);
+    expect(seen.count).toBe(1);
+    seen.stop();
+});
+
+test("infers pressable from the pressable attribute", () => {
+    document.body.innerHTML = '<div pressable id="pad">Pad</div>';
+    const host = requireElement("#pad");
+
+    expect(track(bind(host)).state.get()).toEqual(pressableRest);
+});
+
+test("keeps icon-button ahead of pressable", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button pressable aria-label="Bold"></button>';
+    const host = requireButton("button");
+
+    expect(track(bind(host)).state.get()).toEqual(iconButtonState);
+});
+
+test("infers pressable ahead of touchable-row when both attributes are set", () => {
+    document.body.innerHTML = '<div pressable touchable-row="select" id="row">Row</div>';
+    const host = requireElement("#row");
+
+    expect(track(bind(host)).state.get()).toEqual(pressableRest);
+    expect(track(bind(host, "touchable-row")).state.get()).toEqual({
+        selected: false,
+        disabled: false,
+    });
+});
+
+test("removes pressable listeners on dispose", () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    const host = requireElement("#go");
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = track(bind(host, "pressable"));
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    host.dispatchEvent(pointer("pointerdown"));
+
+    expect(binding.state.get()).toEqual(pressableRest);
+    expect(host.hasAttribute("pressed")).toBe(true);
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    expect(removed).not.toContain("juice:longpress");
+    seen.stop();
+});
+
+test("does not write pressable state back to the host", () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    const host = requireElement("#go");
+    const binding = track(bind(host, "pressable"));
+
+    binding.state.set({ pressed: true, longPressed: true });
+
+    expect(binding.state.get()).toEqual({ pressed: true, longPressed: true });
+    expect(host.hasAttribute("pressed")).toBe(false);
+});
+
+const rowRest = { selected: false, disabled: false };
+
+test("seeds a touchable-row signal from getState", () => {
+    document.body.innerHTML = '<div touchable-row="select" id="row">Row</div>';
+    const host = requireElement("#row");
+
+    expect(track(bind(host, "touchable-row")).state.get()).toEqual(rowRest);
+});
+
+test("updates a touchable-row signal when a selectable row is clicked", () => {
+    document.body.innerHTML = '<div touchable-row="select" id="row">Row</div>';
+    const host = requireElement("#row");
+    const binding = track(bind(host, "touchable-row"));
+    const seen = watch(binding.state);
+
+    host.click();
+
+    expect(binding.state.get()).toEqual({ selected: true, disabled: false });
+    expect(host.hasAttribute("selected")).toBe(true);
+    expect(host.getAttribute("aria-selected")).toBe("true");
+    expect(seen.count).toBe(2);
+
+    host.click();
+
+    expect(binding.state.get()).toEqual(rowRest);
+    expect(host.hasAttribute("selected")).toBe(false);
+    expect(seen.count).toBe(3);
+    seen.stop();
+});
+
+test("infers touchable-row from the touchable-row attribute", () => {
+    document.body.innerHTML = '<div touchable-row id="row">Row</div>';
+    const host = requireElement("#row");
+
+    expect(track(bind(host)).state.get()).toEqual(rowRest);
+});
+
+test("removes touchable-row listeners on dispose", () => {
+    document.body.innerHTML = '<div touchable-row="select" id="row">Row</div>';
+    const host = requireElement("#row");
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = track(bind(host, "touchable-row"));
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    host.click();
+
+    expect(binding.state.get()).toEqual(rowRest);
+    expect(host.hasAttribute("selected")).toBe(true);
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("does not write touchable-row state back to the host", () => {
+    document.body.innerHTML = '<div touchable-row="select" id="row">Row</div>';
+    const host = requireElement("#row");
+    const binding = track(bind(host, "touchable-row"));
+
+    binding.state.set({ selected: true, disabled: false });
+
+    expect(binding.state.get()).toEqual({ selected: true, disabled: false });
+    expect(host.hasAttribute("selected")).toBe(false);
+    expect(host.hasAttribute("aria-selected")).toBe(false);
+});
+
+// Node's EventTarget rejects jsdom's Event. The viewport has to be the
+// window's EventTarget so resize events reach the runtime listener.
+const DomEventTarget = window.EventTarget;
+
+class KeyboardViewport extends DomEventTarget {
+    height = 800;
+    width = 400;
+    offsetTop = 0;
+    offsetLeft = 0;
+    pageTop = 0;
+    pageLeft = 0;
+    scale = 1;
+}
+
+type KeyboardFrame = { id: number; cb: FrameRequestCallback };
+
+const originalViewport = Object.getOwnPropertyDescriptor(window, "visualViewport");
+const originalInnerHeight = Object.getOwnPropertyDescriptor(window, "innerHeight");
+const originalRequest = globalThis.requestAnimationFrame;
+const originalCancel = globalThis.cancelAnimationFrame;
+const originalWindowRequest = window.requestAnimationFrame;
+const originalWindowCancel = window.cancelAnimationFrame;
+
+let keyboardViewport: KeyboardViewport | null = null;
+let keyboardFrames: KeyboardFrame[] = [];
+let keyboardFrameId = 0;
+let keyboardHarness = false;
+
+const installKeyboardHarness = () => {
+    keyboardViewport = new KeyboardViewport();
+    keyboardFrameId = 0;
+    keyboardFrames = [];
+    keyboardHarness = true;
+    Object.defineProperty(window, "visualViewport", {
+        configurable: true,
+        writable: true,
+        value: keyboardViewport,
+    });
+    Object.defineProperty(window, "innerHeight", {
+        configurable: true,
+        writable: true,
+        value: 800,
+    });
+    const request = (cb: FrameRequestCallback) => {
+        const id = ++keyboardFrameId;
+        keyboardFrames.push({ id, cb });
+        return id;
+    };
+    const cancel = (id: number) => {
+        keyboardFrames = keyboardFrames.filter((frame) => frame.id !== id);
+    };
+    // The runtime calls the free `requestAnimationFrame`, which is the global,
+    // not `window.requestAnimationFrame`.
+    globalThis.requestAnimationFrame = request;
+    globalThis.cancelAnimationFrame = cancel;
+    window.requestAnimationFrame = request;
+    window.cancelAnimationFrame = cancel;
+};
+
+const flushKeyboardFrames = (times = 1) => {
+    for (let i = 0; i < times; i += 1) {
+        const batch = keyboardFrames;
+        keyboardFrames = [];
+        for (const frame of batch) frame.cb(0);
+    }
+};
+
+const restoreKeyboardHarness = () => {
+    if (!keyboardHarness) return;
+    keyboardHarness = false;
+    keyboardFrames = [];
+    globalThis.requestAnimationFrame = originalRequest;
+    globalThis.cancelAnimationFrame = originalCancel;
+    window.requestAnimationFrame = originalWindowRequest;
+    window.cancelAnimationFrame = originalWindowCancel;
+    if (originalViewport) {
+        Object.defineProperty(window, "visualViewport", originalViewport);
+    } else {
+        delete (window as { visualViewport?: VisualViewport }).visualViewport;
+    }
+    if (originalInnerHeight) {
+        Object.defineProperty(window, "innerHeight", originalInnerHeight);
+    }
+    document.documentElement.removeAttribute("keyboard-open");
+    document.documentElement.style.removeProperty("--juice-keyboard-inset");
+};
+
+const keyboardRest = { open: false, inset: 0 };
+
+const bindKeyboard = (selector = "#host") => {
+    installKeyboardHarness();
+    stopKeyboardAvoiderRuntime();
+    return track(bind(requireElement(selector), "keyboard-avoider"));
+};
+
+test("seeds a keyboard-avoider signal from getState", () => {
+    document.body.innerHTML =
+        '<div keyboard-avoider id="host"><input id="field" aria-label="Note"></div>';
+
+    const binding = bindKeyboard();
+
+    expect(binding.state.get()).toEqual(keyboardRest);
+    expect(document.documentElement.hasAttribute("keyboard-open")).toBe(false);
+    expect(document.documentElement.style.getPropertyValue("--juice-keyboard-inset")).toBe(
+        ""
+    );
+    expect(requireElement("#host").hasAttribute("keyboard-open")).toBe(false);
+});
+
+test("updates a keyboard-avoider signal when the keyboard opens", () => {
+    document.body.innerHTML =
+        '<div keyboard-avoider id="host"><input id="field" aria-label="Note"></div>';
+    const host = requireElement("#host");
+    const field = document.getElementById("field");
+    if (!(field instanceof HTMLInputElement)) throw new Error("missing field");
+    const binding = bindKeyboard();
+    const seen = watch(binding.state);
+
+    field.focus();
+    if (!keyboardViewport) throw new Error("missing viewport");
+    keyboardViewport.height = 500;
+    keyboardViewport.dispatchEvent(new Event("resize"));
+    flushKeyboardFrames();
+
+    expect(binding.state.get()).toEqual({ open: true, inset: 300 });
+    expect(document.documentElement.style.getPropertyValue("--juice-keyboard-inset")).toBe(
+        "300px"
+    );
+    expect(document.documentElement.hasAttribute("keyboard-open")).toBe(true);
+    expect(host.hasAttribute("keyboard-open")).toBe(true);
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("keeps a keyboard-avoider signal on the last juice:change across a small inset step", () => {
+    document.body.innerHTML =
+        '<div keyboard-avoider id="host"><input id="field" aria-label="Note"></div>';
+    const field = document.getElementById("field");
+    if (!(field instanceof HTMLInputElement)) throw new Error("missing field");
+    const binding = bindKeyboard();
+    const seen = watch(binding.state);
+
+    field.focus();
+    if (!keyboardViewport) throw new Error("missing viewport");
+    keyboardViewport.height = 500;
+    keyboardViewport.dispatchEvent(new Event("resize"));
+    flushKeyboardFrames();
+    expect(binding.state.get()).toEqual({ open: true, inset: 300 });
+
+    keyboardViewport.height = 510;
+    keyboardViewport.dispatchEvent(new Event("resize"));
+    flushKeyboardFrames();
+
+    expect(binding.state.get()).toEqual({ open: true, inset: 300 });
+    expect(document.documentElement.style.getPropertyValue("--juice-keyboard-inset")).toBe(
+        "290px"
+    );
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("infers keyboard-avoider from the keyboard-avoider attribute", () => {
+    document.body.innerHTML = '<div keyboard-avoider id="host"></div>';
+
+    expect(bindKeyboard().state.get()).toEqual(keyboardRest);
+});
+
+test("removes keyboard-avoider listeners on dispose", () => {
+    document.body.innerHTML =
+        '<div keyboard-avoider id="host"><input id="field" aria-label="Note"></div>';
+    const host = requireElement("#host");
+    const field = document.getElementById("field");
+    if (!(field instanceof HTMLInputElement)) throw new Error("missing field");
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = bindKeyboard();
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    field.focus();
+    if (!keyboardViewport) throw new Error("missing viewport");
+    keyboardViewport.height = 500;
+    keyboardViewport.dispatchEvent(new Event("resize"));
+    flushKeyboardFrames();
+
+    expect(binding.state.get()).toEqual(keyboardRest);
+    expect(host.hasAttribute("keyboard-open")).toBe(true);
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("does not write keyboard-avoider state back to the host", () => {
+    document.body.innerHTML = '<div keyboard-avoider id="host"></div>';
+    const host = requireElement("#host");
+    const binding = bindKeyboard();
+
+    binding.state.set({ open: true, inset: 120 });
+
+    expect(binding.state.get()).toEqual({ open: true, inset: 120 });
+    expect(host.hasAttribute("keyboard-open")).toBe(false);
+    expect(document.documentElement.hasAttribute("keyboard-open")).toBe(false);
+    expect(document.documentElement.style.getPropertyValue("--juice-keyboard-inset")).toBe(
+        ""
+    );
 });

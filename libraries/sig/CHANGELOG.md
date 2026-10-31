@@ -1,5 +1,19 @@
 # @citrusworx/sigjs
 
+## 1.1.0
+
+Not published yet. Workspace `package.json` is **1.1.0**. npm `latest` stays **1.0.0**.
+
+`@citrusworx/sigjs/juice` `bind` follows pressable, touchable-row, and keyboard-avoider. That catches the adapter up with the thirty-one Juice runtimes in published `@citrusworx/juiceui@0.9.5`. `sheet` is on Juice master only and is not a `JuiceRuntimeName`. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
+
+- Pressable state is `{ pressed, longPressed }`. The host is `[pressable]`. Opt-in `juice:longpress` is a separate bubbling cancelable event whose detail is `{ pressed: true, longPressed: true }`. `bind` does not listen for it. `juice:change` carries that gesture afterwards, and the signal follows `juice:change`.
+- Touchable-row state is `{ selected, disabled }`. The host is `[touchable-row]`. Later changes dispatch `juice:change` from the host.
+- Keyboard-avoider state is `{ open, inset }`. The host is `[keyboard-avoider]`. It does dispatch `juice:change` from each host when `open` flips, or when `inset` moves by at least the runtime threshold from the last published inset while open. It also writes `--juice-keyboard-inset` on `<html>` and `[keyboard-open]` on `<html>` and each host. Smaller inset steps update those and `getState()` without an event, so the signal stays on the last `juice:change`. `bind` does not read the custom property or the attribute.
+- All three are read-only. `state.set` updates the signal and does not call a controller.
+- `startPressableRuntime`, `startTouchableRowRuntime`, and `startKeyboardAvoiderRuntime` are feature-detected off the Juice module namespace, same as icon-button, avatar, and table. Binding one when its start function is missing throws `needs a newer @citrusworx/juiceui`. The optional peer stays `@citrusworx/juiceui` `>=0.9.1 <1`. Icon-button, avatar, and table start functions shipped in juiceui **0.9.3**. Pressable and touchable-row shipped in **0.9.4**. Keyboard-avoider shipped in **0.9.5**.
+
+`yarn version-packages` was not used. No Sig changeset was added. A changeset would bump this manifest on the next version-packages run.
+
 ## 1.0.0
 
 Stable release of the API frozen in **0.7.2**. Workspace `package.json` is **1.0.0**. Published to npm **2026-10-29** (`gitHead` `4ef7b2e7`). npm `latest` is **1.0.0**.

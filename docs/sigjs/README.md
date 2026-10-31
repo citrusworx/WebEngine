@@ -402,13 +402,13 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 
 ## Status
 
-**Stable** (workspace `@citrusworx/sigjs` **1.0.0**). npm `latest` is **1.0.0** (published 2026-10-29). The API matches that cut. Core reactivity is implemented and tested:
+**Stable** (workspace `@citrusworx/sigjs` **1.1.0**, not published yet). npm `latest` is **1.0.0** (published 2026-10-29). Core reactivity matches that cut. Workspace **1.1.0** adds three Juice runtime names. Core reactivity is implemented and tested:
 
 - `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
 - JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
 - `mount` and tree dispose
 - `SigRouter` — exact paths, `:param` segments, named routes, link interception, view cleanup
-- optional `@citrusworx/sigjs/juice` `bind` for twenty-eight Juice hosts (`{ state, dispose }`), including icon-button, avatar, and table. Write-back adds icon-button (`pressed`, `[toggle]` hosts only). Avatar and table are read-only. Those three need a Juice publish that exports their start functions; published `@citrusworx/juiceui` 0.9.2 does not, and binding one of them then throws `needs a newer @citrusworx/juiceui`. Juice works without this subpath. The subpath shipped in 0.4.0. The three names are in npm `@citrusworx/sigjs@0.7.2`. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
+- optional `@citrusworx/sigjs/juice` `bind` for thirty-one Juice hosts (`{ state, dispose }`), through `keyboard-avoider`. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Twenty-eight dispatch `juice:change`. Pressable also fires opt-in `juice:longpress`; `bind` follows `juice:change`. Keyboard-avoider dispatches `juice:change` with `{ open, inset }`. `sheet` binding waits until `@citrusworx/juiceui` publishes it. The six newer start functions are feature-detected; a build that does not export one throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. Juice works without this subpath. The subpath shipped in 0.4.0. The names through table are in npm `@citrusworx/sigjs@0.7.2`. The thirty-one names are in workspace **1.1.0**, not published yet. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
 
 Not shipped:
 
