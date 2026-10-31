@@ -90,8 +90,8 @@ Component functions run once per mount. They build DOM. They are not render func
 
 ## Status
 
-Workspace and npm are both **1.0.0**. Core reactivity, the JSX factory, `mount`, and `SigRouter` are stable. `bindList` and `ListItem` are experimental.
+Workspace `@citrusworx/sigjs` is **1.1.0**, not published yet. npm `latest` is **1.0.0**. Core reactivity, the JSX factory, `mount`, and `SigRouter` match that published cut. `bindList` and `ListItem` are experimental.
 
-The optional Juice adapter binds 28 runtime names. See [Status](./sig-status.md) for the matrix.
+The optional Juice adapter in this workspace binds 31 runtime names, through keyboard-avoider. npm **1.0.0** binds 28. `sheet` binding waits until juiceui publishes it. See [Status](./sig-status.md) for the matrix.
 
 Sibling libraries: [Juice](../juice/README.md), [Nectarine](../nectarine/README.md), [Seltzer](../seltzer/README.md), [Grapevine](../grapevine/README.md).

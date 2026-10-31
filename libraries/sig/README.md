@@ -10,7 +10,7 @@ It exists so a mostly static page can move a few values without adopting a UI fr
 npm install @citrusworx/sigjs
 ```
 
-This installs **1.0.0** (published 2026-10-29). `yarn add` and `pnpm add` work the same way. `^1.0.0` stays on the 1.x line. `^0.7.0` does not install 1.0.0.
+This installs npm **1.0.0** (published 2026-10-29). The workspace copy is **1.1.0**, not published yet. `yarn add` and `pnpm add` work the same way. `^1.0.0` stays on the 1.x line. `^0.7.0` does not install 1.0.0.
 
 ## Quick start
 
@@ -83,7 +83,7 @@ Juice styles the elements Sig creates. Attributes such as `stack` and `card` are
 import { bind } from "@citrusworx/sigjs/juice";
 ```
 
-`bind` follows 28 Juice runtime names. Icon button, avatar, and table need `@citrusworx/juiceui` **0.9.3** or newer. **0.9.2** loads the adapter and throws if you bind those three.
+`bind` in this workspace follows 31 Juice runtime names, through keyboard-avoider. npm **1.0.0** follows 28, through table. Icon button, avatar, and table need `@citrusworx/juiceui` **0.9.3** or newer. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**. **0.9.2** loads the adapter and throws if you bind any of those six. `sheet` is not a name until juiceui publishes it.
 
 **0.9.1** cannot load the adapter at all. The table is in [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 

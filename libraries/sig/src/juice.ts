@@ -7,19 +7,46 @@
  *
  * Updates follow Juice's DOM contract: a bubbling `juice:change` event whose
  * detail is `{ runtime, state }`. Select, input, and textarea do not emit
- * that event; they use native `input` and `change`. State types for the
- * original runtimes are imported as types. Icon button, avatar, and table
- * use local shapes, so the published declarations do not name Juice types
- * that older builds do not export. Those three start functions are read from
- * the Juice module namespace and may be missing. Binding one of them then
- * throws. The other twenty-five keep named imports, so an older Juice still
- * loads this module and still binds them.
+ * that event; they use native `input` and `change`. Twenty-eight of the
+ * thirty-one names do emit it. State types for the original runtimes are
+ * imported as types. Icon button, avatar, table, pressable, touchable-row,
+ * and keyboard-avoider use local shapes, so the published declarations do
+ * not name Juice types that older builds do not export. Those six start
+ * functions are read from the Juice module namespace and may be missing.
+ * Binding one of them then throws. The other twenty-five keep named imports,
+ * so an older Juice still loads this module and still binds them.
+ *
+ * Pressable state is `{ pressed, longPressed }`. The host is `[pressable]`.
+ * Opt-in `[pressable-longpress]` also dispatches a bubbling, cancelable
+ * `juice:longpress` whose detail is `{ pressed: true, longPressed: true }`.
+ * That event is not `{ runtime, state }`. This module does not listen for it.
+ * The runtime then dispatches `juice:change` with the same gesture, and that
+ * is what the signal follows.
+ *
+ * Touchable-row state is `{ selected, disabled }`. The host is
+ * `[touchable-row]`. Later changes dispatch `juice:change` from that host.
+ *
+ * Keyboard-avoider state is `{ open, inset }`. The host is
+ * `[keyboard-avoider]`. It does dispatch `juice:change` from each host, with
+ * detail `{ runtime: "keyboard-avoider", state }`. The first observation is
+ * silent. Later events fire when `open` flips, or when `inset` has moved by
+ * at least the runtime threshold (default 80) from the last published inset
+ * while open. Smaller steps still update `getState()`, the inline
+ * `--juice-keyboard-inset` on `<html>`, and `[keyboard-open]` on `<html>` and
+ * each host. This module does not read those. The signal stays on the last
+ * `juice:change`.
+ *
+ * `sheet` is not a name. It is on Juice master and is not in published
+ * juiceui through 0.9.5. Binding it waits until `@citrusworx/juiceui`
+ * publishes `sheet`.
  *
  * `state.set` writes back for switch, checkbox, disclosure, modal, and
  * icon-button. Icon-button calls `toggle` only when the host has `[toggle]`
  * and `pressed` changes, then republishes `getState()`. A disabled host or a
  * host without `[toggle]` refuses the write and the signal matches the host.
- * Avatar and table are read-only. Table has no Juice API to set sort.
+ * Avatar, table, pressable, touchable-row, and keyboard-avoider are
+ * read-only. Table has no Juice API to set sort. Pressable, touchable-row,
+ * and keyboard-avoider expose `getState` only.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
  * A call during Sig render also disposes on unmount: `effect` registers that
@@ -55,7 +82,10 @@ import type {
     WizardState,
     AvatarState as JuiceAvatarState,
     IconButtonState as JuiceIconButtonState,
+    KeyboardAvoiderState as JuiceKeyboardAvoiderState,
+    PressableState as JuicePressableState,
     TableState as JuiceTableState,
+    TouchableRowState as JuiceTouchableRowState,
 } from "@citrusworx/juiceui";
 import * as juice from "@citrusworx/juiceui";
 import {
@@ -114,7 +144,10 @@ export type JuiceRuntimeName =
     | "textarea"
     | "icon-button"
     | "avatar"
-    | "table";
+    | "table"
+    | "pressable"
+    | "touchable-row"
+    | "keyboard-avoider";
 
 type IconButtonState = {
     pressed: boolean;
@@ -131,6 +164,21 @@ type AvatarState = {
 type TableState = {
     column: number | null;
     direction: "ascending" | "descending" | "none";
+};
+
+type PressableState = {
+    pressed: boolean;
+    longPressed: boolean;
+};
+
+type TouchableRowState = {
+    selected: boolean;
+    disabled: boolean;
+};
+
+type KeyboardAvoiderState = {
+    open: boolean;
+    inset: number;
 };
 
 export type JuiceRuntimeState = {
@@ -162,6 +210,9 @@ export type JuiceRuntimeState = {
     "icon-button": IconButtonState;
     avatar: AvatarState;
     table: TableState;
+    pressable: PressableState;
+    "touchable-row": TouchableRowState;
+    "keyboard-avoider": KeyboardAvoiderState;
 };
 
 // Type-level test. `tsc` fails if these local shapes drift from the workspace
@@ -182,10 +233,25 @@ type _AvatarStateMatchesJuice = Assert<
 type _TableStateMatchesJuice = Assert<
     MutuallyAssignable<JuiceRuntimeState["table"], JuiceTableState>
 >;
+type _PressableStateMatchesJuice = Assert<
+    MutuallyAssignable<JuiceRuntimeState["pressable"], JuicePressableState>
+>;
+type _TouchableRowStateMatchesJuice = Assert<
+    MutuallyAssignable<JuiceRuntimeState["touchable-row"], JuiceTouchableRowState>
+>;
+type _KeyboardAvoiderStateMatchesJuice = Assert<
+    MutuallyAssignable<
+        JuiceRuntimeState["keyboard-avoider"],
+        JuiceKeyboardAvoiderState
+    >
+>;
 type _JuiceStateLock =
     | _IconButtonStateMatchesJuice
     | _AvatarStateMatchesJuice
-    | _TableStateMatchesJuice;
+    | _TableStateMatchesJuice
+    | _PressableStateMatchesJuice
+    | _TouchableRowStateMatchesJuice
+    | _KeyboardAvoiderStateMatchesJuice;
 
 export type JuiceSignal<T> = {
     get: () => T;
@@ -243,6 +309,9 @@ const NEWER_RUNTIME_EXPORT = {
     "icon-button": "startIconButtonRuntime",
     avatar: "startAvatarRuntime",
     table: "startTableRuntime",
+    pressable: "startPressableRuntime",
+    "touchable-row": "startTouchableRowRuntime",
+    "keyboard-avoider": "startKeyboardAvoiderRuntime",
 } as const;
 
 type NewerRuntimeName = keyof typeof NEWER_RUNTIME_EXPORT;
@@ -324,6 +393,11 @@ const readers: {
     "icon-button": (host) => readOptional<IconButtonState>("icon-button", host),
     avatar: (host) => readOptional<AvatarState>("avatar", host),
     table: (host) => readOptional<TableState>("table", host),
+    pressable: (host) => readOptional<PressableState>("pressable", host),
+    "touchable-row": (host) =>
+        readOptional<TouchableRowState>("touchable-row", host),
+    "keyboard-avoider": (host) =>
+        readOptional<KeyboardAvoiderState>("keyboard-avoider", host),
 };
 
 const hostMatchers: Array<{
@@ -447,6 +521,18 @@ const hostMatchers: Array<{
         match: (host) =>
             host instanceof HTMLTableElement && host.hasAttribute("table"),
     },
+    {
+        runtime: "pressable",
+        match: (host) => host.hasAttribute("pressable"),
+    },
+    {
+        runtime: "touchable-row",
+        match: (host) => host.hasAttribute("touchable-row"),
+    },
+    {
+        runtime: "keyboard-avoider",
+        match: (host) => host.hasAttribute("keyboard-avoider"),
+    },
 ];
 
 const inferRuntime = (host: HTMLElement): JuiceRuntimeName | null =>
@@ -492,7 +578,9 @@ const writeBack = (
             return;
         }
         default:
-            // Avatar and table are read-only. Table has no Juice API to set sort.
+            // Avatar, table, pressable, touchable-row, and keyboard-avoider
+            // are read-only. Table has no Juice API to set sort. Pressable,
+            // touchable-row, and keyboard-avoider expose getState only.
             return;
     }
 };

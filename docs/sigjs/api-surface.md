@@ -1,6 +1,6 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs` at **1.0.0**. The workspace `package.json` and npm `latest` are both **1.0.0** (published 2026-10-29). The API matches **0.7.2** (2026-10-27, PR #295). There is no public change.
+Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. npm `latest` is **1.0.0** (published 2026-10-29) and matches **0.7.2** (2026-10-27, PR #295). The workspace `package.json` is **1.1.0**, not published yet. **1.1.0** adds `pressable`, `touchable-row`, and `keyboard-avoider` to `JuiceRuntimeName`. That is additive. `sheet` is not a name until juiceui publishes it.
 
 **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
@@ -121,14 +121,14 @@ Not re-exported from `.`. The main entry does not import Juice.
 
 | Export | Entry point | Kind | Classification | Reason | Notes |
 |---|---|---|---|---|---|
-| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. Twenty-eight names, including icon-button, avatar, and table, are in npm 0.7.2 and 1.0.0. Throws if the runtime cannot be inferred or `getState()` is null. Binding icon-button, avatar, or table when that start function is missing throws `needs a newer @citrusworx/juiceui`. The module loads on Juice 0.9.2 and not on 0.9.1. Juice 0.9.3+ binds all 28. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
+| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. npm 0.7.2 and 1.0.0 name twenty-eight, through table. Workspace 1.1.0 (not published) names thirty-one, through keyboard-avoider. Throws if the runtime cannot be inferred or `getState()` is null. Binding one of the six newer names when that start function is missing throws `needs a newer @citrusworx/juiceui`. The module loads on Juice 0.9.2 and not on 0.9.1. Icon-button, avatar, and table shipped in juiceui 0.9.3. `sheet` is not a name until juiceui publishes it. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
 | `JuiceBinding` | `./juice` | type | stable | Return type of `bind`. | |
 | `JuiceBinding.state` | `./juice` | property | stable | Host state copied into a signal-shaped object. | A `JuiceSignal`, not the object `Signal()` returns. |
 | `JuiceBinding.dispose` | `./juice` | method | stable | Drops the host listeners. A second call does nothing. | A `bind` during Sig render also disposes on unmount, through `effect` and the internal cleanup scope. |
 | `JuiceSignal` | `./juice` | type | stable | `{ get, set }` used by the binding. | Close to `Signal`'s return shape. There is still no shared `Signal<T>` type. |
 | `JuiceSignal.get` | `./juice` | method | stable | Reads the latest copied state. | |
-| `JuiceSignal.set` | `./juice` | method | stable | Publishes a new state through the binding. | Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back). Avatar, table, and the other read-only names do not call a controller. |
-| `JuiceRuntimeName` | `./juice` | type | stable | The twenty-eight runtime names `bind` accepts, including `icon-button`, `avatar`, and `table`. | Adding a name is additive. Renaming one is breaking. Binding one of those three when Juice does not export its start function throws `needs a newer @citrusworx/juiceui`. |
+| `JuiceSignal.set` | `./juice` | method | stable | Publishes a new state through the binding. | Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back). Pressable, touchable-row, keyboard-avoider, avatar, table, and the other read-only names do not call a controller. |
+| `JuiceRuntimeName` | `./juice` | type | stable | The thirty-one runtime names `bind` accepts, through `keyboard-avoider`, including `pressable`, `touchable-row`, `keyboard-avoider`, `icon-button`, `avatar`, and `table`. | Adding a name is additive. Renaming one is breaking. Binding one of those six when Juice does not export its start function throws `needs a newer @citrusworx/juiceui`. `sheet` is not in this union. |
 | `JuiceRuntimeState` | `./juice` | type | stable | Maps each runtime name to the Juice state type. | Follows `@citrusworx/juiceui`. A breaking Juice state change breaks this type. |
 
 ## Smells
@@ -164,7 +164,7 @@ Not re-exported from `.`. The main entry does not import Juice.
 | A shared `Signal<T>` type | Not added. `JuiceSignal`, `ListItem`, and `memo`'s `{ get }` stay separate shapes |
 | `./node-cleanup` and `./cleanup-scope` | Not entries. `attachNodeCleanup` and `captureCleanupScope` stay internal |
 | `SigRouter.get` and `has` | `get` returns the pattern. `has` is registration only. A param URL helper would be a new function. A future splat must not redefine `"*"` |
-| Juice write-back | Frozen at switch, checkbox, disclosure, modal, and icon-button. Avatar and table stay read-only |
+| Juice write-back | Frozen at switch, checkbox, disclosure, modal, and icon-button. Pressable, touchable-row, keyboard-avoider, avatar, and table stay read-only |
 | Names | `Signal` stays a factory. `jsxs` stays an alias of `jsx`. `memo` has no dispose |
 
 ## What this cleanup changed

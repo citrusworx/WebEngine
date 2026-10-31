@@ -75,6 +75,8 @@ The card is created once. Only the text node updates. The [page tutorial](./sig-
 
 `bind` copies a Juice host into a Sig signal and, for five runtimes, writes back. Juice widgets already work without this import. Listen for `juice:change` or call `getState()` yourself. That contract is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
+It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. Published npm **1.0.0** binds 28 names, through `table`. Workspace **1.1.0** (not published) adds `pressable`, `touchable-row`, and `keyboard-avoider`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime, on master and not in npm 0.9.5. It is not a `JuiceRuntimeName`. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
+
 ```ts
 import "@citrusworx/juiceui";
 import { bind } from "@citrusworx/sigjs/juice";
@@ -99,15 +101,15 @@ A `bind` call during a Sig component function disposes with that view. A bind ou
 
 ### Juice versions
 
-Checked against the published tarballs of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The optional peer range is still `>=0.9.1 <1`.
+The published-Sig column was checked against the tarballs of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The optional peer range is still `>=0.9.1 <1`. Workspace **1.1.0** uses the same feature detection: a missing start function throws, and the module still loads when the named imports of the original 25 succeed.
 
-| Juice | `import "@citrusworx/sigjs/juice"` | Names you can bind |
-|---|---|---|
-| 0.9.1 | Throws. Missing named export `startDisclosureRuntime`. Also missing field, input, select, spinner, and textarea | None. The module does not evaluate |
-| 0.9.2 | Loads | 25. Icon button, avatar, and table throw `needs a newer @citrusworx/juiceui` |
-| 0.9.3 | Loads | All 28 `JuiceRuntimeName` values |
-| 0.9.4 | Loads | All 28. Juice also ships pressable and touchable row, which Sig does not bind |
-| 0.9.5 | Loads | All 28. Juice also ships keyboard avoider, which Sig does not bind |
+| Juice | `import "@citrusworx/sigjs/juice"` | Published Sig 1.0.0 | Workspace Sig 1.1.0 |
+|---|---|---|---|
+| 0.9.1 | Throws. Missing named export `startDisclosureRuntime`. Also missing field, input, select, spinner, and textarea | None. The module does not evaluate | None. The module does not evaluate |
+| 0.9.2 | Loads | 25. Icon button, avatar, and table throw | 25. The six newer names throw |
+| 0.9.3 | Loads | All 28 | 28. Pressable, touchable-row, and keyboard-avoider throw. Icon button, avatar, and table shipped in this cut |
+| 0.9.4 | Loads | All 28. Pressable and touchable row are not names | 30. Keyboard-avoider throws. Pressable and touchable row shipped in this cut |
+| 0.9.5 | Loads | All 28. Keyboard avoider is not a name | All 31. Keyboard avoider shipped in this cut |
 
 The 0.9.2 error is exact:
 
@@ -115,20 +117,24 @@ The 0.9.2 error is exact:
 Sig juice bind: "icon-button" needs a newer @citrusworx/juiceui that exports startIconButtonRuntime.
 ```
 
-Avatar and table use the same sentence with `startAvatarRuntime` and `startTableRuntime`. The message has no version number. The other 25 runtimes still bind on 0.9.2.
+Avatar, table, pressable, touchable-row, and keyboard-avoider use the same sentence with their start functions. The message has no version number. The other 25 runtimes still bind on 0.9.2.
 
-Sig 1.0.0 does not add names for the Juice runtimes that shipped after the adapter: pressable, touchable row, keyboard avoider.
+`sheet` is not in either column. It is on Juice master, not in npm 0.9.5, and binding it waits until juiceui publishes it.
 
 ### What the signal follows
 
 | Hosts | Events |
 |---|---|
 | select, input, textarea | Native `input` and `change`, then `getState()` |
-| The other 25, including icon button, avatar, and table | Bubbling `juice:change` with `detail: { runtime, state }` |
+| The other 28, including icon button, avatar, table, pressable, touchable-row, and keyboard-avoider | Bubbling `juice:change` with `detail: { runtime, state }` |
 
 The event counts only when `event.target` is the bound host and `detail.runtime` matches. A change that bubbles from a descendant is ignored. An equal state does not notify.
 
 `state` starts as `structuredClone(getState())`.
+
+Pressable with `[pressable-longpress]` also dispatches a bubbling, cancelable `juice:longpress`. Its detail is `{ pressed: true, longPressed: true }`, not `{ runtime, state }`. `bind` does not listen for it. The runtime then dispatches `juice:change` with `{ pressed, longPressed }`, and the signal follows that.
+
+Keyboard-avoider dispatches `juice:change` from each `[keyboard-avoider]` host with state `{ open, inset }`. The first observation is silent. Later events fire when `open` flips, or when `inset` moves by at least the runtime threshold (default 80) from the last published inset while open. It also writes `--juice-keyboard-inset` on `<html>` and `[keyboard-open]` on `<html>` and each host. Smaller inset steps update those and `getState()` without an event. `bind` does not read them, so the signal stays on the last `juice:change`.
 
 ### Inference
 
@@ -164,8 +170,11 @@ Omit the runtime name and the first matching row wins. Pass the name when you wa
 | `icon-button` | `[icon-button]` |
 | `avatar` | `[avatar]` |
 | `table` | `<table table>` only. A `<div table>` is not a host |
+| `pressable` | `[pressable]` |
+| `touchable-row` | `[touchable-row]` |
+| `keyboard-avoider` | `[keyboard-avoider]` |
 
-A host that matches an earlier row stays on that runtime. `[switch]` wins over `[icon-button]` when both are present.
+A host that matches an earlier row stays on that runtime. `[switch]` wins over `[icon-button]`. `[icon-button]` wins over `[pressable]`. A host with both `[pressable]` and `[touchable-row]` infers pressable. Pass `"touchable-row"` to bind the row.
 
 ### Write-back
 
@@ -178,17 +187,23 @@ A host that matches an earlier row stays on that runtime. `[switch]` wins over `
 | `icon-button` | `toggle(host)` only when the host has `[toggle]` and `pressed` changes. The signal is then read back from `getState()` | A disabled host, or a host without `[toggle]`, refuses the write. The signal stays on the host |
 | avatar | | No write API |
 | table | | No API to set sort |
+| pressable | | `getState` only. Opt-in `juice:longpress` is not the state channel |
+| touchable-row | | `getState` only |
+| keyboard-avoider | | `getState` only. Sub-threshold inset steps do not move the signal |
 | The other 21 | | `set` updates the signal only. The next host event overwrites it |
 
-Local state shapes for the three newer names, as declared by Sig 1.0.0:
+Local state shapes for the six newer names. Icon button, avatar, and table are in published Sig 1.0.0. Pressable, touchable-row, and keyboard-avoider are in workspace 1.1.0.
 
 | Runtime | State |
 |---|---|
 | `icon-button` | `{ pressed: boolean; disabled: boolean; named: boolean }` |
 | `avatar` | `{ loaded: boolean; fallback: boolean; hasImage: boolean }` |
 | `table` | `{ column: number \| null; direction: "ascending" \| "descending" \| "none" }` |
+| `pressable` | `{ pressed: boolean; longPressed: boolean }` |
+| `touchable-row` | `{ selected: boolean; disabled: boolean }` |
+| `keyboard-avoider` | `{ open: boolean; inset: number }` |
 
-The other state types are imported from the installed Juice package.
+The other state types are imported from the installed Juice package. Those six are read from `startIconButtonRuntime`, `startAvatarRuntime`, `startTableRuntime`, `startPressableRuntime`, `startTouchableRowRuntime`, and `startKeyboardAvoiderRuntime` on the Juice module. A build that does not export one still loads this adapter. Binding that runtime throws `needs a newer @citrusworx/juiceui`. The message names the missing start function and has no version number.
 
 ```tsx
 import { effect, mount } from "@citrusworx/sigjs";

@@ -59,13 +59,13 @@ The split — Juice for structure, Sig for behavior — is the product story. Th
 
 ### 6. The Juice runtime hookup is done
 
-`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }` for 28 `JuiceRuntimeName` values, including icon button, avatar, and table.
+`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. Published **1.0.0** names 28 `JuiceRuntimeName` values, including icon button, avatar, and table. Workspace **1.1.0** (not published) names 31, through keyboard-avoider. `sheet` is not a name. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
 
-`state.set` writes back for switch, checkbox, disclosure, modal, and icon button (`pressed`, `[toggle]` hosts only). A refused icon-button write leaves the signal on the host. Avatar and table are read-only.
+`state.set` writes back for switch, checkbox, disclosure, modal, and icon button (`pressed`, `[toggle]` hosts only). A refused icon-button write leaves the signal on the host. Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Pressable’s opt-in `juice:longpress` is a separate event; `bind` follows `juice:change`. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`.
 
 `dispose` drops the listeners. A `bind` during Sig render also disposes on unmount.
 
-Juice 0.9.2 loads this module and throws if you bind the three newer names. Juice 0.9.1 does not load it. Juice 0.9.3 and newer bind all 28.
+Juice 0.9.1 does not load this module. Juice 0.9.2 loads it and throws if you bind any of the six newer names. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5, which is the first published Juice that can bind all 31.
 
 The peer range still says `>=0.9.1 <1`. The checked table is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). Juice’s own event table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in 0.4.0.
 
