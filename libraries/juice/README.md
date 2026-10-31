@@ -80,9 +80,9 @@ Built files are `dist/index.css` (core) and `dist/themes/<id>.css`. Each theme i
 
 ## Components and runtimes
 
-The top-level JS entry is small. Thirty-one runtimes stay Emerging.
+The top-level JS entry is small. Thirty-two runtimes stay Emerging.
 
-Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
+Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second, on master, and not in that npm cut.
 
 The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
@@ -92,6 +92,7 @@ The full index, including how to choose between similar components, is [Runtime 
 | --- | --- | --- | --- |
 | Modal | `[modal-overlay]` | Dialog. Open and close, Escape, focus trap, one open at a time. | [Modal](../../docs/juice/juice-modal-runtime.md) |
 | Drawer | `[drawer-overlay]` | Edge dialog (`left` or `right`, optional `drawer-size` of `sm` or `lg`). Escape, focus trap, exclusive. | [Drawer](../../docs/juice/juice-drawer-runtime.md) |
+| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. The thirty-second runtime. On master, not in npm 0.9.5. Not a `JuiceRuntimeName`. | [Sheet](../../docs/juice/juice-sheet-runtime.md) |
 | Popover | `[popover-root]` | Anchored non-modal dialog. The surface is `[popover-panel]`, never a bare `popover` attribute. | [Popover](../../docs/juice/juice-popover-runtime.md) |
 | Tooltip | `[tooltip-root]` | Hover and focus tip. The surface is `[tooltip-panel]`, never a bare `tooltip` attribute or native `title`. | [Tooltip](../../docs/juice/juice-tooltip-runtime.md) |
 | Toast | `[toast-region]` | Non-modal stack (default `top-right`). Not a dialog: no focus trap, no `aria-modal`, stacking is allowed. | [Toast](../../docs/juice/juice-toast-runtime.md) |
@@ -169,7 +170,7 @@ Every runtime exports the same four functions. `<Name>` is the component stem, s
 | `start<Name>Runtime()` | Boots the document-level controller that enhances matching markup. A second call syncs and returns that controller. Returns `null` when there is no document. |
 | `stop<Name>Runtime()` | Destroys that document-level controller. |
 
-Modal shows the four export names. The other thirty use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
+Modal shows the four export names. The other thirty-one use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
 
 ```ts
 import {
@@ -190,7 +191,7 @@ stopModalRuntime();
 
 `tokens` is the shared token object: color families and swatches, and the `adobe` and `google` font providers. `Accordion` is a Sig component that renders one `[accordion]` section (trigger plus panel). It is not the document runtime. The runtime is `createAccordion` / `startAccordionRuntime`.
 
-Icon button, avatar, table, pressable, touchable row, and keyboard avoider export the same four names. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
+Icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet export the same four names. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is on master and is not in that npm cut.
 
 ### `juice:change` and `getState`
 
@@ -198,12 +199,12 @@ Interactive runtimes dispatch a bubbling `juice:change` from the widget host whe
 
 Select, input, and textarea publish through native `input` and `change`. They still expose `getState()`.
 
-The contract covers all thirty-one runtimes. `juice:change` and `JUICE_CHANGE_EVENT` shipped in 0.9.3. Pressable and touchable row dispatch that contract from 0.9.4. Keyboard avoider dispatches it from 0.9.5.
+The contract covers all thirty-two runtimes. `juice:change` and `JUICE_CHANGE_EVENT` shipped in 0.9.3. Pressable and touchable row dispatch that contract from 0.9.4. Keyboard avoider dispatches it from 0.9.5. Sheet dispatches it on master and is not in the 0.9.5 npm cut.
 
 `@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`, on master and in `@citrusworx/sigjs@0.7.2`.
 
 - `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values.
-- Pressable, touchable row, and keyboard avoider are not.
+- Pressable, touchable row, keyboard avoider, and sheet are not.
 - `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 - Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3.
 
@@ -344,7 +345,7 @@ Attributes, keyboard behavior, and theme roles for each component are on the pag
 
 ### CSS-only chrome
 
-These do not auto-enhance, do not dispatch `juice:change`, and are not part of the thirty-one runtimes.
+These do not auto-enhance, do not dispatch `juice:change`, and are not part of the thirty-two runtimes.
 
 | Chrome | Hook | Release | Docs |
 | --- | --- | --- | --- |

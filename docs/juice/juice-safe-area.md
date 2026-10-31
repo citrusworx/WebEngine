@@ -4,7 +4,7 @@ This document explains the current safe-area chrome in `libraries/juice/src/comp
 
 Safe area is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createSafeArea`, no auto-enhance, and no `SafeArea()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It shipped in 0.9.3. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It shipped in 0.9.3. It is not one of the thirty-two Emerging auto-enhance runtimes. That count stays thirty-two. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 Safe area pads a host clear of the notch, the home indicator, and rounded corners. It does not paint. There is nothing for a theme to bind.
 
@@ -308,7 +308,7 @@ An unknown value is all four edges. Prefer a named value when only one edge shou
 
 ## Keyboard avoider
 
-`keyboard-avoider.scss` loads after this file. Padding mode on a bare `[safe-area]`, `[safe-area="bottom"]`, or `[safe-area="y"]` host replaces bottom padding with `max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))`. Translate-only and footer-only hosts keep this file's padding. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md).
+`keyboard-avoider.scss` loads after this file. Padding mode on a bare `[safe-area]`, `[safe-area="bottom"]`, or `[safe-area="y"]` host replaces bottom padding with `max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))`. Translate-only and footer-only hosts keep this file's padding. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). A sheet footer, and a `[sheet-body]` that is the last child, use that same `max()`. Under `html[keyboard-open]` those pads drop the keyboard term and the sheet max-height shrinks by the inset, so the keyboard is counted once. See [Sheet chrome](./juice-sheet.md#safe-area-and-the-keyboard).
 
 ## Accessibility
 
@@ -321,7 +321,7 @@ Padding is not a substitute for a control’s hit target. `[drawer-close]` can s
 ## Limitations
 
 - CSS-only. No `SafeArea()` factory, no `createSafeArea`, and no auto-enhance. The JS entry does not boot a safe-area runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[safe-area]`.
-- Emerging, not Stable. On master, and shipped in 0.9.3. The thirty-one Emerging runtimes stay thirty-one.
+- Emerging, not Stable. On master, and shipped in 0.9.3. The thirty-two Emerging runtimes stay thirty-two.
 - Shipped themes are not required to bind `--juice-safe-area-pad`. The role is on `:root` only. Bundled theme CSS does not contain it.
 - Values other than `top`, `bottom`, `x`, and `y` pad all four edges. There is no `left`, `right`, `start`, or `end` value.
 - `x` and `y` are physical. They do not follow writing mode.

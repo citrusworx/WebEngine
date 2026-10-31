@@ -26,9 +26,9 @@ Icon button is a square icon-only control on button chrome, distinct from switch
 
 Avatar is the twenty-seventh Emerging auto-enhance runtime and shipped in 0.9.3. Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3.
 
-Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
+Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second, on master, and not in npm 0.9.5.
 
-All thirty-one stay Emerging. Skeleton is a CSS-only loading placeholder (`[skeleton]`) shipped in 0.9.3.
+All thirty-two stay Emerging. Skeleton is a CSS-only loading placeholder (`[skeleton]`) shipped in 0.9.3.
 
 It is not a runtime and does not change that count. See [Skeleton](./juice-skeleton.md).
 
@@ -86,7 +86,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Page-level patterns | Emerging | Tutorials and patterns are now present, which makes Juice more teachable and reusable. |
 | Rules engine | Emerging | The philosophy is strong, but only lightly formalized in written protocol docs so far. |
 | Docs and onboarding | Emerging to Stable | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
-| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts the runtimes. Twenty-five shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. See [Runtime behavior](./juice-runtime-behavior.md#components). |
+| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts the runtimes. Twenty-five shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is on master and is not in that npm cut. See [Runtime behavior](./juice-runtime-behavior.md#components). |
 | Public component exports | Emerging | `Accordion()` is the only Sig factory. Every runtime exports `create` / `init` / `start` / `stop`. Markup plus auto-enhance is the contract. Skeleton, list, badge, and safe area are not JS exports. |
 | Themes | Emerging | Fourteen bundled themes, each `<id>.scss` plus `<id>.yaml`. Required binds are in the [Theme contract](./juice-theme-contract.md). The retro themes are separate entrypoints, not a `retro.css` bundle. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog is in [Animations](./juice-animations.md). Motion core shipped in `@citrusworx/juiceui@0.9.2`. Stays Emerging. |
@@ -99,6 +99,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Pressable (`[pressable]`) | Emerging | Transient press. The twenty-ninth runtime. Shipped in 0.9.4. See [Pressable](./juice-pressable.md). |
 | Touchable row (`[touchable-row]`) | Emerging | 44px row. The thirtieth runtime. Shipped in 0.9.4. See [Touchable row](./juice-touchable-row.md). |
 | Keyboard avoider (`[keyboard-avoider]`) | Emerging | Software-keyboard inset. The thirty-first runtime. Shipped in 0.9.5. Not a `JuiceRuntimeName`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). |
+| Sheet (`[sheet-overlay]`) | Emerging | Bottom sheet. The thirty-second runtime. On master, not in npm 0.9.5. Not a `JuiceRuntimeName`. See [Sheet](./juice-sheet-runtime.md). |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
 | Generator/config pipeline | Draft | The config exists, but the workflow around it is still early and evolving. |
 
@@ -124,7 +125,7 @@ These are already useful, but still need refinement before they feel fully settl
 - cards
 - forms
 - navigation
-- accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row auto-enhance runtimes
+- accordion, tabs, modal, drawer, sheet, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider auto-enhance runtimes
 - skeleton loading chrome (CSS-only, shipped in 0.9.3, not a runtime)
 - list rows (CSS-only, shipped in 0.9.3, not a runtime)
 - Sig Accordion factory
@@ -144,7 +145,7 @@ These should be treated more carefully in positioning:
 - generator/config workflow
 - a large public JS component API beyond the shipped runtimes and Accordion factory
 
-The JS entrypoint is no longer a stub. Navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row auto-enhance on import, and `Accordion()` is a real Sig factory.
+The JS entrypoint is no longer a stub. Navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet auto-enhance on import, and `Accordion()` is a real Sig factory.
 
 Checkbox and radio are two runtimes. Breadcrumb is a light trail.
 
@@ -176,7 +177,7 @@ If Juice is being described externally or internally, the most honest current po
 
 `Juice Beta is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes.`
 
-That framing matches the strongest current reality. The JS entry is an Emerging extra: importing it auto-enhances nav, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row.
+That framing matches the strongest current reality. The JS entry is an Emerging extra: importing it auto-enhances nav, accordion, tabs, modal, drawer, sheet, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider.
 
 Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. It is not a finished component runtime.
 
@@ -220,8 +221,8 @@ If you are building with Juice today:
 - use `[safe-area]` from core CSS as Emerging — shipped in 0.9.3, and not an auto-enhance runtime. See [Safe Area](./juice-safe-area.md)
 - use `[avatar]` as Emerging — shipped in 0.9.3. The twenty-seventh auto-enhance runtime. See [Avatar](./juice-avatar.md)
 - use `[table]` as Emerging — shipped in 0.9.3. The twenty-eighth auto-enhance runtime. See [Table](./juice-table.md)
-- use `[pressable]` as Emerging — shipped in 0.9.4. The twenty-ninth auto-enhance runtime. `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. See [Pressable](./juice-pressable.md)
-- use `[touchable-row]` as Emerging — shipped in 0.9.4. The thirtieth auto-enhance runtime. `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. See [Touchable Row](./juice-touchable-row.md)
+- use `[pressable]` as Emerging — shipped in 0.9.4. The twenty-ninth auto-enhance runtime. `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Pressable](./juice-pressable.md)
+- use `[touchable-row]` as Emerging — shipped in 0.9.4. The thirtieth auto-enhance runtime. `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Touchable Row](./juice-touchable-row.md)
 - use the shipped auto-enhance runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row) and the Sig Accordion factory as Emerging
 - valid markup should work after importing the JS entry, but that surface is not Stable. Checkbox and radio are two runtimes.
 - Breadcrumb is a light trail. Progress is a progressbar.

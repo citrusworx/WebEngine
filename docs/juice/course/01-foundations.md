@@ -66,7 +66,7 @@ import "@citrusworx/juiceui/styles/themes/citrusmint";
 
 Importing `@citrusworx/juiceui` auto-starts the runtimes for valid markup. The index is [Runtime behavior](../juice-runtime-behavior.md#components).
 
-Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
+Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second runtime, on master, and not in that npm cut.
 
 How similar components differ is [Choosing between similar components](../juice-runtime-behavior.md#choosing-between-similar-components). You do not need that for this lesson.
 
