@@ -1537,6 +1537,10 @@ describe("Juice build artifacts", () => {
             expect(handleHit).toContain("content: \"\"");
             expect(handleHit).toContain("position: absolute");
             expect(handleHit).toContain("height: 44px");
+            expect(handleHit).toContain("top: -0.75rem");
+            expect(handleHit).toContain("transform: translateX(-50%)");
+            expect(handleHit).not.toContain("top: 50%");
+            expect(handleHit).not.toContain("translate(-50%, -50%)");
             expect(handleHit).not.toContain("background");
 
             const body = ruleAt("[sheet-body] {");

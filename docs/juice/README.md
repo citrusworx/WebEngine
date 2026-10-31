@@ -108,7 +108,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 ### Foundations
 
-- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, the component index, and `juice:change` / `getState` for all 31 runtimes
+- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, the component index, and `juice:change` / `getState` for all 32 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
@@ -132,6 +132,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
+- [Sheet](./juice-sheet-runtime.md) — bottom sheet (on master, not in npm 0.9.5; the thirty-second Emerging runtime; not a `JuiceRuntimeName`). Chrome contract: [juice-sheet.md](./juice-sheet.md)
 - [Popover Runtime](./juice-popover-runtime.md)
 - [Tooltip Runtime](./juice-tooltip-runtime.md)
 - [Toast Runtime](./juice-toast-runtime.md)

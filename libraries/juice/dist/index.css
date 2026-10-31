@@ -102714,10 +102714,10 @@ nav[sticky] > [container][safe-area=y][keyboard-avoider~=padding],
   content: "";
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: -0.75rem;
   width: 100%;
   height: 44px;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
 }
 
 [sheet-header] {

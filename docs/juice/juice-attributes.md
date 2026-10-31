@@ -265,7 +265,7 @@ Space is, on a custom button host that is not a native Space control, so the pag
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
 
 ### Touchable row
 
@@ -300,7 +300,7 @@ Space is `preventDefault`'d on those hosts. `a` and `button` keep the native cli
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
 
 ### Keyboard avoider
 
@@ -315,7 +315,7 @@ Software-keyboard inset. Mobile-Critical. There is no `<keyboard-avoider>` eleme
 
 `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root`. They are not restated on `[theme]`.
 
-See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, or touchable-row yet.
+See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet yet.
 
 ### Cards
 
@@ -407,6 +407,24 @@ See [Modal Runtime](./juice-modal-runtime.md). Theme paint uses `--juice-modal-*
 Openers pair through `aria-controls` pointing at the overlay `id`. There is no extra Juice opener attribute.
 
 See [Drawer Runtime](./juice-drawer-runtime.md). Theme paint uses `--juice-drawer-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility, and not `[modal-overlay]`.
+
+### Sheet
+
+- `sheet-overlay` — bottom-sheet root / full-viewport host. Hide with the native `hidden` attribute. Boolean is modal. `"static"` keeps the backdrop and opts out of backdrop-click close. `"none"` is non-modal: no scrim, and the page behind stays clickable
+- `sheet` — bottom-anchored dialog panel (`role="dialog"`)
+- `sheet-detents` — allowed detents, words `peek`, `half`, and `full` (`~=`). Absent, the set is `half full`
+- `detent` — current detent: `peek`, `half`, or `full`
+- `dragging` — set while a drag is committed. Transition is off
+- `sheet-handle` — grab bar. The visible bar stays short. The hit target is 44px and stays inside the sheet
+- `sheet-header` — title region. Also a drag origin
+- `sheet-body` — scrolling body
+- `sheet-footer` — action row. Owns the safe-area / keyboard padding when present
+- `sheet-close` — dismiss control (surface paint, not a CTA)
+- `name` — optional overlay label used as the slug for generated ids
+
+Openers pair through `aria-controls` pointing at the overlay `id`. There is no extra Juice opener attribute.
+
+See [Sheet runtime](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Color is an optional `--juice-sheet-*` override that falls through to `--juice-drawer-*` (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). Layout roles stay on `:root`. There is no required sheet role. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Sheet is the thirty-second Emerging auto-enhance runtime, on master, and not in npm 0.9.5. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
 
 ### Toast
 
@@ -684,7 +702,7 @@ See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spi
 
 ### Skeleton
 
-CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It shipped in 0.9.3, and it is not one of the thirty-one Emerging auto-enhance runtimes.
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It shipped in 0.9.3, and it is not one of the thirty-two Emerging auto-enhance runtimes.
 
 - `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
 - `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
@@ -705,7 +723,7 @@ See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`
 
 ### List
 
-CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It shipped in 0.9.3, and it is not one of the thirty-one Emerging auto-enhance runtimes.
+CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It shipped in 0.9.3, and it is not one of the thirty-two Emerging auto-enhance runtimes.
 
 - `list` — host, on `ul`, `ol`, or `div`. The selector is `:where(ul, ol, div)[list]`, so `<input list>` is not painted. There is no HTML global `list` attribute, and there is no `<list>` element. Markers and the list’s own padding reset. Do not restyle `[role="list"]` or `[role="listitem"]`
 - `divided` — on `[list]`. A hairline between direct children. Ignored without `[list]`
@@ -737,7 +755,7 @@ Layout roles are `--juice-list-gap` (`0`), `--juice-list-padding` (`0.75rem 1rem
 
 ### Badge
 
-CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. It is not one of the thirty-one Emerging auto-enhance runtimes.
+CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. It is not one of the thirty-two Emerging auto-enhance runtimes.
 
 - `badge` — host. Boolean `[badge]` is a pill (radius `999px`, padding `0.375rem 0.75rem`, `0.8125rem` at weight 600). There is no HTML global `badge` attribute, and there is no `<badge>` element. Any value other than `square` or `ribbon` is still that pill
 - `badge="square"` — the same pill with radius `0.375rem`
@@ -758,7 +776,7 @@ The words on the badge are the name. A count needs context in the text or on the
 
 ### Safe area
 
-CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It shipped in 0.9.3, and it is not one of the thirty-one Emerging auto-enhance runtimes.
+CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It shipped in 0.9.3, and it is not one of the thirty-two Emerging auto-enhance runtimes.
 
 - `safe-area` — host. Boolean `[safe-area]` pads all four edges. There is no HTML global `safe-area` attribute, and there is no `<safe-area>` element. An empty value, or any value other than `top`, `bottom`, `x`, or `y`, is still all four edges
 - `safe-area="top"` — top only

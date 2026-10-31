@@ -135,7 +135,7 @@ Cancelling does not apply the terminal state. `createElementMotion().cancel(elem
 
 ## Overlay enter and exit
 
-Modal, drawer, popover, and toast use this lifecycle. Enter removes `hidden`, then plays. Exit plays first. `hidden` is set only after exit finishes (`data-motion-state="exited"`, or the same turn when motion is instant). Reduced motion, or a computed duration of `0`, does both in the same turn.
+Modal, drawer, sheet, popover, and toast use this lifecycle. Enter removes `hidden`, then plays. Exit plays first. `hidden` is set only after exit finishes (`data-motion-state="exited"`, or the same turn when motion is instant). Reduced motion, or a computed duration of `0`, does both in the same turn.
 
 An in-flight exit stays the open surface until that commit. A new open cancels the exit.
 
@@ -158,6 +158,10 @@ An in-flight exit stays the open surface until that commit. A new open cancels t
 | default / `right` | `translateX(100%)` | `translateX(100%)` |
 | `left` | `translateX(-100%)` | `translateX(-100%)` |
 
+### Sheet
+
+`[sheet-overlay][data-motion-state]`. The scrim fades on the same enter/exit tokens as modal. The panel slides on the bottom edge: enter from `translateY(100%)` to none, exit back to `translateY(100%)`. `[dragging]` sets `transition: none` so a drag can write height. `prefers-reduced-motion: reduce` sets `transition: none` on `[sheet]` and `[sheet-close]`. See [Sheet](./juice-sheet-runtime.md).
+
 ### Popover
 
 `[popover-root][data-motion-state]` fades the root. The panel shifts `0.5rem` from the trigger side, on the same enter (`base` / `enter`) and exit (`fast` / `exit`) tokens:
@@ -175,7 +179,7 @@ An in-flight exit stays the open surface until that commit. A new open cancels t
 
 ### Events and focus during exit
 
-For modal, drawer, and popover, the surface stays open until `hidden` is set. The focus trap and Escape still apply during exit. A second Escape does not start a second exit. Focus restores to the opener after `hidden` is set, not when the exit animation starts.
+For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. The focus trap and Escape still apply during exit. A second Escape does not start a second exit. Focus restores to the opener after `hidden` is set, not when the exit animation starts.
 
 Toast has no focus trap. Escape still dismisses the most recently shown visible toast (same yield rules as before). `hidden` is set after the exit finishes. Showing a toast that is exiting cancels the exit and leaves it open.
 

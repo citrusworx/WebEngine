@@ -233,17 +233,21 @@ $_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
 }
 
 // The visible bar stays --juice-sheet-handle-height. This pseudo is
-// only a hit target, at least 44px tall, and does not paint. z-index
-// on the handle keeps that target above the header.
+// only a hit target, 44px tall, and does not paint. It is shifted up
+// by the handle's margin-top (0.75rem) so the top of the target meets
+// the sheet's top edge and the full 44px stays inside. Centering it on
+// the bar would cross that edge, and [sheet] { overflow: hidden }
+// would clip the part above the sheet. z-index on the handle keeps
+// the target above the header. The bar's box and margins are unchanged.
 [sheet-handle]::before,
 [theme] [sheet-handle]::before {
     content: "";
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: -0.75rem;
     width: 100%;
     height: 44px;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
 }
 
 [sheet-header] {
