@@ -344,6 +344,18 @@ export type {
     KeyboardAvoiderState
 } from "./js/src/keyboard-avoider/keyboard-avoider-runtime.js";
 export {
+    createSheet,
+    initSheet,
+    startSheetRuntime,
+    stopSheetRuntime
+} from "./js/src/sheet/sheet-runtime.js";
+export type {
+    SheetController,
+    SheetDetent,
+    SheetOptions,
+    SheetState
+} from "./js/src/sheet/sheet-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,

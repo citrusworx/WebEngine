@@ -102689,6 +102689,8 @@ nav[sticky] > [container][safe-area=y][keyboard-avoider~=padding],
 
 [sheet-handle],
 [theme] [sheet-handle] {
+  position: relative;
+  z-index: 1;
   display: block;
   flex: 0 0 auto;
   align-self: center;
@@ -102705,6 +102707,17 @@ nav[sticky] > [container][safe-area=y][keyboard-avoider~=padding],
   touch-action: none;
   -webkit-user-select: none;
           user-select: none;
+}
+
+[sheet-handle]::before,
+[theme] [sheet-handle]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 [sheet-header] {
@@ -102778,6 +102791,13 @@ nav[sticky] > [container][safe-area=y][keyboard-avoider~=padding],
 html[keyboard-open] [sheet],
 html[keyboard-open] [theme] [sheet] {
   max-height: calc(var(--juice-sheet-max-height) - var(--juice-keyboard-inset));
+}
+
+html[keyboard-open] [sheet] > [sheet-body]:last-child,
+html[keyboard-open] [theme] [sheet] > [sheet-body]:last-child,
+html[keyboard-open] [sheet-footer],
+html[keyboard-open] [theme] [sheet-footer] {
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px));
 }
 
 [sheet][dragging],

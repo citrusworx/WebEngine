@@ -13,6 +13,7 @@ import {
   createKeyboardAvoider,
   stopKeyboardAvoiderRuntime,
 } from '../keyboard-avoider/keyboard-avoider-runtime.js';
+import { createSheet, stopSheetRuntime } from '../sheet/sheet-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -65,6 +66,7 @@ const stopAll = () => {
   stopPressableRuntime();
   stopTouchableRowRuntime();
   stopKeyboardAvoiderRuntime();
+  stopSheetRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -1188,5 +1190,39 @@ describe('juice:change', () => {
       document.documentElement.removeAttribute('keyboard-open');
       document.documentElement.style.removeProperty('--juice-keyboard-inset');
     }
+  });
+
+  it('dispatches one sheet event per real open, detent, or drag change', () => {
+    document.body.innerHTML = `
+      <div sheet-overlay id="s" hidden>
+        <div sheet>
+          <div sheet-handle></div>
+          <div sheet-header><h2>Details</h2></div>
+        </div>
+      </div>
+    `;
+    stopSheetRuntime();
+    const controller = createSheet({ root: document.body });
+    const host = document.getElementById('s')!;
+    const heard = listen();
+
+    controller.open(host);
+    controller.open(host);
+    expect(heard.events).toHaveLength(1);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'sheet',
+      state: { open: true, detent: 'half', dragging: false, modal: true },
+    });
+    expect(controller.isOpen(host)).toBe(true);
+    expect(controller.getState(host)).toEqual({
+      open: true,
+      detent: 'half',
+      dragging: false,
+      modal: true,
+    });
+
+    heard.stop();
+    controller.destroy();
   });
 });

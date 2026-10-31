@@ -3,9 +3,10 @@
  * Selectors match the polish A/B overlay contract.
  *
  * Yield order (highest owns Escape first):
- *   modal/drawer overlay → popover ≈ menu (same band) → combobox →
+ *   modal/drawer/sheet overlay → popover ≈ menu (same band) → combobox →
  *   toast / tooltip. Menu closed vs open is native `hidden` on `[menu]`,
- *   not on `[menu-root]`.
+ *   not on `[menu-root]`. Sheet closed vs open is native `hidden` on
+ *   `[sheet-overlay]`, including `sheet-overlay="none"`.
  */
 
 const hasOpen = (selector: string) => {
@@ -14,7 +15,9 @@ const hasOpen = (selector: string) => {
 };
 
 export const hasOpenDialogOverlay = () =>
-  hasOpen('[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])');
+  hasOpen(
+    '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden]), [sheet-overlay]:not([hidden])'
+  );
 
 export const hasOpenPopover = () => hasOpen('[popover-root]:not([hidden])');
 
