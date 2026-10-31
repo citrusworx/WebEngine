@@ -1,326 +1,163 @@
-# JSX and the DOM
+# Templating
 
-How `@citrusworx/sigjs` turns JSX into real DOM, and why lists, conditionals, and attributes do **not** behave like React.
+JSX in Sig is a factory. A tag becomes a DOM node. A function component runs once and must return a node. Updates happen only where you passed a function that reads a signal.
 
-Implemented in `libraries/sig/src/jsx-runtime.ts`, with types in `jsx.ts`. Configure TypeScript with `jsx: "react-jsx"` and `jsxImportSource: "@citrusworx/sigjs"`.
+There is no compiler pass that makes JSX reactive. `jsxImportSource` selects this runtime. It does not rewrite your components into a virtual DOM.
 
-Related:
-
-- [Signals](./sig-signals.md) — what `{() => count.get()}` is actually subscribing to
-- [Effects](./sig-effects.md) — the primitive function children use
-- [Patterns](./sig-patterns.md) — lists, tabs, forms built on this model
-- [Anti-patterns](./sig-anti-patterns.md) — the VDOM habits that break here
-
-## Static first
-
-`jsx(type, props)` either:
-
-- calls a **function component** once, inside `captureCleanupScope`, and returns whatever `Node` it returned, or
-- `document.createElement(type)`, assigns props, appends children, and returns that element
-
-There is no virtual tree, no diff, no second pass. A second call to `<Header />` is a second element, not an update.
-
-```tsx
-function Header() {
-  return <h1>Operator desk</h1>;
-}
-
-const a = <Header />;
-const b = <Header />;
-a === b; // false — two real h1s
-```
-
-Component functions are **element factories**. They are not render functions. They do not re-run when a signal changes. That is the whole point of Sig.js: the page stays put; only subscribed nodes move.
-
-## The child model
-
-```ts
-type Child =
-  | Node
-  | string
-  | number
-  | null
-  | undefined
-  | (() => string | number | boolean | null | undefined)
-  | Child[];
-```
-
-`appendChild` handles each kind:
-
-| Child | What the runtime does |
+| | |
 |---|---|
-| `null` / `undefined` | skipped |
-| array | each item appended |
-| `string` / `number` | static `Text` node |
-| `function` | a `Text` node whose `textContent` is `String(child())`, updated by an `effect` |
-| `Node` | `parent.appendChild(child)` |
+| Since | JSX factory in 0.2.0. Function-valued props in 0.3.0 |
+| Import | Set `jsxImportSource` to `@citrusworx/sigjs` |
+| Status | Stable |
 
-That table is the DOM model. Everything people assume from React has to fit into one of those rows or it does not exist.
-
-## Function children are text only
-
-```ts
-if (typeof child === "function") {
-  const textNode = document.createTextNode("");
-  parent.appendChild(textNode);
-
-  effect(() => {
-    textNode.textContent = String(child());
-  });
-  return;
-}
-```
-
-The runtime never looks at the *return type* of the function. It always does `String(child())`.
+## Use it
 
 ```tsx
-// Live text — correct
-<p>Count: {() => String(count.get())}</p>
+import { Signal, mount } from "@citrusworx/sigjs";
 
-// Snapshot — the get() ran while building the tree
-<p>Count: {count.get()}</p>
+function Counter() {
+  const count = Signal(0);
 
-// Stringifies a DOM node — you will see "[object HTMLDivElement]"
-<div>{() => <p>Hi</p>}</div>
-
-// Stringifies an array — you will see "1,2,3" or "[object HTMLLIElement],…"
-<ul>{() => items.get().map((text) => <li>{text}</li>)}</ul>
-```
-
-Live **structure** is not a child function. It is an effect you write against a node you hold. See lists and conditionals below.
-
-`Fragment` uses the same `appendChild`, so function children inside `<>…</>` are still text nodes.
-
-## Props: static values vs reactive getters
-
-`setProp` runs at create time. The rule is small:
-
-| Kind | Behavior |
-|---|---|
-| `children` | ignored here; appended separately |
-| `ref` (function) | called with the element after create — **not** a reactive getter |
-| `on*` (function) | `addEventListener(name.toLowerCase(), fn)` — `onClick` → `click` — **not** a reactive getter |
-| Any other **function** | wrapped in `effect`; the function is called again when signals it reads change; the **result** is assigned |
-| Known DOM properties | assigned (`el[key] = value`), except `animate` / `animation` / `motion`, `data-*`, `aria-*` |
-| `true` | `setAttribute(key, "")` |
-| `false` / `null` / `undefined` | `removeAttribute` |
-| other | `setAttribute(key, value)` |
-
-Non-function values are assigned **once**. Function-valued host props (except `ref` and `on*`) are reactive getters. The same property-vs-attribute rule applies to the getter’s return value.
-
-```tsx
-<div className={() => (on.get() ? "active" : "")} />
-<input value={() => name.get()} />
-<input type="checkbox" checked={() => on.get()} />
-<section padding={() => size.get()} hidden={() => !open.get()} />
-```
-
-That is the intended live-attribute path for a single binding. `class` is treated as the HTML class attribute (`className` stays the DOM property). `textContent` is a DOM property, so `textContent={() => …}` works — do not mix it with JSX children on the same node.
-
-Cleanup is attached to the element, so `disposeTree` (and the router) unsubscribes the effect.
-
-### Assign-once exceptions
-
-These stay callbacks / listeners, even though they are functions:
-
-- **`ref`** — called once with the element
-- **`on*`** — registered once with `addEventListener`
-
-A snapshot is also assign-once:
-
-```tsx
-// First boolean, forever — get() ran while building the tree
-<button disabled={busy.get()} />
-
-// Live
-<button disabled={() => busy.get()} />
-```
-
-### `ref` + `effect` is still supported
-
-Use it when one effect should write several properties, or when you already hold the node for a list / conditional:
-
-```tsx
-const el = <div className="off" /> as HTMLDivElement;
-
-effect(() => {
-  el.className = on.get() ? "on" : "off";
-});
-```
-
-```tsx
-<input
-  ref={(el) => {
-    effect(() => {
-      el.disabled = !ready.get();
-    });
-  }}
-/>
-```
-
-There is no live `style={{ color: … }}` object binder. Pass a static string, or write `el.style.*` from an effect.
-
-### Why Juice attributes work
-
-`stack`, `gap`, `padding`, `card`, `surface`, `hero`, `panel`, `muted` are not DOM properties, so they take the `setAttribute` path. Juice CSS then matches `[stack]`, `[gap="2rem"]`, `[card]`.
-
-Static Juice flags (`stack`, `card`, `muted`) should be `true` so they become `setAttribute(key, "")`. Function-valued Juice attributes subscribe:
-
-```tsx
-<section card padding={() => (dense.get() ? "0.5rem" : "1.25rem")} />
-```
-
-## Events
-
-`onClick`, `onInput`, `onKeyDown`, `onSubmit`, `onclick` — any `on*` function — become `addEventListener`. The prefix is sliced and lowercased: `onClick` → `click`, `onKeyDown` → `keydown`.
-
-A non-function `onClick` is ignored (it falls through; if `onClick` is not a DOM property it may even land as an attribute named `onClick`). Pass a function.
-
-There is no event pooling and no synthetic event. You get the browser’s `Event`. Cast `e.target` when you need `.value`.
-
-## `ref`
-
-`ref` is called once. It is not a reactive getter. Put an `effect` inside (or close over the element) when one subscription should write several properties. For a single live attribute, a function-valued prop is enough.
-
-## Components
-
-```tsx
-function Card(props: { title: string; children?: Node }) {
   return (
-    <article card padding="1.25rem" stack gap="0.75rem">
-      <h2>{props.title}</h2>
-      {props.children}
-    </article>
+    <p className={() => (count.get() > 0 ? "hot" : "cold")}>
+      Count: {() => count.get()}
+      <button type="button" onClick={() => count.set(count.get() + 1)}>
+        Increment
+      </button>
+    </p>
   );
 }
 
-<Card title="Queue">{list}</Card>
+mount(<Counter />, document.getElementById("root")!);
 ```
 
-The function receives `props` and must return a `Node` (or something `jsx` will return to the parent — typically a `Node`). Effects created during the call are attached to that node via `captureCleanupScope`.
+The `p` and the button are created once. The text node and `className` update later.
 
-There are no hooks. Calling `Signal` or `effect` inside the function is just calling functions. Call them at the top of the factory so they run once per mount. Calling `effect` inside a click handler would create a **new** effect per click; do not do that.
+## Children
 
-`jsxs` is an alias of `jsx`. `jsxDEV` (dev runtime) also delegates to `jsx`.
+| Child | Result |
+|---|---|
+| string or number | A text node |
+| `null` or `undefined` | Omitted |
+| A `Node` | Appended |
+| An array | Each item appended, including nested arrays |
+| `() => string \| number \| boolean \| null \| undefined` | A text node. An effect sets `textContent` to `String(child())` |
+
+`String(null)` is `"null"`. `String(undefined)` is `"undefined"`. `String(false)` is `"false"`. `String(0)` is `"0"`.
+
+A function that returns an element does not mount it. The text becomes `[object HTMLDivElement]`. Show and hide with `hidden`, or replace children from an effect.
+
+```tsx
+{() => (open.get() ? <aside>Notes</aside> : null)}
+```
+
+That line is text, not a panel.
+
+## Props
+
+| Prop | When it updates |
+|---|---|
+| string, number, or boolean | Once, at create time |
+| `() => string \| number \| boolean \| null \| undefined` | Whenever signals it reads change |
+| `onClick`, `onInput`, any `on*` function | Once. Registered with `addEventListener`. Not a getter |
+| `ref={(el) => ...}` | Once, with the element |
+| `style="color: red"` | Once, as a CSS string. A function that returns a string updates |
+| `style={{ color: "red" }}` | Accepted by the types. Does not apply CSS. See below |
+| Unknown keys (`stack`, `card`, `data-*`, `aria-*`) | Attributes. `true` sets `""`. `false` or `null` removes the attribute |
+
+DOM properties (`className`, `value`, `checked`, `hidden`, `disabled`, and other keys that exist on the element) are assigned on the object. `data-*` and `aria-*` are attributes even though some exist as properties. `class` is special: a string sets `className`; `false` or `null` clears it.
+
+`className={false}` assigns the string `"false"`, because `className` is a property. Use `class={false}` or `className=""` when you mean no class.
+
+`disabled={busy.get()}` is a snapshot. `disabled={() => busy.get()}` stays live.
+
+## Events and ref
+
+```tsx
+<button
+  type="button"
+  ref={(el) => {
+    el.dataset.ready = "1";
+  }}
+  onClick={(event) => {
+    const target = event.target as HTMLButtonElement;
+    target.dataset.clicks = "1";
+  }}
+>
+  Go
+</button>
+```
+
+The listener receives the browser `Event`. There is no pooling and no synthetic event. `disposeTree` does not remove these listeners. Dropping the node drops them with it, unless something else still holds the node.
+
+`ref` is the place to subscribe when you want the element without assigning JSX to a variable. Pair it with `effect` if the subscription must be live. `ref` itself does not re-run.
+
+## Components and fragments
+
+```tsx
+function Card(props: { title: string; children?: unknown }) {
+  return (
+    <section>
+      <h2>{props.title}</h2>
+      {props.children}
+    </section>
+  );
+}
+
+<>
+  <Card title="A">One</Card>
+  <Card title="B">Two</Card>
+</>
+```
+
+`Card` runs once per creation. It does not re-run when a signal changes. Read signals in a child function or an effect inside `Card`, not in the props you captured once.
+
+`<>...</>` is a `DocumentFragment` with the same child rules. A component that returns a fragment still gets its cleanups attached to the fragment's children.
+
+The `key` prop is in the JSX types and ignored. Keyed lists are `bindList`, not `key`.
 
 ## Conditionals
 
-Three honest patterns, in order of preference:
+| Goal | Pattern |
+|---|---|
+| Keep the node, flip visibility | `hidden={() => !open.get()}` or set `hidden` in an effect |
+| Swap which children exist | `parent.replaceChildren(...)` inside an effect |
+| Choose text | `{() => (open.get() ? "Hide" : "Show")}` |
 
-### 1. Hide structure that already exists
-
-```tsx
-const panel = <aside panel hidden>Notes</aside> as HTMLElement;
-
-effect(() => {
-  panel.hidden = !open.get();
-});
-```
-
-Best when the hidden UI is cheap and you want to keep its state (input text, scroll).
-
-### 2. Rewrite children when membership changes
-
-```tsx
-const body = <div /> as HTMLDivElement;
-
-effect(() => {
-  const value = tab.get();
-  if (value === "queue") {
-    body.replaceChildren(<Queue />);
-    return;
-  }
-  body.replaceChildren(<About />);
-});
-```
-
-Best for tabs and routes-inside-a-page. Each branch is a fresh tree.
-
-### 3. Do not use a function child as a conditional element
-
-```tsx
-// Wrong
-{() => (open.get() ? <Panel /> : null)}
-```
-
-That is text. See the child table.
+`replaceChildren` drops the previous nodes. That is the non-keyed list. It is the right default when rows are cheap.
 
 ## Lists
 
-Same rule as conditionals. The runtime will not reconcile `{items.map(…)}` **as a function child**. It will append a **static** mapped array if you pass the array *as* children at create time:
-
 ```tsx
-// Static — mapped once while the component runs
-<ul>
-  {initial.map((text) => (
-    <li>{text}</li>
-  ))}
-</ul>
-```
-
-That is fine for data that never changes. For a live list:
-
-```tsx
-const list = <ul /> as HTMLUListElement;
+const list = <ul></ul> as HTMLUListElement;
 
 effect(() => {
-  list.replaceChildren(
-    ...items.get().map((text) => <li>{text}</li>),
-  );
+  list.replaceChildren(...items.get().map((text) => <li>{text}</li>));
 });
 ```
 
-`replaceChildren` drops the previous `<li>` nodes. That is the simple, non-keyed list. For a small operator queue it is the right default.
+`bindList` keeps a node for each key. It is experimental. An array needs a key function. A `Map` uses iteration order and the map key.
 
-When a row should keep its node, focus, and effects, use `bindList`. It reuses the node for a key that stays and gives `render` a per-row getter. It is not `{() => items.map(...)}`. See [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist) and [bindList](./sig-api.md#bindlist).
+`render` runs once per key and receives `{ get() }` for the current item. Read that getter from an effect or a function child.
 
-## `mount` and `disposeTree`
+Duplicate array keys throw `bindList: duplicate key …` before that update changes the DOM. The first call throws out of `bindList` and leaves the parent empty. A later duplicate leaves the previous rows in place.
 
-```ts
-function mount(node: Node, target: HTMLElement): void
-```
+The parent should be an empty element reserved for the rows. Children that were already there are pushed after the rows. One binding per parent. The walkthrough is [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
 
-Disposes existing children of `target`, then `replaceChildren(node)`.
+## Juice attributes
 
-```ts
-function disposeTree(node: Node): void
-```
+Any tag name is legal. Unknown keys become attributes, so `stack`, `gap`, and `card` survive. A function value on those keys updates the attribute.
 
-Walks the node, runs attached cleanups, recurses. `SigRouter` and `mount` call this for you.
+They are not a typed Juice plugin. See [Sig.js + Juice](./sig-juice-integration.md).
 
-Cleanup is stored on a `WeakMap<Node, Set<Cleanup>>`. Function components attach their scope disposer to the returned node. Function-child text effects and function-valued prop effects also attach to the host node, so `disposeTree` can stop them without a component wrapper. A function-component root is still the clearer app shape. See [Effects — cleanup scopes](./sig-effects.md#cleanup-scopes-and-component-functions).
+## What "surgical" means
 
-## `Fragment`
+The runtime does not diff a tree. It re-runs the function you gave it and writes one text node or one property. If an effect calls `replaceChildren` on a large parent, that parent is rebuilt because the effect said so.
 
-```tsx
-function Title() {
-  return (
-    <>
-      <h1>Desk</h1>
-      <p muted>Operations</p>
-    </>
-  );
-}
-```
+## Related
 
-`Fragment` builds a `DocumentFragment` and appends children into it. When that fragment is inserted, its children move into the parent. Cleanup attached to a fragment is copied onto those children.
-
-## What “surgical updates” means in this runtime
-
-Sig.js does not re-render a component function when a signal changes.
-
-- A function child updates **one text node**.
-- A function-valued prop updates **one property or attribute**.
-- An `effect` runs your callback; you decide which properties to write.
-- `replaceChildren` rebuilds those children. `bindList` reuses a row whose key stayed. Neither one is `{() => items.map(...)}`.
-
-If the page “re-renders,” you wrote an effect that rebuilt it. That is allowed. It is also how you accidentally recreate the problem Sig.js exists to avoid. Keep the writes small.
-
-## Practices that match the implementation
-
-- Treat JSX as `document.createElement` plus a few helpers
-- Use function children only for text
-- Use function-valued props for live attributes (`className`, `value`, `checked`, Juice flags)
-- Hold elements for lists, conditionals, and multi-property writes
-- Put the app in a function component so `disposeTree` can find effects
-- Do not invent `{condition && <X />}` element swapping or a JSX `.map()` reconciler. Keyed rows are `bindList`. Conditionals are `hidden` or `replaceChildren`.
+| | |
+|---|---|
+| [Lifecycle](./sig-lifecycle.md) | Where prop effects are stored |
+| [API: jsx](./sig-api.md#jsx) | Factory signatures |
+| [Anti-patterns](./sig-anti-patterns.md) | The React habits that print `[object HTMLElement]` |

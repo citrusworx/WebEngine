@@ -137,7 +137,9 @@ mount(<EmailField />, document.getElementById("root")!);
 
 ## Todo board (replaceChildren)
 
-Sig.js does not reconcile `{() => items.map(<li />)}`. This board rebuilds the row nodes when the signal changes. That is the simple, non-keyed list. `batch` keeps the add path to one effect run. The next section keeps row nodes with `bindList`.
+Sig.js does not reconcile `{() => items.map(<li />)}`. This board rebuilds the row nodes when the signal changes. That is the simple, non-keyed list.
+
+`batch` keeps the add path to one effect run. The next section keeps row nodes with `bindList`.
 
 ```tsx
 import { Signal, effect, batch, mount } from "@citrusworx/sigjs";
@@ -238,7 +240,9 @@ mount(<TodoApp />, document.getElementById("root")!);
 
 ## Keyed todo (Map + order)
 
-Same board, but each id keeps its `<li>`. Records live in a `Map`. `order` is the sequence. `memo` joins them, and `bindList` reconciles that array by `todo.id`. Toggling writes a new todo object into the map; the checkbox stays the same node because `checked` reads the per-row getter.
+Same board, but each id keeps its `<li>`. Records live in a `Map`. `order` is the sequence. `memo` joins them, and `bindList` reconciles that array by `todo.id`.
+
+Toggling writes a new todo object into the map. The checkbox stays the same node because `checked` reads the per-row getter.
 
 If you never reorder, skip `order` and pass the `Map` itself: `bindList(list, todos, (item, id) => ...)`. Iteration order is display order. A priority sort is another `memo` over the map, not a third store. The longer walkthrough is [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
 
