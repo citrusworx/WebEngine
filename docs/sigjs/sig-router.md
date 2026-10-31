@@ -101,10 +101,10 @@ After `start()`, a document-level click listener handles `<a href>`:
 
 | Left alone | Intercepted |
 |---|---|
-| `http:` / `https:` | `/about` |
-| `mailto:`, `tel:`, `ftp:` | `/` |
-| `download` | |
-| `target="_blank"` | |
+| `href` starting with `http` (so `https` too), `mailto`, `tel`, or `ftp` | `/about`, `/` |
+| `download` | Modifier-clicks (`metaKey`, `ctrlKey`, and the rest) |
+| `target="_blank"` | Hash-only and protocol-relative `//` hrefs |
+| Missing `href`, or a click whose target is not an `HTMLElement` | |
 
 `navigate(path)` normalizes a leading slash the same way as `has` / `set`. Unknown paths with no matching exact route, param pattern, or `"*"` fallback do nothing (no 404 view, no `pushState`).
 
@@ -203,7 +203,7 @@ A prebuilt `Node` view cannot see params — use a function.
 
 **Splat segments.** `/files/*` is not a catch-all. `"*"` is only a whole-path fallback.
 
-**Query strings.** Ignored for matching. Read `window.location.search` in the view.
+**Query strings and hashes.** Not stripped. `/about?x=1` does not match a route registered as `/about`. Read `location.search` only after you have matched the path you actually registered.
 
 **Trailing slashes and case.** `/About` ≠ `/about`. `/about/` ≠ `/about`. `/user/42/` ≠ `/user/42`.
 

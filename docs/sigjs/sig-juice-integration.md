@@ -1,38 +1,31 @@
 # Sig.js + Juice
 
-Juice owns structure and identity. Sig.js owns values that change after paint. They compose because they do not fight for the same job.
+Juice owns layout and theme. Sig owns values that change after paint. They meet on the DOM: Sig writes elements, Juice CSS matches attributes on those elements.
+
+Juice is not a component kit you import as `{ Button }`. Write HTML, or Sig JSX, and put Juice attributes on the tags.
 
 ## The split
 
 | Concern | Owner |
 |---|---|
-| Layout, spacing, surfaces | Juice attributes (`stack`, `row`, `grid`, `gap`, `card`, `panel`, `hero`, `surface`) |
-| Brand, type, color defaults | Theme CSS (`theme="…"` on the root) |
-| One-off brand polish | Small app CSS |
-| Counters, toggles, forms, routes | Sig.js signals and effects |
+| Layout and spacing | Juice attributes: `stack`, `row`, `grid`, `gap`, `card`, `panel`, `hero`, `surface` |
+| Color and type | Theme CSS, `theme="…"` on the root |
+| One-off polish | App CSS |
+| Counters, fields, lists, routes | Sig signals and effects |
+| Widget state (`checked`, `open`, sort) | Juice runtimes. Optional [`bind`](#runtime-binding) copies that state into a signal |
 
-Juice is not a component runtime. Do not import `{ Button }` from `@citrusworx/juiceui` — that export is not the integration path. Write HTML (or Sig JSX) and put Juice attributes on the tags.
+The main Sig entry does not import Juice. Juice does not import `@citrusworx/sigjs/juice`. The packages do not cycle.
 
 ## Setup
 
 ```bash
-yarn add @citrusworx/juiceui @citrusworx/sigjs
-```
-
-```json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@citrusworx/sigjs"
-  }
-}
+npm install @citrusworx/sigjs @citrusworx/juiceui
 ```
 
 ```ts
 import "@citrusworx/juiceui/styles";
 import "./generated/my-theme.css";
 import { mount } from "@citrusworx/sigjs";
-import { App } from "./App";
 
 mount(<App />, document.getElementById("root")!);
 ```
@@ -43,69 +36,31 @@ mount(<App />, document.getElementById("root")!);
 </body>
 ```
 
-The stylesheet path is `@citrusworx/juiceui/styles`, not a `dist/juice.css` file. Core CSS does not include a theme; import a library theme or an app-generated theme separately. See [Juice getting started](../juice/juice-getting-started.md).
+The stylesheet entry is `@citrusworx/juiceui/styles`. Core CSS does not include a theme. Import a library theme or an app theme beside it. See [Juice getting started](../juice/juice-getting-started.md).
 
-## Why attributes survive Sig JSX
-
-Sig's `setProp` treats unknown keys as attributes. Juice's `stack`, `gap`, `padding`, `card`, and `surface` are not DOM properties, so they land on the element as attributes. Juice CSS then matches `[stack]`, `[gap="2rem"]`, and so on.
-
-Static Juice flags (`stack`, `card`) should still be `true`. Function-valued Juice attributes subscribe:
+Unknown JSX keys become attributes, so `stack` and `card` survive. `true` sets an empty attribute. A function value stays live. `padding={size.get()}` is a snapshot.
 
 ```tsx
-// Static Juice — correct
-<section card padding="1.25rem" stack gap="1rem">…</section>
-
-// Live Juice attribute
-<section padding={() => size.get()}>…</section>
-
-// Snapshot — first value, forever
-<section padding={size.get()}>…</section>
+<section card padding="1.25rem" stack gap="1rem" />
+<section padding={() => size.get()} />
 ```
 
-`ref` + `effect` + `setAttribute` is still valid when several attributes should move together.
-
-## Showcase: Juice page, Sig counter
+## A counter on a Juice page
 
 ```tsx
-import "@citrusworx/juiceui/styles";
-import "./generated/my-theme.css";
-import { Signal, effect, mount } from "@citrusworx/sigjs";
+import { Signal, mount } from "@citrusworx/sigjs";
 
 function App() {
   const count = Signal(0);
-  const label = <span>0</span> as HTMLSpanElement;
-
-  effect(() => {
-    label.textContent = String(count.get());
-  });
 
   return (
     <main stack gap="2rem">
-      <section hero surface="brand-stage" padding="2rem" stack gap="1rem">
-        <p muted>Publishing</p>
-        <h1>Juice structure, Sig behavior</h1>
-        <p>
-          Juice keeps layout in markup. Sig.js updates the count without
-          re-rendering the page.
-        </p>
-      </section>
-
-      <section grid gap="1rem">
-        <article card padding="1.25rem" stack gap="0.75rem">
-          <h2>Count</h2>
-          <p>{label}</p>
-          <button
-            type="button"
-            onClick={() => count.set(count.get() + 1)}
-          >
-            Add one
-          </button>
-        </article>
-
-        <aside panel surface="brand-panel" padding="1.25rem" stack gap="0.75rem">
-          <h2>Identity</h2>
-          <p>Theme CSS still owns type and color. This panel does not re-mount.</p>
-        </aside>
+      <section card padding="1.25rem" stack gap="0.75rem">
+        <h2>Count</h2>
+        <p>{() => String(count.get())}</p>
+        <button type="button" onClick={() => count.set(count.get() + 1)}>
+          Add one
+        </button>
       </section>
     </main>
   );
@@ -114,78 +69,11 @@ function App() {
 mount(<App />, document.getElementById("root")!);
 ```
 
-The hero, grid, card, and panel are ordinary elements. Only `label` is subscribed.
-
-## Showcase: filter chips that rewrite a list
-
-```tsx
-import { Signal, effect } from "@citrusworx/sigjs";
-
-type Item = { id: string; title: string; tag: "docs" | "app" };
-
-function Catalog(props: { items: Item[] }) {
-  const tag = Signal<"all" | Item["tag"]>("all");
-  const list = <div stack gap="0.75rem"></div> as HTMLDivElement;
-
-  function Chip(value: "all" | Item["tag"], label: string) {
-    const button = (
-      <button type="button" onClick={() => tag.set(value)}>
-        {label}
-      </button>
-    ) as HTMLButtonElement;
-
-    effect(() => {
-      button.setAttribute("aria-pressed", String(tag.get() === value));
-    });
-
-    return button;
-  }
-
-  effect(() => {
-    const selected = tag.get();
-    const visible =
-      selected === "all"
-        ? props.items
-        : props.items.filter((item) => item.tag === selected);
-
-    list.replaceChildren(
-      ...visible.map((item) => (
-        <article card padding="1rem" stack gap="0.5rem">
-          <h3>{item.title}</h3>
-          <p muted>{item.tag}</p>
-        </article>
-      )),
-    );
-  });
-
-  return (
-    <section stack gap="1.5rem" padding="2rem">
-      <div row gap="0.5rem">
-        {Chip("all", "All")}
-        {Chip("docs", "Docs")}
-        {Chip("app", "Apps")}
-      </div>
-      {list}
-    </section>
-  );
-}
-```
-
-Juice lays out the chips and cards. Sig.js decides which cards exist.
-
-(The `Chip` generic above is illustrative; in app code, type the union explicitly.)
+The card is created once. Only the text node updates. The [page tutorial](./sig-page-tutorial.md) builds a larger page in the same shape.
 
 ## Runtime binding
 
-Juice widgets already change on their own. `bind` is how a Sig signal follows that host, and how five of them accept a write back. Juice works without this module. The DOM contract (`juice:change`, `getState()`) is enough for any other script. This subpath is the only Sig import that talks to Juice controllers.
-
-The hookup is done. It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. Icon-button, avatar, and table are in npm `@citrusworx/sigjs@0.7.2`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry `@citrusworx/sigjs` does not import Juice. Juice depends on Sig's main entry, not on `./juice`.
-
-```bash
-yarn add @citrusworx/sigjs @citrusworx/juiceui
-```
-
-Import the JS entry (or call the matching `start*Runtime`) so the host is enhanced before you bind it. Import styles the same way as any other Juice page.
+`bind` copies a Juice host into a Sig signal and, for five runtimes, writes back. Juice widgets already work without this import. Listen for `juice:change` or call `getState()` yourself. That contract is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
 ```ts
 import "@citrusworx/juiceui";
@@ -195,43 +83,112 @@ const host = document.querySelector<HTMLElement>("[switch]")!;
 const notes = bind(host, "switch");
 
 notes.state.get(); // { checked: boolean }
-notes.state.set({ checked: true }); // writes the host via setChecked
-notes.dispose(); // drop listeners; safe to call again
+notes.state.set({ checked: true }); // setChecked on the host
+notes.dispose(); // safe to call again
 ```
 
-`bind` returns `{ state, dispose }`.
+Import the Juice JS entry, or call the matching `start*Runtime`, before `bind`. `getState()` on a host that was never enhanced returns null, and `bind` throws.
 
-| Field | What it is |
-| --- | --- |
-| `state` | A Sig signal, `{ get, set }`, seeded from that host's `getState()`. Later host changes update it. |
-| `dispose` | Removes the host listeners. A second call does nothing. |
+| Field | Behavior |
+|---|---|
+| `state.get` | Latest copied state. Subscribes a surrounding effect |
+| `state.set` | Deep-equal values do not notify. Five runtimes also call a controller |
+| `dispose` | Removes host listeners. A second call does nothing |
 
-`bind(host)` infers the runtime from the host element. `bind(host, runtime)` uses the name you pass and types `state` to that runtime's `getState()` shape. Pass the name when inference fails, or when you want the type. Icon-button matches `[icon-button]`. Avatar matches `[avatar]`. Table matches a `<table table>` only; a `<div table>` is not a host. Those three matchers run after the original ones, so a host that already matches (for example `[switch]`) stays on that runtime. A missing host shape throws: inference failure (`could not infer a runtime`) or `getState()` returning `null`. Binding icon-button, avatar, or table when Juice does not export that start function throws `needs a newer @citrusworx/juiceui` instead.
+A `bind` call during a Sig component function disposes with that view. A bind outside a component needs `dispose()` when the host goes away. Listeners are `juice:change`, plus native `input` and `change` for select, input, and textarea.
+
+### Juice versions
+
+Checked against the published tarballs of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The optional peer range is still `>=0.9.1 <1`.
+
+| Juice | `import "@citrusworx/sigjs/juice"` | Names you can bind |
+|---|---|---|
+| 0.9.1 | Throws. Missing named export `startDisclosureRuntime`. Also missing field, input, select, spinner, and textarea | None. The module does not evaluate |
+| 0.9.2 | Loads | 25. Icon button, avatar, and table throw `needs a newer @citrusworx/juiceui` |
+| 0.9.3 | Loads | All 28 `JuiceRuntimeName` values |
+| 0.9.4 | Loads | All 28. Juice also ships pressable and touchable row, which Sig does not bind |
+| 0.9.5 | Loads | All 28. Juice also ships keyboard avoider, which Sig does not bind |
+
+The 0.9.2 error is exact:
+
+```text
+Sig juice bind: "icon-button" needs a newer @citrusworx/juiceui that exports startIconButtonRuntime.
+```
+
+Avatar and table use the same sentence with `startAvatarRuntime` and `startTableRuntime`. The message has no version number. The other 25 runtimes still bind on 0.9.2.
+
+Sig 1.0.0 does not add names for the Juice runtimes that shipped after the adapter: pressable, touchable row, keyboard avoider.
 
 ### What the signal follows
 
-`state` starts as a copy of `getState()`. After that it follows the host:
+| Hosts | Events |
+|---|---|
+| select, input, textarea | Native `input` and `change`, then `getState()` |
+| The other 25, including icon button, avatar, and table | Bubbling `juice:change` with `detail: { runtime, state }` |
 
-- Twenty-five Juice runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. Icon button, avatar, and table are three of those twenty-five. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` matches the binding.
-- Select, input, and textarea do not dispatch `juice:change`. `bind` also listens for native `input` and `change` on those hosts and reads `getState()` again.
+The event counts only when `event.target` is the bound host and `detail.runtime` matches. A change that bubbles from a descendant is ignored. An equal state does not notify.
 
-An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange) has twenty-eight Juice runtimes. `bind` accepts all twenty-eight names in `JuiceRuntimeName`.
+`state` starts as `structuredClone(getState())`.
 
-### Write-back and read-only
+### Inference
 
-`state.set` stores the next value on the signal. It writes the widget for these five:
+Omit the runtime name and the first matching row wins. Pass the name when you want the type, or when inference throws `could not infer a runtime`.
 
-| Runtime | `state.set` calls |
-| --- | --- |
-| `switch` | `setChecked(state.checked, host)` |
-| `checkbox` | `setChecked(state.checked, host)` |
-| `disclosure` | `expand` or `collapse` on the first `[disclosure-trigger]` (or the host, when the host is that trigger) |
-| `modal` | `open(host)` or `close(host)` |
-| `icon-button` | `toggle(host)` only when the host has `[toggle]` and `pressed` changes. The signal is then republished from `getState()`. A disabled host, or a host without `[toggle]`, refuses the write, and the signal snaps back to the host so it does not drift. |
+| Runtime | Host |
+|---|---|
+| `select` | `<select select>` |
+| `textarea` | `<textarea textarea>` |
+| `switch` | `[switch]` |
+| `checkbox` | `[checkbox]` |
+| `input` | `<input input>` |
+| `disclosure` | `[disclosure]` |
+| `accordion` | `[accordion]` |
+| `modal` | `[modal-overlay]` |
+| `drawer` | `[drawer-overlay]` |
+| `popover` | `[popover-root]` |
+| `menu` | `[menu-root]` |
+| `combobox` | `[combobox]` |
+| `slider` | `[slider]` |
+| `progress` | `[progress]` |
+| `radio` | `[radiogroup]` |
+| `tabs` | `[tabs]` |
+| `pagination` | `[pagination]` |
+| `breadcrumb` | `[breadcrumb]` |
+| `wizard` | `[wizard-shell]` |
+| `toast` | `[toast]` |
+| `banner` | `[banner]` |
+| `tooltip` | `[tooltip-root]` |
+| `spinner` | `[spinner]` |
+| `nav` | `<nav type="sidebar">` |
+| `field` | `[field]` |
+| `icon-button` | `[icon-button]` |
+| `avatar` | `[avatar]` |
+| `table` | `<table table>` only. A `<div table>` is not a host |
 
-The other twenty-three runtimes are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, textarea, avatar, and table. Avatar has no write API. Table has no Juice API to set sort. A read-only runtime still seeds a signal from `getState()`. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
+A host that matches an earlier row stays on that runtime. `[switch]` wins over `[icon-button]` when both are present.
 
-Icon-button, avatar, and table are read from `startIconButtonRuntime`, `startAvatarRuntime`, and `startTableRuntime` on the Juice module. A published Juice build that does not export one of those still loads this adapter. Binding that runtime, by name or from the host, throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The icon-button and avatar errors use the same sentence with their own names. The message has no version number. Binding switch and the other existing runtimes keeps working.
+### Write-back
+
+| Runtime | `state.set` calls | Read-only |
+|---|---|---|
+| `switch` | `setChecked(state.checked, host)` | |
+| `checkbox` | `setChecked(state.checked, host)` | |
+| `disclosure` | `expand` or `collapse` on `[disclosure-trigger]` (the host, or the first descendant) | |
+| `modal` | `open(host)` or `close(host)` | |
+| `icon-button` | `toggle(host)` only when the host has `[toggle]` and `pressed` changes. The signal is then read back from `getState()` | A disabled host, or a host without `[toggle]`, refuses the write. The signal stays on the host |
+| avatar | | No write API |
+| table | | No API to set sort |
+| The other 21 | | `set` updates the signal only. The next host event overwrites it |
+
+Local state shapes for the three newer names, as declared by Sig 1.0.0:
+
+| Runtime | State |
+|---|---|
+| `icon-button` | `{ pressed: boolean; disabled: boolean; named: boolean }` |
+| `avatar` | `{ loaded: boolean; fallback: boolean; hasImage: boolean }` |
+| `table` | `{ column: number \| null; direction: "ascending" \| "descending" \| "none" }` |
+
+The other state types are imported from the installed Juice package.
 
 ```tsx
 import { effect, mount } from "@citrusworx/sigjs";
@@ -239,15 +196,10 @@ import { bind } from "@citrusworx/sigjs/juice";
 
 function SwitchLabel(props: { host: HTMLElement }) {
   const notes = bind(props.host, "switch");
-  const label = <span>Off</span> as HTMLSpanElement;
-
-  effect(() => {
-    label.textContent = notes.state.get().checked ? "On" : "Off";
-  });
 
   return (
     <span row gap="0.5rem">
-      {label}
+      <span>{() => (notes.state.get().checked ? "On" : "Off")}</span>
       <button type="button" onClick={() => notes.state.set({ checked: true })}>
         Turn on
       </button>
@@ -259,31 +211,21 @@ const switchHost = document.querySelector<HTMLElement>("[switch]")!;
 mount(<SwitchLabel host={switchHost} />, document.getElementById("root")!);
 ```
 
-A read-only host uses the same `bind`. Read `state.get()` from an effect. Leave `set` alone unless you only need a local copy that the next host event will replace.
+## Without the adapter
 
-### Disposal on unmount
-
-`bind` registers its listeners with `effect`. Two cleanups apply:
-
-- Call `dispose()` when you bound a host outside a Sig component and the host is going away.
-- Call `bind` while a Sig component function is running, and the component cleanup scope owns that effect. `mount` and `SigRouter` call `disposeTree` on the way out, which runs the effect cleanup and removes the listeners. You can still call `dispose()` yourself first.
-
-Listeners removed are `juice:change`, plus `input` and `change` for select, input, and textarea.
-
-### Juice without this adapter
-
-A page that never imports `@citrusworx/sigjs/juice` still gets every runtime. Listen for `juice:change` on the host, or call `getState()` from the controller. That path is [juice:change](../juice/juice-runtime-behavior.md#juicechange). Sig attributes on static markup (`stack`, `card`, `gap`) stay the other half of this guide and do not require `bind`.
+A page that never imports `@citrusworx/sigjs/juice` still gets every Juice runtime. Attributes such as `stack` and `card` do not need `bind`. Widget state without the adapter is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
 ## Practices
 
-- Import Juice CSS before `mount`
-- Set `theme="…"` on `body` or the app root, not on every card
-- Let Juice own `stack` / `row` / `gap`; do not rebuild layout in JS on resize
-- Keep Sig effects at the leaves (one label, one list)
-- See [Juice best practices](../juice/juice-best-practices.md) for composition; see [Sig best practices](./sig-best-practices.md) for the behavior half of the same split
-- See [Sig troubleshooting](./sig-troubleshooting.md) if a value changes and the DOM does not
-- The [page tutorial](./sig-page-tutorial.md) is a Juice hero + cards with a Sig tally, disclosure, queue, and route
+| Do | Why |
+|---|---|
+| Import Juice CSS before `mount` | Unstyled markup is not a Sig bug |
+| Set `theme` on `body` or the app root | Not on every card |
+| Leave `stack`, `row`, and `gap` in markup | Do not rebuild layout in an effect |
+| Keep effects on the node that changes | The card around it stays put |
+
+Composition rules for the attributes themselves are [Juice best practices](../juice/juice-best-practices.md). Sig rules are [Best practices](./sig-best-practices.md).
 
 ## What this guide will not show
 
-Invented Juice APIs (`stack="vertical"`, `bg="primary-50"`, `cols={{ md: 3 }}`, `text="2xl"`) are not how Juice works today. If you need a visual token, use the attributes and theme contract documented under [docs/juice](../juice/README.md).
+Invented values such as `stack="vertical"`, `bg="primary-50"`, or `cols={{ md: 3 }}` are not Juice's attribute contract. Use the attributes documented under [Juice](../juice/README.md).

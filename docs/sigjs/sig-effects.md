@@ -1,20 +1,16 @@
 # Effects
 
-How `effect`, `batch`, `memo`, and cleanup actually work in `libraries/sig/src/signal.ts`.
+An effect runs a function now, subscribes to the signals that function reads, and runs it again when those signals change. The return value may be a cleanup function.
 
-An effect is the unit of work that runs when a signal changes. Function-child text, list rewrites, attribute updates, timers, and fetch all sit on this primitive.
+Use an effect for DOM writes that are more than one text node, for timers, for `fetch`, and for list rewrites. Do not use one to copy a signal into another signal. That copy is a [memo](./sig-memo.md).
 
-Related:
+| | |
+|---|---|
+| Since | 0.2.0 |
+| Import | `import { effect } from "@citrusworx/sigjs"` |
+| Status | Stable |
 
-- [Signals](./sig-signals.md) — `get` / `set`
-- [JSX and the DOM](./sig-jsx.md) — when the runtime creates an effect for you
-- [Anti-patterns](./sig-anti-patterns.md) — effects that fight the model
-
-## What an effect is
-
-```ts
-function effect(fn: () => void | (() => void)): () => void
-```
+## Use it
 
 ```ts
 import { Signal, effect } from "@citrusworx/sigjs";
@@ -22,279 +18,116 @@ import { Signal, effect } from "@citrusworx/sigjs";
 const count = Signal(0);
 
 const dispose = effect(() => {
-  console.log(count.get());
+  console.log("count", count.get());
   return () => {
     console.log("cleanup");
   };
 });
 
-count.set(1); // cleanup, then the callback again
-dispose();    // cleanup once more; further sets are ignored
+count.set(1);
+dispose();
 ```
 
-The contract:
+The signature is `effect(fn: () => void | (() => void)): () => void`.
 
-1. `fn` runs **immediately**.
-2. Every `get()` during that run becomes a dependency.
-3. When a dependency notifies, cleanup (if any) runs, then `fn` runs again.
-4. The return value of `effect` is a disposer. Calling it unsubscribes and runs the last cleanup.
+## Rules
 
-Tests in `signal.test.ts` pin this down: an effect that reads `count` runs once at registration and once per `set`.
+| Step | What happens |
+|---|---|
+| Create | `fn` runs immediately |
+| Track | Every `Signal` or `memo` `get()` in that run becomes a dependency |
+| Notify | Cleanup from the previous run runs, then `fn` runs again and dependencies are collected from scratch |
+| Dispose | The returned function unsubscribes the effect and runs the last cleanup. A second call does nothing |
+| Scope | If a component or `bindList` row is collecting cleanups, this disposer is registered there too |
 
-## Tracking
-
-While `fn` runs, a module-level `currentSubscriber` points at this effect. `Signal.get` / `memo.get` see that pointer and add the effect to their subscriber set.
-
-```ts
-const prevSubscriber = currentSubscriber;
-currentSubscriber = subscriber;
-try {
-  maybeCleanup = fn();
-} finally {
-  currentSubscriber = prevSubscriber;
-}
-```
-
-Nested effects work because each `run` saves and restores the pointer. The inner effect becomes its own subscriber; it does not steal the outer one’s dependency list.
-
-Reads that happen **asynchronously** are not tracked:
-
-```ts
-effect(() => {
-  setTimeout(() => {
-    console.log(count.get()); // no currentSubscriber — this is a bare read
-  }, 0);
-});
-```
-
-That callback will not re-subscribe. If you need the later read to be reactive, read the signal **before** you yield, or put a second effect on the value you actually care about.
-
-The same pitfall shows up with `fetch`:
-
-```ts
-effect(() => {
-  const id = userId.get(); // tracked
-  fetch(`/api/users/${id}`).then((res) => res.json()).then((data) => {
-    user.set(data); // fine — that is a write
-    // extra.get() here would not subscribe this effect
-  });
-});
-```
+`untrack(fn)` reads signals without adding those reads as dependencies. The signature is `untrack<T>(fn: () => T): T`.
 
 ## Dependencies are rebuilt every run
 
-At the start of each `run()`, the effect **drops its old subscriptions** and tracks from scratch.
+Only signals read on the latest run stay subscribed. A branch that does not run is not a dependency for that run.
 
 ```ts
 effect(() => {
   if (open.get()) {
-    console.log(detail.get());
+    console.log(panel.get());
   }
 });
 ```
 
-When `open` is `false`, `detail` is not a dependency. Flipping `detail` will not re-run the effect. Flipping `open` to `true` will, and the next run *will* subscribe to `detail`.
-
-This is correct and useful. It is also why an effect that “sometimes” reads a signal can look dead. If you need to always react, read the signal unconditionally, even if you ignore the value.
+While `open` is false, changes to `panel` do not re-run this effect. The next time `open` is true, `panel.get()` subscribes again.
 
 ## Cleanup
 
-If `fn` returns a function, that function is the cleanup.
-
-Cleanup runs:
-
-- before the next execution (the previous run’s leftover work)
-- when you call the disposer
-- when a cleanup scope disposes the effect (router / `mount` / `disposeTree`)
+Return a function to release a timer, an abort controller, or a listener you added yourself.
 
 ```ts
 effect(() => {
-  const id = window.setInterval(() => {
-    ticks.set(ticks.get() + 1);
-  }, 1000);
-  return () => window.clearInterval(id);
+  const url = path.get();
+  const controller = new AbortController();
+
+  fetch(url, { signal: controller.signal })
+    .then((res) => res.text())
+    .then((text) => {
+      body.textContent = text;
+    })
+    .catch((err: unknown) => {
+      if (controller.signal.aborted) return;
+      body.textContent = String(err);
+    });
+
+  return () => controller.abort();
 });
 ```
 
-Return `clearInterval`, `AbortController.abort`, unsubscribe functions. Do not assume the JS engine will do it for you.
+Cleanup runs after the signal already holds the new value, and before the next body. A cleanup that calls `get()` sees the new value, not the previous one. That read does not subscribe: cleanup runs outside the tracking window.
 
-If you construct `<About />` once and pass that **node** to the router, the effects created during that first call are disposed on the first leave and never rebuilt. Register `About`, the function. See [Router](./sig-router.md).
+The disposer from `effect` also runs that cleanup. `mount` and `SigRouter` do this for you when they tear a component tree down. See [Lifecycle](./sig-lifecycle.md).
 
 ## Cleanup scopes and component functions
 
-When the JSX runtime calls a function component, it wraps the call in `captureCleanupScope`:
+A component call and a `bindList` row run inside an internal scope. `effect` registers its disposer on that scope. The JSX runtime attaches the scope's dispose function to the returned node. `disposeTree` runs it.
 
-```ts
-const { value, dispose } = captureCleanupScope(() => type(props));
-if (value instanceof Node) {
-  attachCleanup(value, dispose);
-}
-```
+If the component throws, cleanups registered so far run before the error propagates. The helper is `captureCleanupScope`. It is not a package export.
 
-Every `effect` registered while `type(props)` runs has its disposer added to that scope. `disposeTree` (used by `mount` and `SigRouter`) walks the node and runs those disposers.
+`bind` from `@citrusworx/sigjs/juice` uses the same path. A bind during render disposes on unmount.
 
-Practical rule: **create effects inside the component function** that returns the tree. Then leaving a route, or `mount`ing over the same target, will stop timers and abort fetches.
+Create the effect inside the component that owns the nodes. An effect created once at module scope is not tied to a view, so the router cannot stop it.
 
-Function-child and function-valued-prop effects also attach their disposer to the host node, so `disposeTree` can stop them even without a component wrapper. Effects you call yourself still need a function-component root (or an explicit disposer) to be found. Prefer a function component as the mount root.
-
-`captureCleanupScope` is not exported. The JSX runtime uses it for component functions. `bindList` uses it for each row, and attaches that disposer to the row node. `@citrusworx/sigjs/juice` `bind` registers through `effect`, so a bind during render disposes on unmount.
-
-`bindList` also returns a list disposer and attaches it to the parent element. Removing a key disposes that row. Disposing the list, or `disposeTree` on the parent, disposes every remaining row. Effects created in `render` — including effects inside a row component — stop on that path. Read the current item from the per-row getter inside the effect so the effect re-runs when the item changes and the node stays.
-
-## Writing to the DOM
-
-Effects do not patch JSX. You hold a node and write:
+## Writing the DOM
 
 ```tsx
 const button = <button type="button">Off</button> as HTMLButtonElement;
 
 effect(() => {
-  const value = on.get();
-  button.textContent = value ? "On" : "Off";
-  button.disabled = !ready.get();
-  button.className = value ? "on" : "off";
-  button.setAttribute("aria-pressed", String(value));
+  const on = pressed.get();
+  button.textContent = on ? "On" : "Off";
+  button.setAttribute("aria-pressed", String(on));
 });
 ```
 
-That is how multi-property live attributes work. A single binding can be a function-valued prop: `className={() => …}`. See [JSX](./sig-jsx.md).
-
-Keep effects **small**. One list container, one button, one fetch. A single effect that rewrites the entire page on every keystroke is how you accidentally rebuild a virtual-DOM tree by hand.
-
-## `ref` as a place to subscribe
-
-If you would rather not assign the element to a variable first:
-
-```tsx
-<span
-  ref={(el) => {
-    effect(() => {
-      el.textContent = ready.get() ? "Ready" : "Starting…";
-    });
-  }}
-/>
-```
-
-`ref` is called once after create. The effect inside it is still a normal effect: it runs immediately, tracks `ready`, and is registered on the current cleanup scope if you are inside a component.
+A single attribute can be a function prop instead: `className={() => ...}`. That prop is an effect the JSX runtime installs. See [Templating](./sig-jsx.md).
 
 ## Batch
 
-```ts
-function batch(fn: () => void): void
-```
-
-While `fn` runs, `scheduleSubscriber` queues subscribers instead of calling `notify`. After the outermost `fn` returns, each queued subscriber is notified once.
-
-```ts
-import { Signal, batch, effect } from "@citrusworx/sigjs";
-
-const a = Signal(0);
-const b = Signal(0);
-let runs = 0;
-
-effect(() => {
-  a.get();
-  b.get();
-  runs += 1;
-});
-
-batch(() => {
-  a.set(1);
-  b.set(2);
-});
-// runs === 2  (initial + one batched notify)
-```
-
-Without `batch`, that would be three runs (initial + `a` + `b`).
-
-### Nested batch is safe
-
-`batch` keeps a depth counter. Inner calls increment it; the queue flushes only when depth returns to zero. If `fn` throws, `finally` still decrements and the outer flush still runs, so `batch` cannot stick “on” and successful `set`s from that batch still notify.
-
-```ts
-batch(() => {
-  a.set(1);
-  batch(() => b.set(2));
-  c.set(3);
-});
-// dependents of a, b, and c run once after the outer batch
-```
-
-One outer `batch` around related writes is still the clearer style. You do not have to un-nest library code that also calls `batch`.
+`batch` groups `set` calls so this effect flushes once. The contract, including throws and nesting, is [Batching](./sig-batch.md).
 
 ## Memo
 
-```ts
-function memo<T>(fn: () => T): { get(): T }
-```
+`memo` is the cached derivation. Effects may read it. The contract is [Derived values](./sig-memo.md).
 
-A lazy cached computation. The first `get()` runs `fn` and tracks signal (and memo) dependencies. Later `get()`s return the cache until a dependency notifies.
+## Effects to avoid
 
-```ts
-const items = Signal([1, 2, 3]);
-const sum = memo(() => items.get().reduce((a, b) => a + b, 0));
-
-sum.get(); // 6, computes
-sum.get(); // 6, cached
-items.set([10, 20]);
-sum.get(); // 30, computes again
-```
-
-When a dependency notifies, the memo:
-
-1. marks itself dirty
-2. notifies **its** subscribers (effects and other memos that called `sum.get()`)
-
-It does not recompute until the next `get()`. If nobody reads it, the function does not run.
-
-Memos have no `set`. The internal invalidator has a `dispose`, but it is not on the public object — you cannot unsubscribe a memo from the outside. Keep memos as cheap derivations, not as long-lived resource owners. Resources belong in `effect` so they can clean up.
-
-Memos may read other memos. Cycles are not detected; do not build them.
-
-## Choosing the primitive
-
-| Job | Primitive |
+| Pattern | Why |
 |---|---|
-| Store a value | `Signal` |
-| Live text in JSX | function child (an effect the runtime creates) |
-| Live attributes, lists, `hidden` | `effect` you write |
-| Timers, fetch, subscriptions | `effect` with a cleanup return |
-| Several writes, one notify | `batch` |
-| Derived number / string / list you read often | `memo` |
-| Tear down with the view | create the effect inside the component function |
+| `effect(() => { copy.set(source.get()); })` | A second source of truth. Use `memo` |
+| `effect(() => { node.replaceChildren(<App />) })` on every signal | Rebuilds the page. Write the node that changed |
+| `effect(() => { count.set(count.get() + 1); })` | Re-enters immediately. There is no recursion cap |
+| Reading a signal only to log it, then wondering why a child updated | The read is the subscription |
 
-## Effects that should not exist
+## Related
 
-```ts
-// Re-renders the world
-effect(() => {
-  document.getElementById("root")!.innerHTML = renderApp(state.get());
-});
-
-// Syncs two signals that should have been a memo
-effect(() => {
-  fullName.set(`${first.get()} ${last.get()}`);
-});
-
-```
-
-The first is a homemade VDOM. The second is a duplicated source of truth. [Anti-patterns](./sig-anti-patterns.md) collects more of these.
-
-## A compact picture
-
-```
-effect(fn)
-  run()
-    drop old deps
-    run previous cleanup
-    currentSubscriber = this
-    fn()          ← Signal.get / memo.get subscribe
-    store cleanup if fn returned one
-
-Signal.set
-  scheduleSubscriber
-    if batching → queue
-    else        → notify → run()
-```
-
-Once you know this loop, the [JSX runtime](./sig-jsx.md) is a thin layer that either appends a static node or installs one of these effects on a text node.
+| | |
+|---|---|
+| [Lifecycle](./sig-lifecycle.md) | Where disposers are stored |
+| [API: effect](./sig-api.md#effect) | Signature and edge cases |
+| [Troubleshooting](./sig-troubleshooting.md) | An effect that never re-runs |

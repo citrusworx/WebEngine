@@ -199,7 +199,9 @@ When the structure itself should come and go (a list of cards, a tab body), skip
 
 ## Step 4: Build a work queue
 
-This step uses the simple list: keep a `Signal` of data, keep an empty container, and rewrite its children when the signal changes. `replaceChildren` drops the previous nodes. That is the right default for a small queue. When a row should keep focus and effects, the keyed helper is `bindList` ([pattern](./sig-patterns.md#keyed-todo-list-bindlist)). This tutorial stays on `replaceChildren` so the child model stays obvious.
+This step uses the simple list. Keep a `Signal` of data, keep an empty container, and rewrite its children when the signal changes. `replaceChildren` drops the previous nodes.
+
+That is the right default for a small queue. When a row should keep focus and effects, the keyed helper is `bindList` ([pattern](./sig-patterns.md#keyed-todo-list-bindlist)). This tutorial stays on `replaceChildren` so the child model stays obvious.
 
 ```tsx
 import { Signal, effect, batch, mount } from "@citrusworx/sigjs";
