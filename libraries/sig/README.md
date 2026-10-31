@@ -1,8 +1,8 @@
-# @citrusworx/sigjs
+# Sig.js
 
-Signals, a JSX-to-DOM runtime, and a small client router. Use it in any TypeScript or JavaScript project — Vite, `tsc`, or a bundler of your choice. There are no runtime dependencies and no WebEngine / Nectarine / Seltzer / Juice requirement.
+Sig.js is a small client library for fine-grained DOM updates. A signal holds a value. An effect or a function in JSX reads it and writes only the node that should change. There is no virtual DOM and no component re-render.
 
-Reactivity is opt-in. Host elements render once; wrap a child or a prop in a function that reads a signal, and only that node updates.
+It exists so a mostly static page can move a few values without adopting a UI framework. JSX creates real DOM nodes once. Reactivity is opt-in.
 
 ## Install
 
@@ -10,69 +10,20 @@ Reactivity is opt-in. Host elements render once; wrap a child or a prop in a fun
 npm install @citrusworx/sigjs
 ```
 
-Yarn / pnpm work the same: `yarn add @citrusworx/sigjs` or `pnpm add @citrusworx/sigjs`. The workspace copy in this repo is **1.1.0** (`package.json`), not published yet. npm `latest` is **1.0.0** (published 2026-10-29), so this command installs **1.0.0**. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install **1.0.0**.
+This installs npm **1.0.0** (published 2026-10-29). The workspace copy is **1.1.0**, not published yet. `yarn add` and `pnpm add` work the same way. `^1.0.0` stays on the 1.x line. `^0.7.0` does not install 1.0.0.
 
-From **1.0.0**, a breaking change to a documented export is a major. `0.7.0` removed root exports under the old 0.x rule, where that break was a minor. The written policy is [Sig.js release checklist](../../docs/sigjs/release-checklist.md#semver).
+## Quick start
 
-## Signals
-
-```ts
-import { Signal, effect, batch, memo } from "@citrusworx/sigjs";
-
-const count = Signal(0);
-
-effect(() => {
-  console.log("count is", count.get());
-});
-
-count.set(1);
-
-batch(() => {
-  count.set(2);
-  count.set(3);
-});
-
-const doubled = memo(() => count.get() * 2);
-doubled.get(); // 6
-```
-
-- **`Signal(value)`** — `{ get, set }`. `get()` inside an effect (or memo) subscribes.
-- **`effect(fn)`** — runs immediately, re-runs when read signals change. Return a function to clean up before the next run and on dispose. `effect` itself returns a disposer.
-- **`batch(fn)`** — groups `set` calls so subscribers flush once. Nested batches flush when the outermost call finishes; a throw still resets batching and flushes successful sets.
-- **`memo(fn)`** — lazy cached derived value. Recomputes when its signal dependencies change.
-- **`untrack(fn)`** — read signals inside `fn` without subscribing the current effect or memo.
-
-## JSX
-
-Point TypeScript (and your bundler) at this package as the JSX source:
+Point the JSX transform at this package, then mount a function that returns DOM.
 
 ```json
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@citrusworx/sigjs",
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler"
+    "jsxImportSource": "@citrusworx/sigjs"
   }
 }
 ```
-
-Vite can do the same without a full `tsc` emit:
-
-```ts
-// vite.config.ts
-import { defineConfig } from "vite";
-
-export default defineConfig({
-  esbuild: {
-    jsx: "automatic",
-    jsxImportSource: "@citrusworx/sigjs",
-  },
-});
-```
-
-Components are functions that return real DOM nodes:
 
 ```tsx
 import { Signal, mount } from "@citrusworx/sigjs";
@@ -83,10 +34,7 @@ function Counter() {
   return (
     <div>
       <p>Count: {() => count.get()}</p>
-      <button
-        className={() => (count.get() > 0 ? "hot" : "cold")}
-        onClick={() => count.set(count.get() + 1)}
-      >
+      <button type="button" onClick={() => count.set(count.get() + 1)}>
         Increment
       </button>
     </div>
@@ -96,93 +44,64 @@ function Counter() {
 mount(<Counter />, document.getElementById("root")!);
 ```
 
-- Function **children** become a text node that re-runs when signals change.
-- Function **host props** (anything except `ref` and `on*`) re-apply when signals change — `className`, `value`, `checked`, `hidden`, `disabled`, attributes, and so on.
-- `onClick` / `onInput` / other `on*` functions are event listeners, not reactive getters.
-- `ref={(el) => { ... }}` runs once with the element. Pair it with `effect` if you need an imperative subscription.
-- `{count.get()}` (no function) is a one-shot read at create time. Wrap it: `{() => count.get()}`.
+`Signal` is a factory. Call `Signal(0)`, not `new Signal(0)`. `{() => count.get()}` is live text. `{count.get()}` is a one-time snapshot.
 
-`mount(node, target)` replaces `target`'s children (and disposes the previous tree).
+A runnable copy of this counter, plus a small router, is in [`examples/counter`](./examples/counter).
 
-A runnable copy of this counter lives in [`examples/counter`](./examples/counter).
+## Read next
 
-## Lists
+| | |
+|---|---|
+| [Documentation](../../docs/sigjs/README.md) | Hub for concepts, API, guides, and migration |
+| [Getting started](../../docs/sigjs/sig-getting-started.md) | Install, first page, Juice, and WebEngine |
+| [API reference](../../docs/sigjs/sig-api.md) | Every public export |
+| [What's new in 1.0](../../docs/sigjs/sig-whats-new.md) | What 1.0.0 freezes, and what it does not add |
+| [Migrating from 0.x](../../docs/sigjs/sig-migrating.md) | Breaks since 0.2, including 0.7.0 and the stale 0.7.1 tarball |
 
-`replaceChildren` in an effect rebuilds children. That is the non-keyed list.
+## How a value reaches the DOM
 
-`bindList` keeps a DOM node for each key. An array needs a key function. A `Map` uses iteration order and the map key. `render` is called once per key and receives `{ get() }` for the current item — read it from an effect or a function child. Removing a key, disposing the list, or `disposeTree` on the parent disposes that row's effects. Duplicate array keys throw.
+| You want | Write |
+|---|---|
+| A value | `const count = Signal(0)` |
+| Live text | `{() => count.get()}` |
+| One live attribute | `className={() => (count.get() > 0 ? "hot" : "cold")}` |
+| Several writes, a list, or a fetch | Hold the element and update it in `effect` |
+| One notification for several writes | `batch(() => { ... })` |
+| A cached derivation | `memo(() => ...)` |
+| Keyed rows | `bindList` (experimental) |
+| Another view | `new SigRouter("#root")` |
+
+`onClick` and other `on*` props are event listeners. `ref` runs once. Function children are text: returning an element from `{() => ...}` stringifies it.
+
+## Packages around it
+
+Sig does not import WebEngine, Nectarine, Seltzer, or Juice from the main entry. WebEngine does not mount Sig for you. Use Sig in the browser the same way you would in any Vite or `tsc` app.
+
+Juice styles the elements Sig creates. Attributes such as `stack` and `card` are ordinary HTML attributes. The optional adapter is a separate import:
 
 ```ts
-import { Signal, bindList, effect } from "@citrusworx/sigjs";
-
-const todos = Signal(new Map<string, { text: string }>());
-const list = document.createElement("ul");
-
-const dispose = bindList(list, todos, (item, id) => {
-  const li = document.createElement("li");
-  li.dataset.id = id;
-  effect(() => {
-    li.textContent = item.get().text;
-  });
-  return li;
-});
+import { bind } from "@citrusworx/sigjs/juice";
 ```
 
-A `Map<id, Todo>` plus an `order: id[]`, joined with `memo`, is the shape to use when display order is not insertion order. The walkthrough is [Keyed todo list](../../docs/sigjs/sig-patterns.md#keyed-todo-list-bindlist).
+`bind` in this workspace follows 31 Juice runtime names, through keyboard-avoider. npm **1.0.0** follows 28, through table. Icon button, avatar, and table need `@citrusworx/juiceui` **0.9.3** or newer. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**. **0.9.2** loads the adapter and throws if you bind any of those six. `sheet` is not a name until juiceui publishes it.
 
-## Router
+**0.9.1** cannot load the adapter at all. The table is in [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 
-```tsx
-import { SigRouter } from "@citrusworx/sigjs/sig-router";
-// or: import { SigRouter } from "@citrusworx/sigjs";
+## Entry points
 
-function Home() {
-  return <p>Home</p>;
-}
+You only import these by hand when you are not using the JSX transform.
 
-function User(params: { id: string }) {
-  return <p>User {params.id}</p>;
-}
+| Import | Exports |
+|---|---|
+| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList`, `mount`, `disposeTree`, `jsx`, `jsxs`, `Fragment`, `JSX`, `SigRouter`, and the route and child types |
+| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime, plus `mount` and `disposeTree` |
+| `@citrusworx/sigjs/jsx-dev-runtime` | `jsxDEV`. Not re-exported from the package root |
+| `@citrusworx/sigjs/sig-router` | `SigRouter` and the route types, without JSX |
+| `@citrusworx/sigjs/juice` | Optional `bind`. The main entry does not import it |
 
-function NotFound() {
-  return <p>Not found</p>;
-}
+`jsxDEV` and `captureCleanupScope` are not on the package root. `captureCleanupScope` is not a public entry. The freeze inventory is [API surface](../../docs/sigjs/api-surface.md).
 
-const router = new SigRouter("#root");
-
-router.set({
-  "/": Home,
-  "/user/:id": (params) => User(params),
-  about: () => <p>About</p>,
-  "*": NotFound,
-});
-
-router.start();
-```
-
-Matching order:
-
-1. **Exact** path (`/about`, `/user/new`)
-2. **`:param`** segments (`/user/:id` → `{ id: "42" }` on the factory)
-3. **`*`** fallback, if registered
-
-Exact routes win over a colliding param pattern. Register view **functions** (not pre-rendered `<Home />`) so each visit gets a fresh tree; the router disposes the previous view on navigate.
-
-Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `download`, `mailto`, `tel`, and `ftp` links are left alone. `router.navigate("/about")`, `router.goBack()`, and `router.stop()` cover programmatic control. Keys without a leading `/` in an object map become named routes (`router.get("about")` → `"/about"`).
-
-## Subpath exports
-
-| Import | What it is |
-|--------|------------|
-| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList` (experimental), `mount`, `disposeTree`, `jsx` / `jsxs` / `Fragment`, the `JSX` namespace, `SigRouter`, types. `jsxDEV` is not on this entry. |
-| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `Child`, the `JSX` namespace) |
-| `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`, `jsxs`, `Fragment`, the `JSX` namespace) |
-| `@citrusworx/sigjs/sig-router` | `SigRouter`, plus route types `RouteFactory`, `RouteMap`, `RouteParams`, `RouteView` |
-| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }` for thirty-one `JuiceRuntimeName` values, through `keyboard-avoider` (pressable, touchable-row, and keyboard-avoider, plus icon-button, avatar, and table). Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Twenty-eight of the thirty-one dispatch `juice:change`. Pressable's opt-in `juice:longpress` is a separate event; `bind` follows `juice:change`. Keyboard-avoider dispatches `juice:change` with `{ open, inset }`. `sheet` is not a name; binding it waits until `@citrusworx/juiceui` publishes it. Binding one of the six newer names throws `needs a newer @citrusworx/juiceui` when that start function is missing. Icon-button, avatar, and table shipped in juiceui 0.9.3. Optional peer `>=0.9.1 <1`. Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). The subpath shipped in 0.4.0. The names through table are in npm 0.7.2 and in **1.0.0**. The thirty-one names are in workspace **1.1.0**, not published yet. |
-
-`jsxImportSource` uses the `jsx-runtime` / `jsx-dev-runtime` subpaths automatically. You do not import those by hand unless you are calling `jsx()` yourself.
-
-The v1 freeze inventory (stable, experimental, internal) is [API surface](../../docs/sigjs/api-surface.md).
+From 1.0.0, a breaking change to a documented stable export is a major. The policy is [Semver](../../docs/sigjs/release-checklist.md#semver).
 
 ## TypeScript without a bundler
 
@@ -198,17 +117,9 @@ The v1 freeze inventory (stable, experimental, internal) is [API surface](../../
 }
 ```
 
-```html
-<script type="module" src="./dist/main.js"></script>
-```
+`tsc` emits imports of `@citrusworx/sigjs`. Serve those files with a tool that understands package `exports`. A plain static file server will not resolve the subpaths.
 
-`tsc` emits `.js` that import from `@citrusworx/sigjs`. Serve `node_modules` with a tool that understands package `exports` (Vite, esbuild, or a similar bundler). Plain static file serving will not resolve npm subpaths.
-
-## Also used by
-
-CitrusWorx apps (Juice UI, KiwiPress, and others in this monorepo) consume `@citrusworx/sigjs` as a normal npm dependency. Those stacks are optional. The main entry does not import them. `@citrusworx/sigjs/juice` is the optional Juice adapter and the only module here that imports Juice. Juice’s own `juice:change` / `getState()` contract does not require it. `bind` during a Sig component render disposes on unmount. See [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
-
-## Development (this repo)
+## Development in this repo
 
 ```bash
 yarn workspace @citrusworx/sigjs build

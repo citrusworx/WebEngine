@@ -59,9 +59,17 @@ The split — Juice for structure, Sig for behavior — is the product story. Th
 
 ### 6. The Juice runtime hookup is done
 
-`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. `state` follows Juice’s `juice:change` / `getState()` contract for the thirty-one `JuiceRuntimeName` values `bind` accepts, through keyboard-avoider, including pressable, touchable-row, keyboard-avoider, icon-button, avatar, and table. Twenty-eight dispatch `juice:change`. Select, input, and textarea use native `input` and `change`. Pressable’s opt-in `juice:longpress` is a separate event; `bind` follows `juice:change`. Keyboard-avoider dispatches `juice:change` with `{ open, inset }`. `sheet` is not a name. Binding it waits until `@citrusworx/juiceui` publishes `sheet`. `state.set` writes back for switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. The other read-only names stay read-only. On a Juice build that does not export one of the six newer start functions, binding that runtime throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. The module still loads, and the other runtimes still bind. `dispose` drops the listeners, and a `bind` during Sig render also disposes on unmount.
+`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. Published **1.0.0** names 28 `JuiceRuntimeName` values, including icon button, avatar, and table. Workspace **1.1.0** (not published) names 31, through keyboard-avoider. `sheet` is not a name. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
 
-Juice works without that module. The DOM contract stays in Juice, and the main Sig entry does not import Juice. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). The state table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in `@citrusworx/sigjs@0.4.0`.
+`state.set` writes back for switch, checkbox, disclosure, modal, and icon button (`pressed`, `[toggle]` hosts only). A refused icon-button write leaves the signal on the host. Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Pressable’s opt-in `juice:longpress` is a separate event; `bind` follows `juice:change`. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`.
+
+`dispose` drops the listeners. A `bind` during Sig render also disposes on unmount.
+
+Juice 0.9.1 does not load this module. Juice 0.9.2 loads it and throws if you bind any of the six newer names. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5, which is the first published Juice that can bind all 31.
+
+The peer range still says `>=0.9.1 <1`. The checked table is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). Juice’s own event table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in 0.4.0.
+
+Juice works without that module. The main Sig entry does not import Juice.
 
 That hookup is the adapter. It is not a new state primitive, and it is not a per-runtime Sig factory.
 
@@ -79,11 +87,15 @@ Function children as **text only** is correct and documented, and it is still th
 
 `batch` is a depth counter with `try` / `finally`. Nested calls and throws are tested.
 
-`count.set(1); count.set(1)` notifies twice. That is the v1 contract: `Signal.set` always notifies, even when the value is unchanged. There is no equality check. Callers that want to skip a write compare first. A deep equality helper is not part of v1.
+`count.set(1); count.set(1)` notifies twice. That is the v1 contract: `Signal.set` always notifies, even when the value is unchanged. There is no equality check.
+
+Callers that want to skip a write compare first. A deep equality helper is not part of v1.
 
 ### 3. The router matches params; splat routes are still absent
 
-`set` / `has` / `navigate` share `normalizePath`. `navigate("about")` hits `/about`. `/user/:id` passes `{ id }` to the view function. Exact routes win over param patterns. Register `"*"` for unknown paths. Without it, `navigate` to a missing path is a silent no-op and `popstate` empties the target.
+`set`, `has`, and `navigate` share `normalizePath`. `navigate("about")` hits `/about`. `/user/:id` passes `{ id }` to the view function. Exact routes win over param patterns.
+
+Register `"*"` for unknown paths. Without it, `navigate` to a missing path is a silent no-op and `popstate` empties the target.
 
 That is teachable. Splat routes and a helper that fills named param URLs are still not shipped.
 
@@ -146,7 +158,11 @@ Exact paths, `:param` matching, `navigate` normalization, and an optional `"*"` 
 
 ### Priority 4. Lists — decided
 
-Keyed rows use `bindList(parent, source, key, render)` for an array, or `bindList(parent, source, render)` for a `Map`. The map's iteration order is display order, and the map key is the row key. `render` runs once per key and receives a per-row getter. Read `item.get()` in an effect or a function child; the node stays. Removed keys dispose their effects. The returned disposer, and `disposeTree` on the parent, dispose the list.
+Keyed rows use `bindList(parent, source, key, render)` for an array, or `bindList(parent, source, render)` for a `Map`. The map's iteration order is display order, and the map key is the row key.
+
+`render` runs once per key and receives a per-row getter. Read `item.get()` in an effect or a function child. The node stays.
+
+Removed keys dispose their effects. The returned disposer, and `disposeTree` on the parent, dispose the list.
 
 `replaceChildren` stays the simple non-keyed alternative. It rebuilds the children.
 
@@ -197,7 +213,11 @@ Those would blur the split that justifies both libraries.
 
 ## API surface for v1
 
-The classified inventory is [API surface](./api-surface.md). Stable exports are the v1 contract. `bindList` and `ListItem` stay experimental. `captureCleanupScope` is not exported. `jsxDEV` is only on `./jsx-dev-runtime`. `Signal.set` always notifies, and that is frozen. Public `any` is gone from the JSX factory and `JSX.IntrinsicElements`. The `JSX` namespace is exported from both runtime entries.
+The classified inventory is [API surface](./api-surface.md). Stable exports are the v1 contract. `bindList` and `ListItem` stay experimental.
+
+`captureCleanupScope` is not exported. `jsxDEV` is only on `./jsx-dev-runtime`. `Signal.set` always notifies, and that is frozen.
+
+Public `any` is gone from the JSX factory and `JSX.IntrinsicElements`. The `JSX` namespace is exported from both runtime entries.
 
 ## Summary
 

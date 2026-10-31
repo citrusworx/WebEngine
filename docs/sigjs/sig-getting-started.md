@@ -1,24 +1,8 @@
-# Getting Started With Sig.js
+# Getting started
 
-This is the best starting point if you want to use Sig.js the way the library works today.
+Install Sig, point JSX at it, and mount one component. After that, the [operator desk tutorial](./sig-page-tutorial.md) builds a full page.
 
-After this page, the [operator desk tutorial](./sig-page-tutorial.md) is the guided build — counter, disclosure, list, form, and a route — analogous to [Juice’s page tutorial](../juice/juice-page-tutorial.md).
-
-## What Sig.js is
-
-Sig.js is a small signals runtime plus a JSX factory that creates real DOM nodes.
-
-It gives you:
-
-- `Signal(value)` — a box with `get` / `set`
-- `effect(fn)` — run now, re-run when signals you read change, optional cleanup
-- `batch(fn)` — one notification after several `set`s
-- `memo(fn)` — cached derivation
-- JSX that compiles to `jsx()` / `jsxs()` / `Fragment` from `@citrusworx/sigjs`
-- `mount(node, target)` — replace a container's children
-- `SigRouter` — exact-path client routing
-
-It is not React. There is no `useState`, `useEffect`, or virtual DOM. Components are functions that return a `Node`.
+Sig is signals plus a JSX factory that creates real DOM nodes. It is not React. There is no `useState`, no `useEffect`, and no virtual DOM.
 
 ## Install
 
@@ -26,34 +10,38 @@ It is not React. There is no `useState`, `useEffect`, or virtual DOM. Components
 npm install @citrusworx/sigjs
 ```
 
-Workspace `libraries/sig/package.json` is **1.0.0**. npm `latest` is **1.0.0** (published 2026-10-29), so this command installs **1.0.0**. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install **1.0.0**. Yarn / pnpm: `yarn add @citrusworx/sigjs` / `pnpm add @citrusworx/sigjs`.
+npm `latest` is **1.0.0** (published 2026-10-29). `yarn add @citrusworx/sigjs` and `pnpm add @citrusworx/sigjs` install the same version. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install 1.0.0.
 
-## Configure TypeScript for JSX
+## JSX
 
 ```json
 {
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "@citrusworx/sigjs",
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler"
   }
 }
 ```
 
-That points the JSX transform at `@citrusworx/sigjs/jsx-runtime` (and the dev runtime). You do not import `jsx` yourself.
+The transform imports `@citrusworx/sigjs/jsx-runtime`. You do not import `jsx` yourself. Vite can set the same source without a full `tsc` emit:
 
-## The mental model
+```ts
+import { defineConfig } from "vite";
 
-1. Render **once**. JSX builds real elements.
-2. Put changing values in a `Signal`.
-3. Subscribe with either:
-   - a **function child** for live text: `{() => String(count.get())}`
-   - an **effect** that writes to an element you already created
-4. Do not expect `{() => <div />}` to mount an element. Function children are text. Function-valued **props** (`className={() => …}`) are live.
+export default defineConfig({
+  esbuild: {
+    jsx: "automatic",
+    jsxImportSource: "@citrusworx/sigjs",
+  },
+});
+```
 
-## First reactive page
+More compiler settings are in [TypeScript](./sig-typescript.md).
+
+## First page
 
 ```tsx
 import { Signal, mount } from "@citrusworx/sigjs";
@@ -64,8 +52,9 @@ function Counter() {
   return (
     <div>
       <h1>Counter: {() => String(count.get())}</h1>
-      <button onClick={() => count.set(count.get() + 1)}>Increment</button>
-      <button onClick={() => count.set(count.get() - 1)}>Decrement</button>
+      <button type="button" onClick={() => count.set(count.get() + 1)}>
+        Increment
+      </button>
     </div>
   );
 }
@@ -73,25 +62,30 @@ function Counter() {
 mount(<Counter />, document.getElementById("root")!);
 ```
 
-`onClick` works. The runtime lowercases `on*` keys and calls `addEventListener`. `onclick` works too.
-
-`Signal` is a factory:
-
-```ts
-const count = Signal(0);      // correct
-// const count = new Signal(0); // wrong — Signal is not a constructor
+```html
+<div id="root"></div>
+<script type="module" src="./main.js"></script>
 ```
+
+`Signal` is a factory. `new Signal(0)` is not the API. The button and the `div` are created once. Only the text node updates.
+
+| Piece | Role |
+|---|---|
+| `Signal(0)` | Holds the number |
+| `{() => String(count.get())}` | Live text. Re-runs when `count` changes |
+| `{count.get()}` | Snapshot. Does not update later |
+| `onClick` | Browser listener, not a reactive getter |
+| `mount` | Disposes the target's current children, then inserts the tree |
 
 ## When text is not enough
 
-Function children only update a text node (`String(child())`). For attributes, lists, or swapping structure, keep the element and write from an effect. The [JSX guide](./sig-jsx.md) is the full child model; the [tutorial](./sig-page-tutorial.md) uses both `hidden` and `replaceChildren`.
+A function child can only replace text. For several properties, hold the element and write it from an effect.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";
 
 function Status() {
   const ready = Signal(false);
-
   const badge = <span>Starting…</span> as HTMLSpanElement;
 
   effect(() => {
@@ -103,7 +97,9 @@ function Status() {
   return (
     <div>
       {badge}
-      <button onClick={() => ready.set(true)}>Mark ready</button>
+      <button type="button" onClick={() => ready.set(true)}>
+        Mark ready
+      </button>
     </div>
   );
 }
@@ -111,123 +107,49 @@ function Status() {
 mount(<Status />, document.getElementById("root")!);
 ```
 
-`ref` is also available if you prefer not to assign the element to a variable first:
+One attribute can stay in JSX: `hidden={() => !ready.get()}` or `className={() => ...}`. Lists, fetch, and timers belong in an effect. The child rules are in [Templating](./sig-jsx.md).
+
+## A list and a field
+
+`replaceChildren` rebuilds rows. `{() => items.map(...)}` is still text, not a list.
 
 ```tsx
-function Status() {
-  const ready = Signal(false);
+import { Signal, effect, memo, mount } from "@citrusworx/sigjs";
 
-  return (
-    <span
-      ref={(el) => {
-        effect(() => {
-          el.textContent = ready.get() ? "Ready" : "Starting…";
-        });
-      }}
-    />
-  );
-}
-```
-
-## Effects and cleanup
-
-`effect` runs immediately. If it returns a function, that cleanup runs before the next execution and again when you dispose.
-
-```ts
-import { Signal, effect } from "@citrusworx/sigjs";
-
-const seconds = Signal(0);
-
-const dispose = effect(() => {
-  const id = setInterval(() => seconds.set(seconds.get() + 1), 1000);
-  return () => clearInterval(id);
-});
-
-// later
-dispose();
-```
-
-When a `SigRouter` replaces a view, it disposes the previous tree. Effects created while that view's component function ran are cleaned up automatically.
-
-## A form field
-
-Inputs are not two-way bound. Read from the event; write back from an effect if you need a controlled value.
-
-```tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function NameField() {
+function NameAndQueue() {
   const name = Signal("");
-
-  const input = (
-    <input
-      type="text"
-      onInput={(e) => name.set((e.target as HTMLInputElement).value)}
-    />
-  ) as HTMLInputElement;
+  const greeting = memo(() => name.get().trim() || "there");
+  const items = Signal<string[]>(["First"]);
+  const list = <ul></ul> as HTMLUListElement;
 
   effect(() => {
-    if (input.value !== name.get()) {
-      input.value = name.get();
-    }
-  });
-
-  return (
-    <label>
-      Name
-      {input}
-      <p>Hello, {() => name.get() || "stranger"}</p>
-    </label>
-  );
-}
-
-mount(<NameField />, document.getElementById("root")!);
-```
-
-## A list (rewrite the children)
-
-`replaceChildren` inside an effect is the simple, non-keyed list. It rebuilds the row nodes. When a row should keep its node and effects, use `bindList` — see [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist). `{() => todos.map(...)}` is still text.
-
-```tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
-
-function TodoList() {
-  const todos = Signal<string[]>(["Read the getting started"]);
-  const draft = Signal("");
-
-  const list = <ul /> as HTMLUListElement;
-  const input = (
-    <input
-      onInput={(e) => draft.set((e.target as HTMLInputElement).value)}
-      onKeyDown={(e) => {
-        if (e.key !== "Enter") return;
-        const text = draft.get().trim();
-        if (!text) return;
-        todos.set([...todos.get(), text]);
-        draft.set("");
-        input.value = "";
-      }}
-    />
-  ) as HTMLInputElement;
-
-  effect(() => {
-    list.replaceChildren(
-      ...todos.get().map((text) => <li>{text}</li>),
-    );
+    list.replaceChildren(...items.get().map((text) => <li>{text}</li>));
   });
 
   return (
     <div>
-      {input}
+      <input
+        value={() => name.get()}
+        onInput={(event) => {
+          name.set((event.target as HTMLInputElement).value);
+        }}
+      />
+      <p>Hello, {() => greeting.get()}</p>
+      <button
+        type="button"
+        onClick={() => items.set([...items.get(), "Next"])}
+      >
+        Add
+      </button>
       {list}
     </div>
   );
 }
-
-mount(<TodoList />, document.getElementById("root")!);
 ```
 
-## Router (optional)
+When a row should keep its node, use `bindList`. The walkthrough is [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
+
+## Router
 
 ```tsx
 import { SigRouter } from "@citrusworx/sigjs";
@@ -236,25 +158,22 @@ function Home() {
   return <h1>Home</h1>;
 }
 
-function About() {
-  return <h1>About</h1>;
-}
-
 const router = new SigRouter("#root");
 router.set({
   "/": Home,
-  about: About,
+  about: () => <h1>About</h1>,
 });
 router.start();
 ```
 
-You can also import `SigRouter` from `@citrusworx/sigjs/sig-router`. Exact paths win, then `:param` segments, then `"*"`. `/about` and `/about/` are different. `navigate("about")` normalizes to `/about`. Register `"*"` if you want an unknown-path view.
+Register functions, not `<Home />` elements, so each visit builds a fresh tree. Exact paths win, then `:param` segments, then `"*"`. Details are in [Router](./sig-router.md).
 
-## Pair with Juice when you need styling
+## Juice
+
+Juice styles the DOM Sig creates. Sig does not import Juice unless you import `@citrusworx/sigjs/juice`.
 
 ```ts
 import "@citrusworx/juiceui/styles";
-import "./generated/my-theme.css";
 ```
 
 ```html
@@ -263,30 +182,29 @@ import "./generated/my-theme.css";
 </body>
 ```
 
-Juice attributes (`stack`, `row`, `gap`, `card`, `padding`) are ordinary HTML attributes. Sig's `setProp` writes them onto the element. They are not a Sig API.
+```tsx
+<main stack gap="1rem">
+  <section card padding="1.25rem">
+    <p>Count: {() => String(count.get())}</p>
+  </section>
+</main>
+```
 
-## What to use first
+`stack`, `card`, and `padding` are HTML attributes. They are not Sig APIs. To follow a Juice widget's state, use `bind`. Compatibility with Juice 0.9.1 through 0.9.5 is the table in [Runtime binding](./sig-juice-integration.md#runtime-binding).
 
-1. Install `@citrusworx/sigjs` and set `jsxImportSource`
-2. `Signal` + function-child text for the smallest demo
-3. `effect` when you need lists, timers, fetch, or several writes on one node
-4. `batch` / `memo` when updates or derivations get noisy
-5. `SigRouter` when you have more than one view
-6. Juice only for structure and theme — not for state
+## WebEngine
 
-After the first page works, build the [operator desk tutorial](./sig-page-tutorial.md). That is the Juice-style guided path: a real page, not a bag of snippets.
+WebEngine does not mount Sig, start the router, or import this package from the engine class. Its lifecycle methods are stubs. A browser app imports `@citrusworx/sigjs` directly, the same way the counter above does.
+
+The reading order for that stack is [WebEngine getting started](../webengine/webengine-getting-started.md), then this page, then [Juice](../juice/juice-getting-started.md) if the page needs a theme.
 
 ## Where to go next
 
-- [Page Tutorial](./sig-page-tutorial.md) — guided build: counter → disclosure → list → form → route
-- [Signals](./sig-signals.md) — `get` / `set` and when updates fire
-- [Effects](./sig-effects.md) — tracking, cleanup, `batch`, `memo`
-- [JSX and the DOM](./sig-jsx.md) — static first, text-only function children
-- [Patterns](./sig-patterns.md) — cookbook
-- [Best Practices](./sig-best-practices.md) · [Anti-Patterns](./sig-anti-patterns.md)
-- [Examples](./sig-examples.md)
-- [API Reference](./sig-api.md)
-- [Router Guide](./sig-router.md)
-- [Sig.js + Juice](./sig-juice-integration.md)
-- [Troubleshooting](./sig-troubleshooting.md)
-- [Status](./sig-status.md) · [Roadmap](./sig-roadmap.md)
+| Next | When |
+|---|---|
+| [Page tutorial](./sig-page-tutorial.md) | You want one guided page |
+| [Signals](./sig-signals.md) | `get` and `set` still feel unclear |
+| [Effects](./sig-effects.md) | You need cleanup, fetch, or several writes |
+| [Templating](./sig-jsx.md) | A function child printed `[object HTMLElement]` |
+| [Patterns](./sig-patterns.md) | You have a form, list, or request to build |
+| [Troubleshooting](./sig-troubleshooting.md) | A `set` did not change the DOM |

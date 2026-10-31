@@ -24,7 +24,7 @@ That must pass before publishing.
 - confirm `libraries/juice/CHANGELOG.md` describes user-facing changes clearly
 - confirm `dist/index.css`, `dist/index.js`, and `dist/icons/` are present after build
 - confirm artifact budgets still pass in `src/juice.artifacts.test.ts`
-- confirm interactive runtime tests still pass for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider behavior
+- confirm interactive runtime tests still pass for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet behavior
 - confirm any new assets are intentionally part of the published contract
 - confirm README examples and package entrypoints still match the build output
 
@@ -42,11 +42,11 @@ That must pass before publishing.
 - Do not bypass `verify` for “docs-only” changes if the package version is changing.
 - If browser targets or shipped asset directories change, update the README and artifact tests in the same change.
 - `sideEffects` must include `./dist/index.js` as well as the CSS entries.
-- The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
+- The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
 - Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. All six auto-start with that entry.
 - See [Avatar](./juice-avatar.md) [Table](./juice-table.md)
-- [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), and [Keyboard avoider](./juice-keyboard-avoider-runtime.md).
-- `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. Skeleton (`[skeleton]`) is CSS-only loading chrome.
+- [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), [Keyboard avoider](./juice-keyboard-avoider-runtime.md), and [Sheet](./juice-sheet-runtime.md). Sheet is on master and is not in npm 0.9.5.
+- `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. Skeleton (`[skeleton]`) is CSS-only loading chrome.
 - It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3. See [Skeleton](./juice-skeleton.md).
 - List (`[list]`) is CSS-only stacked rows. It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3.
 - See [List](./juice-list.md). Badge (`[badge]`) is CSS-only label chrome.

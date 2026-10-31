@@ -4,7 +4,7 @@ Import `@citrusworx/juiceui` and valid markup runs in the browser. Most pages ne
 
 Juice does not load Sig. Observation is the DOM contract below. The optional adapter is `@citrusworx/sigjs/juice`.
 
-Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. All thirty-one stay Emerging.
+Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second runtime, on master, and not in that npm cut. All thirty-two stay Emerging.
 
 ## Components
 
@@ -24,6 +24,7 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 | --- | --- | --- | --- |
 | Modal | `[modal-overlay]` | Centered dialog. Focus trap. One modal at a time. | [Modal](./juice-modal-runtime.md) |
 | Drawer | `[drawer-overlay]` | Edge dialog, `left` or `right`. Focus trap. | [Drawer](./juice-drawer-runtime.md) |
+| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. On master, not in npm 0.9.5. Not a `JuiceRuntimeName`. | [Sheet](./juice-sheet-runtime.md) |
 | Popover | `[popover-root]` | Panel anchored to a control. Surface is `[popover-panel]`. | [Popover](./juice-popover-runtime.md) |
 | Tooltip | `[tooltip-root]` | Hover or focus tip. Surface is `[tooltip-panel]`. | [Tooltip](./juice-tooltip-runtime.md) |
 | Toast | `[toast-region]` | Corner stack of messages. Default `top-right`. | [Toast](./juice-toast-runtime.md) |
@@ -74,7 +75,7 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 | --- | --- | --- | --- |
 | Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. Shipped in 0.9.5. A `JuiceRuntimeName` in workspace Sig 1.1.0. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
 
-CSS-only, and not part of the thirty-one:
+CSS-only, and not part of the thirty-two:
 
 - [Skeleton](./juice-skeleton.md)
 - [List](./juice-list.md)
@@ -87,6 +88,7 @@ CSS-only, and not part of the thirty-one:
 | --- | --- | --- |
 | A centered dialog with a focus trap | Modal | Drawer, popover, toast |
 | An edge-docked dialog | Drawer | Modal |
+| A bottom sheet with detents | Sheet | Drawer, modal |
 | A floating panel anchored to a control | Popover | Tooltip, menu, modal |
 | A hover or focus tip with no interactive content | Tooltip | Popover, native `title` |
 | A corner stack of messages | Toast | Banner, a dialog |
@@ -157,11 +159,11 @@ Shared helpers under `libraries/juice/src/js/src/shared/` are not a public multi
 
 When several surfaces are open, later bands yield so a higher band owns Escape. Highest band first. This is the keyboard contract, not the paint order. See [z-index bands](#z-index-bands).
 
-Modal and drawer do not yield to each other. If both overlays are open, one Escape closes both.
+Modal, drawer, and sheet each handle Escape. They do not yield to each other. If more than one is open, one Escape can close each of them. Within sheets, Escape closes the last open overlay in DOM order.
 
 | Order | Surface | Owns Escape when | Yields when |
 | --- | --- | --- | --- |
-| 1 | Modal / drawer | An open `[modal-overlay]` or `[drawer-overlay]` without `hidden` | Does not yield to later bands, or to each other |
+| 1 | Modal / drawer / sheet | An open `[modal-overlay]`, `[drawer-overlay]`, or `[sheet-overlay]` without `hidden` | Does not yield to later bands. The three do not yield to each other |
 | 2 | Popover / menu | An open `[popover-root]` or an open `[menu]` | An open dialog overlay exists. Popover and menu do not yield to each other. Menu `hidden` is on `[menu]`, not `[menu-root]` |
 | 3 | Combobox | An open `[combobox-list]` | An open dialog, popover, or menu exists |
 | 4 | Toast / tooltip | See the note below | See the note below |
@@ -175,7 +177,7 @@ Toast does not block tooltip Escape. With both open, the first Escape hides the 
 
 Tooltip yields to an open dialog, popover, menu, or combobox list. Toast yields to those, plus an open tooltip.
 
-Yield checks use internal overlay queries in `libraries/juice/src/js/src/shared/`. The public `create` / `init` / `start` / `stop` contract is unchanged.
+Yield checks use internal overlay queries in `libraries/juice/src/js/src/shared/`. An open `[sheet-overlay]` counts, including `sheet-overlay="none"`, so menus and popovers yield while it is open. The public `create` / `init` / `start` / `stop` contract is unchanged.
 
 ## Z-index bands
 
@@ -183,7 +185,7 @@ Core chrome sets these stacking values. They are structural bands, not a theme c
 
 | Band | Surfaces | `z-index` | Notes |
 | --- | --- | --- | --- |
-| Overlay | `[modal-overlay]`, `[drawer-overlay]` | `1000` | Dialog scrims |
+| Overlay | `[modal-overlay]`, `[drawer-overlay]`, `[sheet-overlay]` | `1000` | Dialog scrims. The sheet panel does not set `z-index` |
 | Anchored | `[popover-root]`, `[combobox-list]`, `[menu]` | `1050` | Floating panel, listbox, and menu |
 | Tip | `[tooltip-root]` | `1060` | Slightly above anchored chrome |
 | Snackbar | `[toast-region]` | `1100` | Highest overlay chrome |
@@ -228,7 +230,7 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-The table is the whole contract. Pressable is the twenty-ninth runtime, touchable row is the thirtieth, and keyboard avoider is the thirty-first. `@citrusworx/sigjs/juice` `bind()` names all thirty-one in workspace `@citrusworx/sigjs` **1.1.0** (not published yet). npm `@citrusworx/sigjs` `latest` is **1.0.0** and still stops at `table`. `sheet` is on Juice master and is not in this table. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
+The table is the whole contract. Pressable is the twenty-ninth runtime, touchable row is the thirtieth, keyboard avoider is the thirty-first, and sheet is the thirty-second, on master and not in npm 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-one through keyboard-avoider. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is in this table and is not a `JuiceRuntimeName`. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
 
 The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 
@@ -265,6 +267,7 @@ The last column is how `bind` treats `state.set`. Read-only means the signal can
 | `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | read-only. Opt-in `juice:longpress` is a separate event; `bind` follows `juice:change` |
 | `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | read-only |
 | `keyboard-avoider` | `[keyboard-avoider]` | `{ open: boolean, inset: number }` | `getState` | read-only. `juice:change` fires when `open` flips or `inset` jumps by the threshold. Smaller steps update the custom property and `getState` without moving the signal |
+| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | not a `JuiceRuntimeName`. Binding waits until juiceui publishes `sheet` |
 
 ### State notes
 
@@ -284,6 +287,7 @@ The last column is how `bind` treats `state.set`. Read-only means the signal can
 | Pressable | `pressed` is the transient gesture, not a latched `[pressed]`. `longPressed` is true only after `juice:longpress` for that gesture. |
 | Touchable row | `selected` is `[selected]`, `aria-selected="true"`, or `aria-current` other than `"false"`. It is not the `select` word. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled control. |
 | Keyboard avoider | `open` is inset above `threshold` (default 80) while an editable control is focused. `inset` is the measured overlap in pixels. |
+| Sheet | `open` is the overlay without `hidden`. `detent` is `peek`, `half`, or `full`. `dragging` is `[dragging]` on `[sheet]`. `modal` is false only for `sheet-overlay="none"`. `getState()` is `null` when there is no `[sheet]`. |
 
 ## Sig adapter
 
@@ -312,12 +316,12 @@ notes.dispose();
 
 Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 
-Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws, because those cuts do not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. The same throw covers `pressable`, `touchable-row`, and `keyboard-avoider` when their start functions are missing. The other runtimes still bind.
+Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, because the named import `startDisclosureRuntime` is missing. On **0.9.2** the module loads, and binding icon-button, avatar, or table throws. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. On a build that loads, binding one of those six when its start function is missing throws the same way. `sheet` is not a name. The other runtimes still bind.
 
 `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts.
 
 `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
 
-`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5.
+`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet dispatches it on master and is not in the 0.9.5 npm cut.
 
 How to call `bind`, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).

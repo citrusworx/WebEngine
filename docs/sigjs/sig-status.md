@@ -1,6 +1,8 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Stable.** Workspace `libraries/sig/package.json` is **1.1.0** (not published yet). npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). **1.0.0** matches that registry cut and the **0.7.2** surface it freezes. **1.1.0** adds three Juice runtime names. `CHANGELOG.md` records **1.1.0**, **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**.
+Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Stable.**
+
+Workspace `libraries/sig/package.json` is **1.1.0** (not published yet). npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). **1.0.0** matches that registry cut and the **0.7.2** surface it freezes. **1.1.0** adds three Juice runtime names. `CHANGELOG.md` records **1.1.0**, **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
@@ -45,7 +47,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `SigRouter` exact + param paths | Emerging | Named routes, `:id` params, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. |
 | Docs and onboarding | Emerging to Stable | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys (covered by `jsx.test.ts`). Not a typed Juice plugin. |
-| Juice `bind` | Emerging | Optional `@citrusworx/sigjs/juice`. `{ state, dispose }` follows `getState` / `juice:change` for thirty-one names, through keyboard-avoider. Twenty-eight dispatch `juice:change`. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. `sheet` waits until juiceui publishes it. A Juice build missing one of the six newer start functions still loads the module; binding that runtime throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. Peer `>=0.9.1 <1`. Shipped in 0.4.0. The names through table are in npm 0.7.2. The thirty-one names are in workspace 1.1.0, not published yet. Juice works without it. |
+| Juice `bind` | Emerging | Optional `@citrusworx/sigjs/juice`. Workspace 1.1.0 names thirty-one, through keyboard-avoider. npm 1.0.0 names twenty-eight. Write-back is switch, checkbox, disclosure, modal, and icon-button. Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. `sheet` waits until juiceui publishes it. Juice 0.9.1 cannot load the module. Juice 0.9.2 loads and refuses the six newer names. Icon-button, avatar, and table shipped in juiceui 0.9.3. Peer range still says `>=0.9.1 <1`. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
 | `bindList` | Emerging | Keyed array or `Map` list. Per-row getter, node reuse, dispose with the row. `replaceChildren` remains the non-keyed rewrite. No `<For>` / `<Show>`. |
 | SSR / hydration | Draft | Client DOM only. |
 | Error boundaries | Draft | Uncaught. |
@@ -146,8 +148,8 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 - `libraries/sig/src/list.test.ts` — `bindList` add/remove/reorder with node identity, item updates, minimal moves, focus, `Map` and array sources, `memo` of `Map` + order, duplicate keys (throw), per-row dispose, list dispose, `disposeTree` / `mount`
 - `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, Juice-style unknown attributes via `setAttribute`, `ref` + effect, `mount` / `disposeTree`
 - `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate, param match, exact-over-param
-- `libraries/sig/src/juice.test.ts` — `bind` seed, `juice:change`, native input/change, write-back (switch, checkbox, disclosure, modal, icon-button), pressable (including opt-in `juice:longpress` staying off the state channel), touchable-row, keyboard-avoider (`juice:change` with `{ open, inset }`; a sub-threshold inset step does not move the signal), avatar and table read-only, dispose, unmount
-- `libraries/sig/src/juice-legacy.test.ts` — older Juice still imports the adapter, binds switch, and refuses icon-button, avatar, table, pressable, touchable-row, and keyboard-avoider (`needs a newer @citrusworx/juiceui`)
+- `libraries/sig/src/juice.test.ts` — `bind` seed, `juice:change`, native input/change, write-back (switch, checkbox, disclosure, modal, icon-button), pressable (opt-in `juice:longpress` stays off the state channel), touchable-row, keyboard-avoider (`juice:change` with `{ open, inset }`; a sub-threshold inset step does not move the signal), avatar and table read-only, dispose, unmount
+- `libraries/sig/src/juice-legacy.test.ts` — a mock Juice with the 25 named start functions (the 0.9.2 shape, not 0.9.1) still imports the adapter, binds switch, and refuses icon-button, avatar, table, pressable, touchable-row, and keyboard-avoider
 - `libraries/sig/src/juice-boundary.test.ts` — the main entry does not import Juice
 
 DOM tests install a jsdom document from `libraries/sig/jsdom-register.ts` (not published).
@@ -162,7 +164,21 @@ Coverage is real and still narrow. Docs examples were checked against source, no
 
 **Juice.** Complementary: Juice attributes are HTML attributes; Sig writes them at create time. Import `@citrusworx/juiceui/styles` plus a theme. There is no `Button` export from Juice for Sig to mount. Juice’s accordion is a working in-tree example of `Signal` + `effect` writing `hidden` / `aria-expanded`.
 
-Juice works without Sig. Observable widget state is `juice:change` and `getState()` on the host. The optional adapter is `bind` from `@citrusworx/sigjs/juice` (`{ state, dispose }`) for thirty-one names, through keyboard-avoider. Twenty-eight dispatch `juice:change`. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. `sheet` binding waits until `@citrusworx/juiceui` publishes it. Binding one of the six newer names when that start function is missing throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. The other runtimes still bind. A bind during render disposes on unmount. Guide: [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). The subpath shipped in `@citrusworx/sigjs@0.4.0`. The names through table are in npm `@citrusworx/sigjs@0.7.2`. The thirty-one names are in workspace **1.1.0**, not published yet.
+Juice works without Sig. Observable widget state is `juice:change` and `getState()` on the host.
+
+The optional adapter is `bind` from `@citrusworx/sigjs/juice`. Workspace **1.1.0** (not published) returns `{ state, dispose }` for 31 names, through keyboard-avoider. npm **1.0.0** returns it for 28. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, and only when the host has `[toggle]`). Pressable, touchable-row, keyboard-avoider, avatar, and table are read-only. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. `sheet` binding waits until juiceui publishes it.
+
+| Juice | Workspace Sig 1.1.0 |
+|---|---|
+| 0.9.1 | Does not load. Named import `startDisclosureRuntime` is missing |
+| 0.9.2 | Loads. Binding any of the six newer names throws |
+| 0.9.3 | 28 names bind. Pressable, touchable-row, and keyboard-avoider throw. Icon-button, avatar, and table shipped in this cut |
+| 0.9.4 | 30 names bind. Keyboard-avoider throws. Pressable and touchable row shipped in this cut |
+| 0.9.5 | All 31 names bind. Keyboard avoider shipped in this cut |
+
+Published Sig 1.0.0 stops at the 28 names through table on Juice 0.9.3–0.9.5. The peer range still says `>=0.9.1 <1`. A bind during render disposes on unmount. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding).
+
+The subpath shipped in 0.4.0. Icon button, avatar, and table shipped in Sig 0.7.2 and are in 1.0.0. `juice-legacy.test.ts` mocks a Juice that has the 25 named start functions and lacks the six. That is the 0.9.2 shape, not 0.9.1.
 
 **Nectarine / Grapevine / Seltzer.** No typed client bindings. Fetch Nectarine-backed HTTP yourself; do not expect `BlogSchema` or `GrapevineClient` exports. The [Seltzer integration note](../seltzer/seltzer-integration.md) shows `Signal` + `client.get` as app code, not a Sig plugin.
 

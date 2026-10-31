@@ -1,6 +1,8 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. This page describes the workspace tree (`libraries/sig/package.json` **1.1.0**, not published yet). npm `latest` is **1.0.0** (published 2026-10-29). **1.1.0** adds `pressable`, `touchable-row`, and `keyboard-avoider` to `JuiceRuntimeName`. That is additive. **1.0.0** matches **0.7.2** (2026-10-27, PR #295). **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
+Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. npm `latest` is **1.0.0** (published 2026-10-29) and matches **0.7.2** (2026-10-27, PR #295). The workspace `package.json` is **1.1.0**, not published yet. **1.1.0** adds `pressable`, `touchable-row`, and `keyboard-avoider` to `JuiceRuntimeName`. That is additive. `sheet` is not a name until juiceui publishes it.
+
+**0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
 Two root names came off the public entry: `captureCleanupScope` (internal module only) and `jsxDEV` (still on `./jsx-dev-runtime`). `Signal.set` always notifies, including when the value is unchanged, and that is frozen for v1. `bindList` and `ListItem` stay experimental.
 
@@ -119,7 +121,7 @@ Not re-exported from `.`. The main entry does not import Juice.
 
 | Export | Entry point | Kind | Classification | Reason | Notes |
 |---|---|---|---|---|---|
-| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. Thirty-one names, through `keyboard-avoider`. The names through table are in npm 0.7.2. Throws if the runtime cannot be inferred or `getState()` is null. Binding icon-button, avatar, table, pressable, touchable-row, or keyboard-avoider when that start function is missing throws `needs a newer @citrusworx/juiceui`. Icon-button, avatar, and table shipped in juiceui 0.9.3. `sheet` is not a name until juiceui publishes it. |
+| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. npm 0.7.2 and 1.0.0 name twenty-eight, through table. Workspace 1.1.0 (not published) names thirty-one, through keyboard-avoider. Throws if the runtime cannot be inferred or `getState()` is null. Binding one of the six newer names when that start function is missing throws `needs a newer @citrusworx/juiceui`. The module loads on Juice 0.9.2 and not on 0.9.1. Icon-button, avatar, and table shipped in juiceui 0.9.3. `sheet` is not a name until juiceui publishes it. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
 | `JuiceBinding` | `./juice` | type | stable | Return type of `bind`. | |
 | `JuiceBinding.state` | `./juice` | property | stable | Host state copied into a signal-shaped object. | A `JuiceSignal`, not the object `Signal()` returns. |
 | `JuiceBinding.dispose` | `./juice` | method | stable | Drops the host listeners. A second call does nothing. | A `bind` during Sig render also disposes on unmount, through `effect` and the internal cleanup scope. |
@@ -151,18 +153,19 @@ Not re-exported from `.`. The main entry does not import Juice.
 
 **Signal.set.** Notification does not compare the previous value. `count.set(1)` while the signal already holds `1` runs subscribers again. Frozen for v1. An equality check would be a breaking behavior change.
 
-## Still open before a 1.0 publish
+## Decisions still open after 1.0
 
-These are decisions, not this cleanup. `bindList` stays experimental until they are accepted.
+1.0.0 shipped with these unresolved. They are not a second public API.
 
-1. **Keep `bindList` and `ListItem` experimental** until the array/Map overloads, the duplicate-key throw, and focus restore are accepted. Then remove `@experimental`. Do not mark them stable in the same breath as `Signal`.
-2. **Inline `EffectCallback`** in `effect`'s public signature so `signal.d.ts` does not mention the unexported name. The structural type stays the same.
-3. **Do not add a `Signal<T>` type unless the overlapping shapes should collapse.** `JuiceSignal`, `ListItem`, and `memo`'s `{ get }` would then be described against one name. A new export waits.
-4. **Name the missing types in [API](./sig-api.md)** (`ListItem`, `RouteMap`, the Juice types) or keep this page as the only inventory. The API page's root sentence already points here.
-5. **Do not add `./node-cleanup` or `./cleanup-scope`.** `attachNodeCleanup` and `captureCleanupScope` stay off the public map.
-6. **Freeze router `get` and `has`.** `get` returns the pattern. `has` is registration only. A param URL helper is a new function, not a quiet change to `get`. A future splat must not redefine `"*"`.
-7. **Freeze Juice write-back** at switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Pressable, touchable-row, keyboard-avoider, avatar, and table stay read-only. `state.set` on the other read-only runtimes does not call a controller. Teaching another runtime to write back is a behavior change.
-8. **Keep the names.** Do not rename `Signal` to `signal`. Do not split `jsxs` from `jsx`. Do not add `memo` dispose.
+| Decision | What 1.0 did |
+|---|---|
+| `bindList` and `ListItem` | Stay experimental. The overloads, duplicate-key throw, and focus restore are in the implementation and still tagged `@experimental` |
+| `EffectCallback` | Still an unexported alias in `signal.d.ts`. The structural type is `() => void \| (() => void)` |
+| A shared `Signal<T>` type | Not added. `JuiceSignal`, `ListItem`, and `memo`'s `{ get }` stay separate shapes |
+| `./node-cleanup` and `./cleanup-scope` | Not entries. `attachNodeCleanup` and `captureCleanupScope` stay internal |
+| `SigRouter.get` and `has` | `get` returns the pattern. `has` is registration only. A param URL helper would be a new function. A future splat must not redefine `"*"` |
+| Juice write-back | Frozen at switch, checkbox, disclosure, modal, and icon-button. Pressable, touchable-row, keyboard-avoider, avatar, and table stay read-only |
+| Names | `Signal` stays a factory. `jsxs` stays an alias of `jsx`. `memo` has no dispose |
 
 ## What this cleanup changed
 
