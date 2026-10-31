@@ -26,13 +26,13 @@ That means it should work for:
 
 The user should not need to manually initialize keyboard avoider in their app code.
 
-There is no `KeyboardAvoider()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, or touchable-row yet. There is no `JuiceRuntimeName` for any of those three. `JuiceRuntimeName` stops at twenty-eight names, through `table`.
+There is no `KeyboardAvoider()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet yet. There is no `JuiceRuntimeName` for any of those four. `JuiceRuntimeName` stops at twenty-eight names, through `table`.
 
 This surface is Emerging, not Stable. Valid markup should lay out from core CSS, and an open keyboard should set the inset after importing the JS entry, but the API is still likely to evolve.
 
 Keyboard avoider is layout. It is not a dialog, not a focus trap, and not a restyle of input, textarea, or select. It does not own Enter, Space, or Escape.
 
-Keyboard avoider is the thirty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.5` is the live npm cut (published 2026-10-30 15:11 UTC). `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth, avatar is the twenty-seventh, and table is the twenty-eighth; those three shipped in 0.9.3. Pressable (chrome in #299 and #301, runtime in #303) is the twenty-ninth and shipped in 0.9.4. Touchable row (chrome in #306, runtime in #308) is the thirtieth and shipped in 0.9.4. Keyboard avoider (chrome in #310, runtime in #311) shipped in 0.9.5. All thirty-one stay Emerging.
+Keyboard avoider is the thirty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.5` is the live npm cut (published 2026-10-30 15:11 UTC). `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth, avatar is the twenty-seventh, and table is the twenty-eighth; those three shipped in 0.9.3. Pressable (chrome in #299 and #301, runtime in #303) is the twenty-ninth and shipped in 0.9.4. Touchable row (chrome in #306, runtime in #308) is the thirtieth and shipped in 0.9.4. Keyboard avoider (chrome in #310, runtime in #311) shipped in 0.9.5. Sheet (chrome in #316, runtime in #317) is the thirty-second, on master, and not in the 0.9.5 npm cut. All thirty-two stay Emerging.
 
 ## When to use it
 
@@ -407,7 +407,7 @@ There is no `MutationObserver`. A host added after boot is not seen until the ne
 
 ## Sig `bind()`
 
-`@citrusworx/sigjs/juice` `bind()` does not include keyboard-avoider, pressable, or touchable-row. `JuiceRuntimeName` stops at twenty-eight names, through `table`. Passing `"keyboard-avoider"` is not a supported name. Passing `"pressable"` is not a supported name. Passing `"touchable-row"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
+`@citrusworx/sigjs/juice` `bind()` does not include keyboard-avoider, pressable, touchable-row, or sheet. `JuiceRuntimeName` stops at twenty-eight names, through `table`. Passing `"keyboard-avoider"` is not a supported name. Passing `"pressable"` is not a supported name. Passing `"touchable-row"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
 
 `juice:change` and `getState()` still work without Sig. Listen on the host, or call `getState()` on the controller.
 
@@ -479,8 +479,8 @@ A composer that should not scroll the page when a field inside it focuses:
 ## Limitations
 
 - No `KeyboardAvoider()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Keyboard avoider is the thirty-first Emerging auto-enhance runtime. It shipped in 0.9.5. Touchable row remains the thirtieth and shipped in 0.9.4. Pressable remains the twenty-ninth and shipped in 0.9.4. All thirty-one stay Emerging.
-- `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, or touchable-row. Do not pass `"keyboard-avoider"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
+- This surface is Emerging, not Stable. Keyboard avoider is the thirty-first Emerging auto-enhance runtime. It shipped in 0.9.5. Touchable row remains the thirtieth and shipped in 0.9.4. Pressable remains the twenty-ninth and shipped in 0.9.4. Sheet is the thirty-second, on master, and not in the 0.9.5 npm cut. All thirty-two stay Emerging.
+- `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet. Do not pass `"keyboard-avoider"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
 - The stylesheet does not select `[keyboard-open]`. Layout follows `--juice-keyboard-inset`.
 - `open` is `inset > threshold` (default `80`) and an editable field is focused. An overlap of exactly `80` stays closed. Checkbox, radio, range, date, button, and the other non-text input types do not count as editable. A hardware keyboard stays closed.
 - `getState().inset` is the measured overlap. It can stay non-zero after blur. The inline custom property is removed while closed, so CSS sees `0px` or the `env()` fallback.

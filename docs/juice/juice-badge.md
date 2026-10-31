@@ -4,7 +4,7 @@ This document explains the current badge chrome in `libraries/juice/src/componen
 
 Badge is CSS-only. Importing the core stylesheet is enough for the shape and the core color. There is no JS entry, no `createBadge`, no auto-enhance, and no `Badge()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It is not one of the thirty-two Emerging auto-enhance runtimes. That count stays thirty-two. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 Two cuts are in play, and they are not the same CSS:
 
@@ -303,7 +303,7 @@ A `span` badge is not a control. It has no `:focus-visible` ring, no hover fill,
 ## Limitations
 
 - CSS-only. No `Badge()` factory, no `createBadge`, and no auto-enhance. The JS entry does not boot a badge runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[badge]`.
-- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline shipped in 0.9.3. The thirty-one Emerging runtimes stay thirty-one.
+- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline shipped in 0.9.3. The thirty-two Emerging runtimes stay thirty-two.
 - Shipped themes are not required to bind `--juice-badge-*`. Bundled theme CSS does not contain those names.
 - No `[scale]`. The only size step is `[wizard-header] [brand] [badge]`, which overrides the layout roles for that slot.
 - Values other than `square` and `ribbon` are the pill. There is no dot, count, or tone value. `[warm]` is a separate boolean. Core does not paint it.

@@ -182,6 +182,20 @@ Edge and size are separate so they compose: `[drawer]` / `[drawer="right"]` / `[
 
 Tide must stay a dark scrim and dark panel, not a white glass drawer.
 
+### Sheet chrome (optional override)
+
+Sheet paint is not a required role family. There is no `REQUIRED_SHEET_ROLES` entry. `[sheet-overlay]` / `[sheet]` / `[sheet-close]` read optional `--juice-sheet-*` names that fall through to the drawer role of the same name:
+
+`--juice-sheet-overlay`, `--juice-sheet-panel`, `--juice-sheet-panel-border`, `--juice-sheet-panel-shadow`, `--juice-sheet-close`, `--juice-sheet-close-color`, `--juice-sheet-close-hover`, and `--juice-sheet-focus-ring`.
+
+Shipped themes already bind the drawer names, so a sheet looks like the drawer panel until an author sets a sheet role. Do not declare `--juice-sheet-*` on `:root` or `[theme]` in core CSS. That would block the drawer fallback. Do not add a sheet hue family, and do not edit a theme to bind sheet.
+
+The drawer shadow points down. Set `--juice-sheet-panel-shadow` to a shadow with a negative Y offset to aim it up. That override does not require a theme edit.
+
+Layout roles (`--juice-sheet-offset`, `--juice-sheet-peek`, `--juice-sheet-half`, `--juice-sheet-full`, `--juice-sheet-max-height`, `--juice-sheet-radius`, `--juice-sheet-handle-width`, `--juice-sheet-handle-height`) stay on `:root` only. They are not restated on `[theme]`.
+
+`[sheet-overlay]` is `z-index: 1000`, the same band as modal and drawer. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Optional `surfaceTone` on `[sheet]` is allowed. The runtime auto-enhances that markup — see [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Sheet is the thirty-second Emerging auto-enhance runtime, on master, and not in npm 0.9.5. `bind()` does not name sheet.
+
 ### Toast chrome
 
 Structural non-modal feedback paint. Required names:
@@ -1142,7 +1156,7 @@ The highlight is a translucent white sheen, not `--juice-surface-strong-bg`. On 
 
 Do not set `color: transparent` on the host. Authors own `aria-busy`.
 
-See [Skeleton](./juice-skeleton.md). Skeleton shipped in 0.9.3, and is not one of the thirty-one Emerging auto-enhance runtimes.
+See [Skeleton](./juice-skeleton.md). Skeleton shipped in 0.9.3, and is not one of the thirty-two Emerging auto-enhance runtimes.
 
 ### List (optional override)
 
@@ -1173,7 +1187,7 @@ Disabled interactive rows are `opacity: 0.5`. The divider is decorative (under 3
 
 Authors own list semantics and whether `aria-disabled` swallows a click. See [List](./juice-list.md).
 
-List shipped in 0.9.3 and is not one of the thirty-one Emerging auto-enhance runtimes.
+List shipped in 0.9.3 and is not one of the thirty-two Emerging auto-enhance runtimes.
 
 ### Badge (optional override)
 
@@ -1206,11 +1220,11 @@ Those rules are `(0, 1, 0)` and lose to core. It does not emit `--juice-badge-*`
 
 See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2.
 
-The roles shipped in 0.9.3. Badge is not one of the thirty-one Emerging auto-enhance runtimes.
+The roles shipped in 0.9.3. Badge is not one of the thirty-two Emerging auto-enhance runtimes.
 
 ### Safe area (not a theme bind)
 
-`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area shipped in 0.9.3, and is not one of the thirty-one Emerging auto-enhance runtimes.
+`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area shipped in 0.9.3, and is not one of the thirty-two Emerging auto-enhance runtimes.
 
 ### Avatar (optional override)
 
@@ -1310,7 +1324,7 @@ Muted Citrusmint copy (`p`, `span`, `li`, `label`) is 1.95:1 on the page and 2.1
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
 
 ### Touchable row (optional override)
 
@@ -1348,13 +1362,18 @@ A 92% mix would be 4.03:1 on the Citrusmint page. The runtime auto-enhances `[to
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
 
 `[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5.
 
+### Sheet (optional override)
+
+Color falls through `--juice-sheet-*` to `--juice-drawer-*`. There is no required sheet role. Layout roles stay on `:root` only. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. The drawer fallback points down. See [Sheet](./juice-sheet-runtime.md). Sheet is the thirty-second Emerging auto-enhance runtime, on master, and not in npm 0.9.5. `bind()` does not name sheet.
+
+
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
 
-They do not emit `--juice-skeleton-*`, `--juice-list-*`, `--juice-badge-*`, `--juice-safe-area-*`, `--juice-avatar-*`, `--juice-table-*`, `--juice-pressable-*`, `--juice-touchable-row-*`, or `--juice-keyboard-*`.
+They do not emit `--juice-skeleton-*`, `--juice-list-*`, `--juice-badge-*`, `--juice-safe-area-*`, `--juice-avatar-*`, `--juice-table-*`, `--juice-pressable-*`, `--juice-touchable-row-*`, `--juice-keyboard-*`, or `--juice-sheet-*`.
 
 ## 6. Identity-prefix alias convention
 
@@ -1600,7 +1619,7 @@ Icon button is the twenty-sixth Emerging auto-enhance runtime and shipped in 0.9
 
 Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3. Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-one stay Emerging. Keyboard avoider is the thirty-first, shipped in 0.9.5, and is not a `JuiceRuntimeName`.
+Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-two stay Emerging. Keyboard avoider is the thirty-first, shipped in 0.9.5, and is not a `JuiceRuntimeName`. Sheet is the thirty-second, on master, not in npm 0.9.5, and is not a `JuiceRuntimeName`.
 
 Skeleton chrome and docs shipped in 0.9.3 (CSS-only, not a runtime). `--juice-skeleton-*` stays a core default.
 
