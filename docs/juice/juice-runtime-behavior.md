@@ -24,7 +24,7 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 | --- | --- | --- | --- |
 | Modal | `[modal-overlay]` | Centered dialog. Focus trap. One modal at a time. | [Modal](./juice-modal-runtime.md) |
 | Drawer | `[drawer-overlay]` | Edge dialog, `left` or `right`. Focus trap. | [Drawer](./juice-drawer-runtime.md) |
-| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. Shipped in 0.9.6. Not a `JuiceRuntimeName`. | [Sheet](./juice-sheet-runtime.md) |
+| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. Shipped in 0.9.6. A `JuiceRuntimeName` in workspace Sig 1.1.0. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. | [Sheet](./juice-sheet-runtime.md) |
 | Popover | `[popover-root]` | Panel anchored to a control. Surface is `[popover-panel]`. | [Popover](./juice-popover-runtime.md) |
 | Tooltip | `[tooltip-root]` | Hover or focus tip. Surface is `[tooltip-panel]`. | [Tooltip](./juice-tooltip-runtime.md) |
 | Toast | `[toast-region]` | Corner stack of messages. Default `top-right`. | [Toast](./juice-toast-runtime.md) |
@@ -230,7 +230,7 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-one through keyboard-avoider. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is in this table and is not a `JuiceRuntimeName`. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Binding sheet in Sig is unblocked and is not done.
+The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-two through sheet. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is a `JuiceRuntimeName` on that workspace tree. It binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws.
 
 The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 
@@ -267,7 +267,7 @@ The last column is how `bind` treats `state.set`. Read-only means the signal can
 | `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | read-only. Opt-in `juice:longpress` is a separate event; `bind` follows `juice:change` |
 | `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | read-only |
 | `keyboard-avoider` | `[keyboard-avoider]` | `{ open: boolean, inset: number }` | `getState` | read-only. `juice:change` fires when `open` flips or `inset` jumps by the threshold. Smaller steps update the custom property and `getState` without moving the signal |
-| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | not a `JuiceRuntimeName` in npm `@citrusworx/sigjs` **1.0.0** or workspace **1.1.0** yet. Binding is unblocked and is not done |
+| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | read-only. `juice:change` bubbles from `[sheet-overlay]`. The inner `[sheet]` does not dispatch it. The first observation is silent. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws |
 
 ### State notes
 
@@ -309,19 +309,19 @@ notes.dispose();
 - Write-back is switch, checkbox, disclosure, modal, and icon-button.
 - Icon-button calls `toggle` only when the host has `[toggle]` and `pressed` changes. The signal is then republished from the host.
 - A disabled host, or a host without `[toggle]`, refuses that write. The signal matches the host.
-- Avatar, table, pressable, touchable-row, and keyboard-avoider are read-only. Table has no API to set sort. Pressable, touchable-row, and keyboard-avoider expose `getState` only.
+- Avatar, table, pressable, touchable-row, keyboard-avoider, and sheet are read-only. Table has no API to set sort. Pressable, touchable-row, and keyboard-avoider expose `getState` only. Sheet's controller can open and close; `bind` does not call them.
 - The other read-only names are accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea.
 
-`JuiceRuntimeName` is thirty-one names, through `keyboard-avoider`, on the workspace **1.1.0** tree (not published yet). npm `@citrusworx/sigjs@1.0.0` and `@citrusworx/sigjs@0.7.2` are twenty-eight names, through `table`.
+`JuiceRuntimeName` is thirty-two names, through `sheet`, on the workspace **1.1.0** tree (not published yet). npm `@citrusworx/sigjs@1.0.0` and `@citrusworx/sigjs@0.7.2` are twenty-eight names, through `table`.
 
 Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 
-Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, because the named import `startDisclosureRuntime` is missing. On **0.9.2** the module loads, and binding icon-button, avatar, or table throws. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. On a build that loads, binding one of those six when its start function is missing throws the same way. `sheet` is not a name. The other runtimes still bind.
+Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, because the named import `startDisclosureRuntime` is missing. On **0.9.2** the module loads, and binding icon-button, avatar, or table throws. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On a build that loads, binding one of those seven when its start function is missing throws the same way. On **0.9.5** sheet throws. On **0.9.6** all thirty-two bind. The other runtimes still bind.
 
 `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts.
 
 `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
 
-`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet dispatches it. It shipped in 0.9.6.
+`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet dispatches it from `[sheet-overlay]`. It shipped in 0.9.6.
 
 How to call `bind`, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).

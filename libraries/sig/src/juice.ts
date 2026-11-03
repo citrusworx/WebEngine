@@ -7,11 +7,11 @@
  *
  * Updates follow Juice's DOM contract: a bubbling `juice:change` event whose
  * detail is `{ runtime, state }`. Select, input, and textarea do not emit
- * that event; they use native `input` and `change`. Twenty-eight of the
- * thirty-one names do emit it. State types for the original runtimes are
+ * that event; they use native `input` and `change`. Twenty-nine of the
+ * thirty-two names do emit it. State types for the original runtimes are
  * imported as types. Icon button, avatar, table, pressable, touchable-row,
- * and keyboard-avoider use local shapes, so the published declarations do
- * not name Juice types that older builds do not export. Those six start
+ * keyboard-avoider, and sheet use local shapes, so the published declarations
+ * do not name Juice types that older builds do not export. Those seven start
  * functions are read from the Juice module namespace and may be missing.
  * Binding one of them then throws. The other twenty-five keep named imports,
  * so an older Juice still loads this module and still binds them.
@@ -36,17 +36,24 @@
  * each host. This module does not read those. The signal stays on the last
  * `juice:change`.
  *
- * `sheet` is not a name. It is on Juice master and is not in published
- * juiceui through 0.9.5. Binding it waits until `@citrusworx/juiceui`
- * publishes `sheet`.
+ * Sheet state is `{ open, detent, dragging, modal }`. `detent` is `"peek"`,
+ * `"half"`, or `"full"`. The host is `[sheet-overlay]`. `juice:change`
+ * bubbles from that overlay, with detail `{ runtime: "sheet", state }`. The
+ * inner `[sheet]` is the dialog panel. It does not dispatch the event, and
+ * inference does not match it. `getState()` on the overlay is null when the
+ * overlay has no `[sheet]`. The first observation is silent. Later events
+ * fire when `open`, `detent`, `dragging`, or `modal` changes.
+ * `startSheetRuntime` shipped in `@citrusworx/juiceui` 0.9.6. Binding sheet
+ * on 0.9.5 or older throws.
  *
  * `state.set` writes back for switch, checkbox, disclosure, modal, and
  * icon-button. Icon-button calls `toggle` only when the host has `[toggle]`
  * and `pressed` changes, then republishes `getState()`. A disabled host or a
  * host without `[toggle]` refuses the write and the signal matches the host.
- * Avatar, table, pressable, touchable-row, and keyboard-avoider are
+ * Avatar, table, pressable, touchable-row, keyboard-avoider, and sheet are
  * read-only. Table has no Juice API to set sort. Pressable, touchable-row,
- * and keyboard-avoider expose `getState` only.
+ * and keyboard-avoider expose `getState` only. Sheet's controller can open
+ * and close; this module does not call them.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
  * A call during Sig render also disposes on unmount: `effect` registers that
@@ -84,6 +91,7 @@ import type {
     IconButtonState as JuiceIconButtonState,
     KeyboardAvoiderState as JuiceKeyboardAvoiderState,
     PressableState as JuicePressableState,
+    SheetState as JuiceSheetState,
     TableState as JuiceTableState,
     TouchableRowState as JuiceTouchableRowState,
 } from "@citrusworx/juiceui";
@@ -147,7 +155,8 @@ export type JuiceRuntimeName =
     | "table"
     | "pressable"
     | "touchable-row"
-    | "keyboard-avoider";
+    | "keyboard-avoider"
+    | "sheet";
 
 type IconButtonState = {
     pressed: boolean;
@@ -179,6 +188,13 @@ type TouchableRowState = {
 type KeyboardAvoiderState = {
     open: boolean;
     inset: number;
+};
+
+type SheetState = {
+    open: boolean;
+    detent: "peek" | "half" | "full";
+    dragging: boolean;
+    modal: boolean;
 };
 
 export type JuiceRuntimeState = {
@@ -213,6 +229,7 @@ export type JuiceRuntimeState = {
     pressable: PressableState;
     "touchable-row": TouchableRowState;
     "keyboard-avoider": KeyboardAvoiderState;
+    sheet: SheetState;
 };
 
 // Type-level test. `tsc` fails if these local shapes drift from the workspace
@@ -245,13 +262,17 @@ type _KeyboardAvoiderStateMatchesJuice = Assert<
         JuiceKeyboardAvoiderState
     >
 >;
+type _SheetStateMatchesJuice = Assert<
+    MutuallyAssignable<JuiceRuntimeState["sheet"], JuiceSheetState>
+>;
 type _JuiceStateLock =
     | _IconButtonStateMatchesJuice
     | _AvatarStateMatchesJuice
     | _TableStateMatchesJuice
     | _PressableStateMatchesJuice
     | _TouchableRowStateMatchesJuice
-    | _KeyboardAvoiderStateMatchesJuice;
+    | _KeyboardAvoiderStateMatchesJuice
+    | _SheetStateMatchesJuice;
 
 export type JuiceSignal<T> = {
     get: () => T;
@@ -312,6 +333,7 @@ const NEWER_RUNTIME_EXPORT = {
     pressable: "startPressableRuntime",
     "touchable-row": "startTouchableRowRuntime",
     "keyboard-avoider": "startKeyboardAvoiderRuntime",
+    sheet: "startSheetRuntime",
 } as const;
 
 type NewerRuntimeName = keyof typeof NEWER_RUNTIME_EXPORT;
@@ -398,6 +420,7 @@ const readers: {
         readOptional<TouchableRowState>("touchable-row", host),
     "keyboard-avoider": (host) =>
         readOptional<KeyboardAvoiderState>("keyboard-avoider", host),
+    sheet: (host) => readOptional<SheetState>("sheet", host),
 };
 
 const hostMatchers: Array<{
@@ -533,6 +556,10 @@ const hostMatchers: Array<{
         runtime: "keyboard-avoider",
         match: (host) => host.hasAttribute("keyboard-avoider"),
     },
+    {
+        runtime: "sheet",
+        match: (host) => host.hasAttribute("sheet-overlay"),
+    },
 ];
 
 const inferRuntime = (host: HTMLElement): JuiceRuntimeName | null =>
@@ -578,9 +605,11 @@ const writeBack = (
             return;
         }
         default:
-            // Avatar, table, pressable, touchable-row, and keyboard-avoider
-            // are read-only. Table has no Juice API to set sort. Pressable,
-            // touchable-row, and keyboard-avoider expose getState only.
+            // Avatar, table, pressable, touchable-row, keyboard-avoider, and
+            // sheet are read-only. Table has no Juice API to set sort.
+            // Pressable, touchable-row, and keyboard-avoider expose getState
+            // only. Sheet's controller can open and close; this module does
+            // not call them.
             return;
     }
 };

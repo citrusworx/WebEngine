@@ -1,6 +1,6 @@
 # API reference
 
-Every public export of workspace `@citrusworx/sigjs` **1.1.0** (not published). npm `latest` is **1.0.0**. The 1.0.0 signatures match `dist/*.d.ts` in that published tarball. **1.1.0** adds `pressable`, `touchable-row`, and `keyboard-avoider` to `JuiceRuntimeName`. `sheet` is not a name. The classification (stable, experimental, internal) is [API surface](./api-surface.md).
+Every public export of workspace `@citrusworx/sigjs` **1.1.0** (not published). npm `latest` is **1.0.0**. The 1.0.0 signatures match `dist/*.d.ts` in that published tarball. **1.1.0** adds `pressable`, `touchable-row`, `keyboard-avoider`, and `sheet` to `JuiceRuntimeName`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. The classification (stable, experimental, internal) is [API surface](./api-surface.md).
 
 ## Entry points
 
@@ -38,11 +38,11 @@ Every public export of workspace `@citrusworx/sigjs` **1.1.0** (not published). 
 | [`RouteFactory`](#routefactory) | type | 0.3.0 (exported). 0.2.0 was `() => Node` and not exported |
 | [`RouteView`](#routeview) | type | 0.3.0 |
 | [`RouteMap`](#routemap) | type | 0.3.0 |
-| [`bind`](#bind) | function | 0.4.0. Icon button, avatar, and table in 0.7.2. Pressable, touchable-row, and keyboard-avoider in workspace 1.1.0 |
+| [`bind`](#bind) | function | 0.4.0. Icon button, avatar, and table in 0.7.2. Pressable, touchable-row, keyboard-avoider, and sheet in workspace 1.1.0 |
 | [`JuiceBinding`](#juicebinding) | type | 0.4.0 |
 | [`JuiceSignal`](#juicesignal) | type | 0.4.0 |
-| [`JuiceRuntimeName`](#juiceruntimename) | type | 0.4.0, three names added in 0.7.2, three more in workspace 1.1.0 |
-| [`JuiceRuntimeState`](#juiceruntimestate) | type | 0.4.0, three local shapes in 0.7.2, three more in workspace 1.1.0 |
+| [`JuiceRuntimeName`](#juiceruntimename) | type | 0.4.0, three names added in 0.7.2, four more in workspace 1.1.0 |
+| [`JuiceRuntimeState`](#juiceruntimestate) | type | 0.4.0, three local shapes in 0.7.2, four more in workspace 1.1.0 |
 
 `0.6.0` was published from a build that `package.json` never recorded. `0.7.0` is the versioned release that kept `untrack` and `bindList`.
 
@@ -1045,14 +1045,14 @@ notes.dispose();
 ### Notes
 
 - The main entry does not import Juice. This module does. The peer is optional: `@citrusworx/juiceui` `>=0.9.1 <1`.
-- Importing this module against Juice **0.9.1** throws. The named import `startDisclosureRuntime` is missing. **0.9.2** loads and binds 25 names. Icon button, avatar, and table need **0.9.3**. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**, which binds all 31. The table is [Runtime binding](./sig-juice-integration.md#runtime-binding).
+- Importing this module against Juice **0.9.1** throws. The named import `startDisclosureRuntime` is missing. **0.9.2** loads and binds 25 names. Icon button, avatar, and table need **0.9.3**. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**, which binds 31. Sheet needs **0.9.6**, which binds all 32. On **0.9.5** sheet throws. The table is [Runtime binding](./sig-juice-integration.md#runtime-binding).
 - Omit `runtime` to infer from the host. The first matcher in source order wins. `[icon-button]` wins over `[pressable]`. `[pressable]` wins over `[touchable-row]`.
 - `getState()` of `null` throws `Sig juice bind: <runtime> getState() returned null for this host.`
 - Inference failure throws `Sig juice bind: could not infer a runtime from this host. Pass a runtime name.`
-- Icon button, avatar, table, pressable, touchable-row, and keyboard-avoider throw `Sig juice bind: "<runtime>" needs a newer @citrusworx/juiceui that exports <start function>.` when that export is missing. The rest of the module still works on 0.9.2. `sheet` is not a name until juiceui publishes it.
-- Select, input, and textarea listen for native `input` and `change`. The other 28 follow a bubbling `juice:change` whose `detail` is `{ runtime, state }`, and only when `event.target` is the bound host. Pressable's opt-in `juice:longpress` is a separate event. `bind` does not listen for it.
+- Icon button, avatar, table, pressable, touchable-row, keyboard-avoider, and sheet throw `Sig juice bind: "<runtime>" needs a newer @citrusworx/juiceui that exports <start function>.` when that export is missing. The rest of the module still works on 0.9.2. Sheet's missing export is `startSheetRuntime`. That is the **0.9.5** failure. **0.9.6** exports it.
+- Select, input, and textarea listen for native `input` and `change`. The other 29 follow a bubbling `juice:change` whose `detail` is `{ runtime, state }`, and only when `event.target` is the bound host. Pressable's opt-in `juice:longpress` is a separate event. `bind` does not listen for it. Sheet's event is dispatched from `[sheet-overlay]`, not from the inner `[sheet]`.
 - `state.set` skips the write when the next state is deeply equal to the current one. That is not `Signal.set`.
-- Write-back runs for switch, checkbox, disclosure, modal, and icon button. Pressable, touchable-row, keyboard-avoider, avatar, table, and the other names update the signal only. The next host event copies the host back over a local `set`. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. A sub-threshold inset step updates Juice's custom property and `getState` without moving the signal.
+- Write-back runs for switch, checkbox, disclosure, modal, and icon button. Pressable, touchable-row, keyboard-avoider, sheet, avatar, table, and the other names update the signal only. The next host event copies the host back over a local `set`. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. A sub-threshold inset step updates Juice's custom property and `getState` without moving the signal. Sheet does dispatch `juice:change` from `[sheet-overlay]` with `{ open, detent, dragging, modal }`. The first observation is silent.
 - A bind during a Sig component render disposes with the view.
 
 <details>
@@ -1128,7 +1128,7 @@ There is still no shared `Signal<T>` type.
 
 | | |
 |---|---|
-| Since | 0.4.0 for the original names. `"icon-button"`, `"avatar"`, and `"table"` in 0.7.2. `"pressable"`, `"touchable-row"`, and `"keyboard-avoider"` in workspace 1.1.0 (not published) |
+| Since | 0.4.0 for the original names. `"icon-button"`, `"avatar"`, and `"table"` in 0.7.2. `"pressable"`, `"touchable-row"`, `"keyboard-avoider"`, and `"sheet"` in workspace 1.1.0 (not published) |
 | Entry | `./juice` |
 | Status | Stable |
 | Kind | type |
@@ -1141,10 +1141,11 @@ type JuiceRuntimeName =
   | "wizard" | "toast" | "banner" | "tooltip" | "spinner"
   | "nav" | "field" | "select" | "input" | "textarea"
   | "icon-button" | "avatar" | "table"
-  | "pressable" | "touchable-row" | "keyboard-avoider";
+  | "pressable" | "touchable-row" | "keyboard-avoider"
+  | "sheet";
 ```
 
-Thirty-one names in workspace 1.1.0. Published 1.0.0 stops at `"table"`. `sheet` is not in this union. Binding it waits until juiceui publishes it. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
+Thirty-two names in workspace 1.1.0. Published 1.0.0 stops at `"table"`. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On 0.9.5, binding `"sheet"` throws because `startSheetRuntime` is missing.
 
 Adding a name later would be a minor. Renaming one is a major. Inference attributes and which Juice versions can bind each name are in [Runtime binding](./sig-juice-integration.md#runtime-binding).
 
@@ -1154,12 +1155,12 @@ Adding a name later would be a minor. Renaming one is a major. Inference attribu
 
 | | |
 |---|---|
-| Since | 0.4.0. Three local shapes in 0.7.2. Three more in workspace 1.1.0 |
+| Since | 0.4.0. Three local shapes in 0.7.2. Four more in workspace 1.1.0 |
 | Entry | `./juice` |
 | Status | Stable |
 | Kind | type |
 
-Maps each [`JuiceRuntimeName`](#juiceruntimename) to a state type. Twenty-five of the types are imported from `@citrusworx/juiceui`. Icon button, avatar, table, pressable, touchable-row, and keyboard-avoider are declared locally so this file does not name Juice types that older builds do not export.
+Maps each [`JuiceRuntimeName`](#juiceruntimename) to a state type. Twenty-five of the types are imported from `@citrusworx/juiceui`. Icon button, avatar, table, pressable, touchable-row, keyboard-avoider, and sheet are declared locally so this file does not name Juice types that older builds do not export.
 
 ```ts
 type JuiceRuntimeState = {
@@ -1205,6 +1206,12 @@ type JuiceRuntimeState = {
   pressable: { pressed: boolean; longPressed: boolean };
   "touchable-row": { selected: boolean; disabled: boolean };
   "keyboard-avoider": { open: boolean; inset: number };
+  sheet: {
+    open: boolean;
+    detent: "peek" | "half" | "full";
+    dragging: boolean;
+    modal: boolean;
+  };
 };
 ```
 

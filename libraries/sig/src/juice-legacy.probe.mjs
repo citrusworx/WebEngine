@@ -59,6 +59,15 @@ const keyboardHost = document.querySelector("div");
 if (!(keyboardHost instanceof HTMLElement)) throw new Error("missing keyboard-avoider");
 const keyboardErrors = capture("keyboard-avoider", keyboardHost);
 
+document.body.innerHTML = `
+  <div sheet-overlay hidden>
+    <div sheet></div>
+  </div>
+`;
+const sheetHost = document.querySelector("[sheet-overlay]");
+if (!(sheetHost instanceof HTMLElement)) throw new Error("missing sheet");
+const sheetErrors = capture("sheet", sheetHost);
+
 const errors = {
     ...iconErrors,
     ...avatarErrors,
@@ -66,6 +75,7 @@ const errors = {
     ...pressableErrors,
     ...rowErrors,
     ...keyboardErrors,
+    ...sheetErrors,
 };
 
 console.log(`LEGACY_REPORT ${JSON.stringify({ switch: switchState, errors })}`);
