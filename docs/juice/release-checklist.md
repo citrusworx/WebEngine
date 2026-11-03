@@ -43,10 +43,10 @@ That must pass before publishing.
 - If browser targets or shipped asset directories change, update the README and artifact tests in the same change.
 - `sideEffects` must include `./dist/index.js` as well as the CSS entries.
 - The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
-- Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. All six auto-start with that entry.
+- Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. Icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet auto-start with that entry.
 - See [Avatar](./juice-avatar.md) [Table](./juice-table.md)
-- [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), [Keyboard avoider](./juice-keyboard-avoider-runtime.md), and [Sheet](./juice-sheet-runtime.md). Sheet is on master and is not in npm 0.9.5.
-- Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Skeleton (`[skeleton]`) is CSS-only loading chrome.
+- [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), [Keyboard avoider](./juice-keyboard-avoider-runtime.md), and [Sheet](./juice-sheet-runtime.md). Sheet shipped in 0.9.6.
+- Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Binding sheet is unblocked and is not done. Skeleton (`[skeleton]`) is CSS-only loading chrome.
 - It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3. See [Skeleton](./juice-skeleton.md).
 - List (`[list]`) is CSS-only stacked rows. It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3.
 - See [List](./juice-list.md). Badge (`[badge]`) is CSS-only label chrome.
@@ -56,4 +56,4 @@ That must pass before publishing.
 - See [Safe Area](./juice-safe-area.md).
 - Keep `@citrusworx/sigjs` on a caret range that matches the workspace version being published (currently `^1.0.0`), not `workspace:^`. This repo publishes with `changeset publish`, which uses `npm publish` and does not rewrite Yarn workspace protocol.
 - Yarn resolves `^1.0.0` to the local `libraries/sig` workspace during development. `^0.7.0` does not include workspace **1.0.0** and would install a nested registry copy.
-- `@citrusworx/sigjs@1.0.0` is on npm (published 2026-10-29). `@citrusworx/juiceui@0.9.5` is the current Juice latest (published 2026-10-30 15:11 UTC). Keep the Juice peer on `^1.0.0`, not `workspace:^`.
+- `@citrusworx/sigjs@1.0.0` is on npm (published 2026-10-29). `@citrusworx/juiceui@0.9.6` is the current Juice latest (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). Keep the Juice peer on `^1.0.0`, not `workspace:^`.

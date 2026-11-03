@@ -1010,7 +1010,7 @@ The drawer shadow points down. Set `--juice-sheet-panel-shadow` with a negative 
 
 Layout roles stay on `:root` only: offset, peek (`25dvh`), half (`50dvh`), full, max-height, radius (`1rem`), handle width (`2.5rem`), and handle height (`0.25rem`). Do not restate them on `[theme]`.
 
-`[sheet-overlay]` is `z-index: 1000`. This is not `overlay="frost|tint"` and not `[drawer]`. See [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Sheet is the thirty-second Emerging auto-enhance runtime, on master, and not in npm 0.9.5. `bind()` does not name sheet.
+`[sheet-overlay]` is `z-index: 1000`. This is not `overlay="frost|tint"` and not `[drawer]`. See [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. `bind()` does not name sheet.
 
 ## Wizard chrome roles
 

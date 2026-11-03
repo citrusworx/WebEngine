@@ -424,7 +424,7 @@ See [Drawer Runtime](./juice-drawer-runtime.md). Theme paint uses `--juice-drawe
 
 Openers pair through `aria-controls` pointing at the overlay `id`. There is no extra Juice opener attribute.
 
-See [Sheet runtime](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Color is an optional `--juice-sheet-*` override that falls through to `--juice-drawer-*` (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). Layout roles stay on `:root`. There is no required sheet role. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Sheet is the thirty-second Emerging auto-enhance runtime, on master, and not in npm 0.9.5. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
+See [Sheet runtime](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Color is an optional `--juice-sheet-*` override that falls through to `--juice-drawer-*` (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). Layout roles stay on `:root`. There is no required sheet role. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
 
 ### Toast
 
