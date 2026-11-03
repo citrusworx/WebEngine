@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.5** public cut on npm (published 2026-10-30 15:11 UTC). Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.6** public cut on npm (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
 
 Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. `juice:change` and `getState()` shipped in 0.9.3.
 
@@ -26,7 +26,7 @@ Icon button is a square icon-only control on button chrome, distinct from switch
 
 Avatar is the twenty-seventh Emerging auto-enhance runtime and shipped in 0.9.3. Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3.
 
-Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second, on master, and not in npm 0.9.5.
+Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6.
 
 All thirty-two stay Emerging. Skeleton is a CSS-only loading placeholder (`[skeleton]`) shipped in 0.9.3.
 
@@ -42,7 +42,7 @@ It is not a runtime and does not change that count. See [Badge](./juice-badge.md
 
 Safe area is CSS-only inset chrome (`[safe-area]`) shipped in 0.9.3. It is not a runtime and does not change that count.
 
-See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 0.9.5 is the current public cut (published 2026-10-30 15:11 UTC).
+See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 0.9.6 is the current public cut (published 2026-11-03 14:59 UTC).
 
 The goal is to make it easy to answer:
 
@@ -86,7 +86,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Page-level patterns | Emerging | Tutorials and patterns are now present, which makes Juice more teachable and reusable. |
 | Rules engine | Emerging | The philosophy is strong, but only lightly formalized in written protocol docs so far. |
 | Docs and onboarding | Emerging to Stable | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
-| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts the runtimes. Twenty-five shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is on master and is not in that npm cut. See [Runtime behavior](./juice-runtime-behavior.md#components). |
+| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts the runtimes. Twenty-five shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. See [Runtime behavior](./juice-runtime-behavior.md#components). |
 | Public component exports | Emerging | `Accordion()` is the only Sig factory. Every runtime exports `create` / `init` / `start` / `stop`. Markup plus auto-enhance is the contract. Skeleton, list, badge, and safe area are not JS exports. |
 | Themes | Emerging | Fourteen bundled themes, each `<id>.scss` plus `<id>.yaml`. Required binds are in the [Theme contract](./juice-theme-contract.md). The retro themes are separate entrypoints, not a `retro.css` bundle. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog is in [Animations](./juice-animations.md). Motion core shipped in `@citrusworx/juiceui@0.9.2`. Stays Emerging. |
@@ -99,7 +99,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Pressable (`[pressable]`) | Emerging | Transient press. The twenty-ninth runtime. Shipped in 0.9.4. See [Pressable](./juice-pressable.md). |
 | Touchable row (`[touchable-row]`) | Emerging | 44px row. The thirtieth runtime. Shipped in 0.9.4. See [Touchable row](./juice-touchable-row.md). |
 | Keyboard avoider (`[keyboard-avoider]`) | Emerging | Software-keyboard inset. The thirty-first runtime. Shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). |
-| Sheet (`[sheet-overlay]`) | Emerging | Bottom sheet. The thirty-second runtime. On master, not in npm 0.9.5. Not a `JuiceRuntimeName`. See [Sheet](./juice-sheet-runtime.md). |
+| Sheet (`[sheet-overlay]`) | Emerging | Bottom sheet. The thirty-second runtime. Shipped in 0.9.6. Not a `JuiceRuntimeName`. See [Sheet](./juice-sheet-runtime.md). |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
 | Generator/config pipeline | Draft | The config exists, but the workflow around it is still early and evolving. |
 

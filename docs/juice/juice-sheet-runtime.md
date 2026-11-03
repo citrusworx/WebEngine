@@ -2,9 +2,9 @@
 
 A sheet is a bottom-anchored dialog rooted at `[sheet-overlay]`.
 
-Emerging. The thirty-second runtime. On master, and not yet in npm. The latest published cut is `@citrusworx/juiceui@0.9.5`. Do not invent a version number for this surface.
+Emerging. The thirty-second runtime. Shipped in `@citrusworx/juiceui@0.9.6` (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`).
 
-`createSheet`, `initSheet`, `startSheetRuntime`, and `stopSheetRuntime` are on master. `@citrusworx/sigjs/juice` `bind` does not name `sheet`. It is not a `JuiceRuntimeName`.
+`createSheet`, `initSheet`, `startSheetRuntime`, and `stopSheetRuntime` shipped in 0.9.6. `@citrusworx/sigjs/juice` `bind` does not name `sheet`. It is not a `JuiceRuntimeName`. Binding sheet is unblocked and is not done.
 
 Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
@@ -102,7 +102,7 @@ A custom-root controller can run beside the document runtime. Each click or key 
 
 A change dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[sheet-overlay]`. `detail` is `{ runtime: "sheet", state }`. `state` is `{ open, detent, dragging, modal }`.
 
-The first observation is silent. Later events fire when that shape changes. There is no second event name. This surface stays Emerging and is not in the published 0.9.5 types.
+The first observation is silent. Later events fire when that shape changes. There is no second event name. This surface stays Emerging and shipped in 0.9.6. The published 0.9.6 types include `startSheetRuntime`.
 
 ## Accessibility
 
@@ -186,7 +186,7 @@ Layout roles stay on `:root`. Color falls through `--juice-sheet-*` to `--juice-
 
 ## Sig `bind()`
 
-`@citrusworx/sigjs/juice` `bind()` does not include sheet. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `JuiceRuntimeName` is thirty-one names, through keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** stop at twenty-eight names, through `table`. Passing `"sheet"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
+`@citrusworx/sigjs/juice` `bind()` does not include sheet. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Binding sheet is unblocked and is not done. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `JuiceRuntimeName` is thirty-one names, through keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** stop at twenty-eight names, through `table`. Passing `"sheet"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
 
 `juice:change` and `getState()` still work without Sig. Listen on the overlay, or call `getState()` on the controller.
 

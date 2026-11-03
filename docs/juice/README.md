@@ -132,7 +132,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
-- [Sheet](./juice-sheet-runtime.md) — bottom sheet (on master, not in npm 0.9.5; the thirty-second Emerging runtime; not a `JuiceRuntimeName`). Chrome contract: [juice-sheet.md](./juice-sheet.md)
+- [Sheet](./juice-sheet-runtime.md) — bottom sheet (shipped in 0.9.6; the thirty-second Emerging runtime; not a `JuiceRuntimeName`). Chrome contract: [juice-sheet.md](./juice-sheet.md)
 - [Popover Runtime](./juice-popover-runtime.md)
 - [Tooltip Runtime](./juice-tooltip-runtime.md)
 - [Toast Runtime](./juice-toast-runtime.md)
@@ -183,7 +183,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 ### Practice and roadmap
 
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.5` live on npm)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.6` live on npm)
 
 ## Status
 

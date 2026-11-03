@@ -4,7 +4,7 @@ Import `@citrusworx/juiceui` and valid markup runs in the browser. Most pages ne
 
 Juice does not load Sig. Observation is the DOM contract below. The optional adapter is `@citrusworx/sigjs/juice`.
 
-Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. All thirty-two stay Emerging.
+Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second runtime and shipped in 0.9.6. All thirty-two stay Emerging.
 
 ## Components
 
@@ -230,7 +230,7 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-two through sheet. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is a `JuiceRuntimeName` on that workspace tree. It binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws.
+The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-two through sheet. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is a `JuiceRuntimeName` on that workspace tree. It binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws.
 
 The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 
@@ -322,6 +322,6 @@ Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, 
 
 `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
 
-`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet ships it from 0.9.6. The event is dispatched from `[sheet-overlay]`.
+`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet dispatches it from `[sheet-overlay]`. It shipped in 0.9.6.
 
 How to call `bind`, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).

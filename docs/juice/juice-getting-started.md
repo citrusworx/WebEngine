@@ -31,21 +31,21 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.5`:
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.6`:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/themes/kiwipress.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/themes/kiwipress.css" />
 
 <body theme="kiwipress">
   <!-- markup -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.js"></script>
 </body>
 ```
 
 The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
 
-unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.5/`.
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.6/`.
 
 If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
 
@@ -220,7 +220,7 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 - pressables / transient press on any host (shipped in 0.9.4)
 - touchable rows / 44px rows with optional selection (shipped in 0.9.4)
 - keyboard avoiders / padding, translate, or a sticky footer clear of the software keyboard (shipped in 0.9.5)
-- sheets / bottom dialogs with peek, half, and full detents (on master, not in npm 0.9.5)
+- sheets / bottom dialogs with peek, half, and full detents (shipped in 0.9.6)
 - motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (shipped in 0.9.2)
 
 `[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-two runtime count. See [Skeleton](./juice-skeleton.md).
@@ -278,7 +278,7 @@ If you are not in a bundler app, use the CDN or copy-dist path under [Plain HTML
 - [Pressable](./juice-pressable.md) — transient press (shipped in 0.9.4; the twenty-ninth Emerging runtime)
 - [Touchable Row](./juice-touchable-row.md) — 44px touch row (shipped in 0.9.4; the thirtieth Emerging runtime)
 - [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime)
-- [Sheet](./juice-sheet-runtime.md) — bottom sheet (on master, not in npm 0.9.5; the thirty-second Emerging runtime). Chrome: [juice-sheet.md](./juice-sheet.md)
+- [Sheet](./juice-sheet-runtime.md) — bottom sheet (shipped in 0.9.6; the thirty-second Emerging runtime). Chrome: [juice-sheet.md](./juice-sheet.md)
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (shipped in 0.9.3; not a runtime)
 - [List](./juice-list.md) — CSS-only stacked rows (shipped in 0.9.3; not a runtime)
 - [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core roles shipped in 0.9.3; not a runtime)
