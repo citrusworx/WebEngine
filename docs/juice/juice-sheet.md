@@ -26,13 +26,13 @@ That means it should work for:
 
 The user should not need to manually initialize sheet in their app code.
 
-There is no `Sheet()` Sig factory. Markup plus the runtime is the contract. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
+There is no `Sheet()` Sig factory. Markup plus the runtime is the contract. npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`.
 
 This surface is Emerging, not Stable. Valid markup should lay out from core CSS, and importing the JS entry should open and drag it, but the API is still likely to evolve.
 
 Sheet is a dialog. It is not a restyle of `[drawer]`, and it is not the surface `overlay="frost|tint"` utility.
 
-Sheet is the thirty-second Emerging auto-enhance runtime. It shipped in `@citrusworx/juiceui@0.9.6` (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). `@citrusworx/sigjs/juice` `bind()` does not name sheet. Binding it is unblocked and is not done. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth, avatar is the twenty-seventh, and table is the twenty-eighth; those three shipped in 0.9.3. Pressable (chrome in #299 and #301, runtime in #303) is the twenty-ninth and shipped in 0.9.4. Touchable row (chrome in #306, runtime in #308) is the thirtieth and shipped in 0.9.4. Keyboard avoider (chrome in #310, runtime in #311) shipped in 0.9.5. Sheet chrome landed in #316 and the runtime in #317, and both shipped in 0.9.6. All thirty-two stay Emerging.
+Sheet is the thirty-second Emerging auto-enhance runtime. It shipped in `@citrusworx/juiceui@0.9.6` (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. `juice:change` comes from `[sheet-overlay]`. **1.1.1** does not name sheet. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth, avatar is the twenty-seventh, and table is the twenty-eighth; those three shipped in 0.9.3. Pressable (chrome in #299 and #301, runtime in #303) is the twenty-ninth and shipped in 0.9.4. Touchable row (chrome in #306, runtime in #308) is the thirtieth and shipped in 0.9.4. Keyboard avoider (chrome in #310, runtime in #311) shipped in 0.9.5. Sheet chrome landed in #316 and the runtime in #317, and both shipped in 0.9.6. All thirty-two stay Emerging.
 
 ## When to use it
 
@@ -253,7 +253,7 @@ Aim the shadow up without editing a theme:
 
 - No `Sheet()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
 - This surface is Emerging, not Stable. Sheet is the thirty-second Emerging auto-enhance runtime. It shipped in 0.9.6. The latest published cut is `@citrusworx/juiceui@0.9.6`. Keyboard avoider remains the thirty-first and shipped in 0.9.5. All thirty-two stay Emerging.
-- `@citrusworx/sigjs/juice` `bind()` does not name sheet. Do not pass `"sheet"` as a `JuiceRuntimeName`. See [Sheet runtime](./juice-sheet-runtime.md#sig-bind).
+- npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet. Pass `"sheet"` on juiceui **0.9.6** or newer. On **0.9.5** it throws. **1.1.1** does not name sheet. `juice:change` comes from `[sheet-overlay]`. See [Sheet runtime](./juice-sheet-runtime.md#sig-bind).
 - Color roles are optional. They fall through to `--juice-drawer-*`. There is no required sheet role. Layout roles stay on `:root`.
 - The drawer fallback for `--juice-sheet-panel-shadow` points down. Set `--juice-sheet-panel-shadow` when the shadow should aim up.
 - `[sheet] { overflow: hidden }` clips to the panel. The `44px` handle target is kept inside the top edge so that clip does not shorten the hit area.

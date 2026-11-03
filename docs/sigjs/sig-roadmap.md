@@ -59,7 +59,7 @@ The split — Juice for structure, Sig for behavior — is the product story. Th
 
 ### 6. The Juice runtime hookup is done
 
-`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. Published **1.0.0** names 28 `JuiceRuntimeName` values, including icon button, avatar, and table. Workspace **1.1.0** (not published) names 32, through sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws.
+`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. npm **1.1.2** names 32 `JuiceRuntimeName` values, through sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** names 31, through keyboard-avoider, and does not bind sheet. Published **1.0.0** names 28, including icon button, avatar, and table.
 
 `state.set` writes back for switch, checkbox, disclosure, modal, and icon button (`pressed`, `[toggle]` hosts only). A refused icon-button write leaves the signal on the host. Pressable, touchable-row, keyboard-avoider, sheet, avatar, and table are read-only. Pressable’s opt-in `juice:longpress` is a separate event; `bind` follows `juice:change`. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. Sheet does dispatch `juice:change` from `[sheet-overlay]` with `{ open, detent, dragging, modal }`. The first observation is silent.
 
@@ -239,6 +239,6 @@ The next stage is refinement:
 - lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
-- the public surface is in [API surface](./api-surface.md). `bindList` stays experimental. **1.0.0** is this surface, and npm `latest` is **1.0.0** (published 2026-10-29)
+- the public surface is in [API surface](./api-surface.md). `bindList` stays experimental. **1.0.0** froze that core surface (published 2026-10-29). npm `latest` is **1.1.2** (published 2026-11-03), which binds all 32 Juice runtimes including sheet. **1.1.1** binds 31 and does not name sheet.
 
 That is a strong place to be. The docs stay with [Status](./sig-status.md), [API surface](./api-surface.md), and the APIs in `libraries/sig/src`.

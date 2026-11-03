@@ -75,7 +75,7 @@ The card is created once. Only the text node updates. The [page tutorial](./sig-
 
 `bind` copies a Juice host into a Sig signal and, for five runtimes, writes back. Juice widgets already work without this import. Listen for `juice:change` or call `getState()` yourself. That contract is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
-It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. Published npm **1.0.0** binds 28 names, through `table`. Workspace **1.1.0** (not published) adds `pressable`, `touchable-row`, `keyboard-avoider`, and `sheet`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. Workspace **1.1.0** names it. On **0.9.5** binding it throws.
+It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. npm **1.1.2** binds 32 names, through `sheet`. **1.1.1** binds 31, through `keyboard-avoider`, and does not name `sheet`. Published npm **1.0.0** binds 28 names, through `table`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. npm **1.1.2** names it. On **0.9.5** binding it throws. `juice:change` for sheet comes from `[sheet-overlay]`. npm `@citrusworx/juiceui` latest is **0.9.6**.
 
 ```ts
 import "@citrusworx/juiceui";
@@ -101,9 +101,9 @@ A `bind` call during a Sig component function disposes with that view. A bind ou
 
 ### Juice versions
 
-The published-Sig column was checked against the tarballs of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. **0.9.6** keeps that published column: npm **1.0.0** still has no `sheet` name. The optional peer range is still `>=0.9.1 <1`. Workspace **1.1.0** uses the same feature detection: a missing start function throws, and the module still loads when the named imports of the original 25 succeed.
+The **1.0.0** column was checked against the tarball of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The **1.1.2** column is that same feature detection with sheet included. A missing start function throws, and the module still loads when the named imports of the original 25 succeed. **1.1.1** is the 31-name tarball (`gitHead` `850e91bb`): sheet is not a name on any Juice version. The optional peer range is still `>=0.9.1 <1`.
 
-| Juice | `import "@citrusworx/sigjs/juice"` | Published Sig 1.0.0 | Workspace Sig 1.1.0 |
+| Juice | `import "@citrusworx/sigjs/juice"` | Published Sig 1.0.0 | Published Sig 1.1.2 |
 |---|---|---|---|
 | 0.9.1 | Throws. Missing named export `startDisclosureRuntime`. Also missing field, input, select, spinner, and textarea | None. The module does not evaluate | None. The module does not evaluate |
 | 0.9.2 | Loads | 25. Icon button, avatar, and table throw | 25. The seven newer names throw |
@@ -195,7 +195,7 @@ A host that matches an earlier row stays on that runtime. `[switch]` wins over `
 | sheet | | read-only. The controller can `open` and `close`; `bind` does not call them. The first observation is silent |
 | The other 21 | | `set` updates the signal only. The next host event overwrites it |
 
-Local state shapes for the seven newer names. Icon button, avatar, and table are in published Sig 1.0.0. Pressable, touchable-row, keyboard-avoider, and sheet are in workspace 1.1.0.
+Local state shapes for the seven newer names. Icon button, avatar, and table are in published Sig 1.0.0. Pressable, touchable-row, and keyboard-avoider are in **1.1.1**. Sheet is in **1.1.2**.
 
 | Runtime | State |
 |---|---|

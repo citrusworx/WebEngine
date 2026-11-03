@@ -46,7 +46,7 @@ That must pass before publishing.
 - Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. Icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet auto-start with that entry.
 - See [Avatar](./juice-avatar.md) [Table](./juice-table.md)
 - [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), [Keyboard avoider](./juice-keyboard-avoider-runtime.md), and [Sheet](./juice-sheet-runtime.md). Sheet shipped in 0.9.6.
-- Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Binding sheet is unblocked and is not done. Skeleton (`[skeleton]`) is CSS-only loading chrome.
+- npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`. Skeleton (`[skeleton]`) is CSS-only loading chrome.
 - It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3. See [Skeleton](./juice-skeleton.md).
 - List (`[list]`) is CSS-only stacked rows. It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3.
 - See [List](./juice-list.md). Badge (`[badge]`) is CSS-only label chrome.

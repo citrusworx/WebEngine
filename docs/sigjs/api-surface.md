@@ -1,6 +1,6 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. npm `latest` is **1.0.0** (published 2026-10-29) and matches **0.7.2** (2026-10-27, PR #295). The workspace `package.json` is **1.1.0**, not published yet. **1.1.0** adds `pressable`, `touchable-row`, `keyboard-avoider`, and `sheet` to `JuiceRuntimeName`. That is additive. `sheet` binds on juiceui **0.9.6** or newer and throws on **0.9.5**.
+Freeze inventory for `@citrusworx/sigjs`. **1.0.0** froze the public entries. npm `latest` is **1.1.2** (published 2026-11-03, `gitHead` `e4c4a0fc`). **1.0.0** (published 2026-10-29) matches **0.7.2** (2026-10-27, PR #295). **1.1.1** adds `pressable`, `touchable-row`, and `keyboard-avoider` (thirty-one names) and does not bind `sheet`. **1.1.2** adds `sheet`. That is additive. `sheet` binds on juiceui **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.0** was never published.
 
 **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
@@ -121,7 +121,7 @@ Not re-exported from `.`. The main entry does not import Juice.
 
 | Export | Entry point | Kind | Classification | Reason | Notes |
 |---|---|---|---|---|---|
-| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. npm 0.7.2 and 1.0.0 name twenty-eight, through table. Workspace 1.1.0 (not published) names thirty-two, through sheet. Throws if the runtime cannot be inferred or `getState()` is null. Binding one of the seven newer names when that start function is missing throws `needs a newer @citrusworx/juiceui`. The module loads on Juice 0.9.2 and not on 0.9.1. Icon-button, avatar, and table shipped in juiceui 0.9.3. Sheet shipped in juiceui 0.9.6. On 0.9.5 sheet throws. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
+| `bind` | `./juice` | function | stable | Optional host adapter. Returns `{ state, dispose }`. | Published in 0.4.0. npm 0.7.2 and 1.0.0 name twenty-eight, through table. npm 1.1.1 names thirty-one, through keyboard-avoider, and does not bind sheet. npm 1.1.2 names thirty-two, through sheet. `juice:change` for sheet comes from `[sheet-overlay]`. Throws if the runtime cannot be inferred or `getState()` is null. Binding one of the seven newer names when that start function is missing throws `needs a newer @citrusworx/juiceui`. The module loads on Juice 0.9.2 and not on 0.9.1. Icon-button, avatar, and table shipped in juiceui 0.9.3. Sheet shipped in juiceui 0.9.6. On 0.9.5 sheet throws. See [Runtime binding](./sig-juice-integration.md#runtime-binding). |
 | `JuiceBinding` | `./juice` | type | stable | Return type of `bind`. | |
 | `JuiceBinding.state` | `./juice` | property | stable | Host state copied into a signal-shaped object. | A `JuiceSignal`, not the object `Signal()` returns. |
 | `JuiceBinding.dispose` | `./juice` | method | stable | Drops the host listeners. A second call does nothing. | A `bind` during Sig render also disposes on unmount, through `effect` and the internal cleanup scope. |

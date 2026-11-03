@@ -24,7 +24,7 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 | --- | --- | --- | --- |
 | Modal | `[modal-overlay]` | Centered dialog. Focus trap. One modal at a time. | [Modal](./juice-modal-runtime.md) |
 | Drawer | `[drawer-overlay]` | Edge dialog, `left` or `right`. Focus trap. | [Drawer](./juice-drawer-runtime.md) |
-| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. Shipped in 0.9.6. A `JuiceRuntimeName` in workspace Sig 1.1.0. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. | [Sheet](./juice-sheet-runtime.md) |
+| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. Shipped in 0.9.6. A `JuiceRuntimeName` in npm sigjs **1.1.2** (32 names). `juice:change` comes from `[sheet-overlay]`. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. sigjs **1.1.1** does not name sheet (31 names). | [Sheet](./juice-sheet-runtime.md) |
 | Popover | `[popover-root]` | Panel anchored to a control. Surface is `[popover-panel]`. | [Popover](./juice-popover-runtime.md) |
 | Tooltip | `[tooltip-root]` | Hover or focus tip. Surface is `[tooltip-panel]`. | [Tooltip](./juice-tooltip-runtime.md) |
 | Toast | `[toast-region]` | Corner stack of messages. Default `top-right`. | [Toast](./juice-toast-runtime.md) |
@@ -73,7 +73,7 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 
 | Component | Markup hook | What it's for | Docs |
 | --- | --- | --- | --- |
-| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. Shipped in 0.9.5. A `JuiceRuntimeName` in workspace Sig 1.1.0. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. Shipped in 0.9.5. A `JuiceRuntimeName` in npm sigjs **1.1.1** and **1.1.2**. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
 
 CSS-only, and not part of the thirty-two:
 
@@ -230,7 +230,7 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-two through sheet. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is a `JuiceRuntimeName` on that workspace tree. It binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws.
+The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. npm `@citrusworx/sigjs` **1.1.2** `bind()` names the thirty-two through sheet. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** stops at `table`. `sheet` is a `JuiceRuntimeName` on **1.1.2**. It binds on `@citrusworx/juiceui` **0.9.6** or newer. On **0.9.5** it throws. `juice:change` comes from `[sheet-overlay]`.
 
 The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 
@@ -267,7 +267,7 @@ The last column is how `bind` treats `state.set`. Read-only means the signal can
 | `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | read-only. Opt-in `juice:longpress` is a separate event; `bind` follows `juice:change` |
 | `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | read-only |
 | `keyboard-avoider` | `[keyboard-avoider]` | `{ open: boolean, inset: number }` | `getState` | read-only. `juice:change` fires when `open` flips or `inset` jumps by the threshold. Smaller steps update the custom property and `getState` without moving the signal |
-| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | read-only. `juice:change` bubbles from `[sheet-overlay]`. The inner `[sheet]` does not dispatch it. The first observation is silent. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws |
+| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | read-only. `juice:change` bubbles from `[sheet-overlay]`. The inner `[sheet]` does not dispatch it. The first observation is silent. npm sigjs **1.1.2** names it. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. **1.1.1** does not name sheet |
 
 ### State notes
 
@@ -312,7 +312,7 @@ notes.dispose();
 - Avatar, table, pressable, touchable-row, keyboard-avoider, and sheet are read-only. Table has no API to set sort. Pressable, touchable-row, and keyboard-avoider expose `getState` only. Sheet's controller can open and close; `bind` does not call them.
 - The other read-only names are accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea.
 
-`JuiceRuntimeName` is thirty-two names, through `sheet`, on the workspace **1.1.0** tree (not published yet). npm `@citrusworx/sigjs@1.0.0` and `@citrusworx/sigjs@0.7.2` are twenty-eight names, through `table`.
+`JuiceRuntimeName` is thirty-two names, through `sheet`, on npm `@citrusworx/sigjs` **1.1.2**. **1.1.1** is thirty-one names, through `keyboard-avoider`, and does not name `sheet`. `@citrusworx/sigjs@1.0.0` and `@citrusworx/sigjs@0.7.2` are twenty-eight names, through `table`.
 
 Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 

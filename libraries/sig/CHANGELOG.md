@@ -1,5 +1,30 @@
 # @citrusworx/sigjs
 
+## 1.1.2
+
+Published to npm **2026-11-03** (`gitHead` `e4c4a0fc`, the PR #324 merge, 16:11 UTC). npm `latest` is **1.1.2**. Workspace `package.json` is **1.1.2**.
+
+**1.1.0** was never published. **1.1.1** published the 31-name adapter the same day and does not bind sheet. **1.1.2** is the first published cut that binds sheet. `JuiceRuntimeName` is thirty-two names, through `sheet`. The published `dist/` matches `libraries/sig/dist` on that merge. The optional `@citrusworx/juiceui` peer stays `>=0.9.1 <1`.
+
+`@citrusworx/sigjs/juice` `bind` follows pressable, touchable-row, keyboard-avoider, and sheet. Pressable, touchable-row, and keyboard-avoider are the shapes published in **1.1.1** (PR #320). Sheet is PR #324.
+
+- Sheet state is `{ open, detent, dragging, modal }`. `detent` is `"peek"`, `"half"`, or `"full"`. The host is `[sheet-overlay]`. `inferRuntime` matches `[sheet-overlay]` only. `juice:change` bubbles from that overlay, with detail `{ runtime: "sheet", state }`. The inner `[sheet]` is the dialog panel and does not dispatch the event. The first observation is silent. Later events fire when `open`, `detent`, `dragging`, or `modal` changes. `bind` is read-only and does not call `open` or `close`.
+- `startSheetRuntime` is feature-detected off the Juice module namespace. Binding sheet when that start function is missing throws `needs a newer @citrusworx/juiceui`. Sheet shipped in juiceui **0.9.6**. On **0.9.5** sheet throws. On **0.9.6** all thirty-two names bind. npm `@citrusworx/juiceui` latest is **0.9.6**.
+
+`yarn version-packages` was not used. No Sig changeset was added. A changeset would bump this manifest on the next version-packages run.
+
+## 1.1.1
+
+Published to npm **2026-11-03** (`gitHead` `850e91bb`, the PR #321 merge, 15:58 UTC). npm `latest` moved to **1.1.2** the same day. Do not republish. Use **1.1.2** for sheet.
+
+That commit includes PR #320 and does not include PR #324. The workspace `package.json` at `850e91bb` still said **1.1.0**. **1.1.0** was never published. The tarball `version` is **1.1.1**. `JuiceRuntimeName` is thirty-one names, through `keyboard-avoider`. `sheet` is not a name. Published `dist/juice.d.ts` says `sheet` is not a name. There is no `startSheetRuntime`, and `inferRuntime` does not match `[sheet-overlay]`.
+
+- Pressable state is `{ pressed, longPressed }`. The host is `[pressable]`. Opt-in `juice:longpress` is a separate bubbling cancelable event whose detail is `{ pressed: true, longPressed: true }`. `bind` does not listen for it. `juice:change` carries that gesture afterwards, and the signal follows `juice:change`.
+- Touchable-row state is `{ selected, disabled }`. The host is `[touchable-row]`. Later changes dispatch `juice:change` from the host.
+- Keyboard-avoider state is `{ open, inset }`. The host is `[keyboard-avoider]`. It does dispatch `juice:change` from each host when `open` flips, or when `inset` moves by at least the runtime threshold from the last published inset while open. It also writes `--juice-keyboard-inset` on `<html>` and `[keyboard-open]` on `<html>` and each host. Smaller inset steps update those and `getState()` without an event, so the signal stays on the last `juice:change`. `bind` does not read the custom property or the attribute.
+- All three are read-only. `state.set` updates the signal and does not call a controller.
+- `startPressableRuntime`, `startTouchableRowRuntime`, and `startKeyboardAvoiderRuntime` are feature-detected off the Juice module namespace, same as icon-button, avatar, and table. The optional peer stays `@citrusworx/juiceui` `>=0.9.1 <1`. Pressable and touchable-row shipped in juiceui **0.9.4**. Keyboard-avoider shipped in **0.9.5**.
+
 ## 1.1.0
 
 Not published yet. Workspace `package.json` is **1.1.0**. npm `latest` stays **1.0.0**.
