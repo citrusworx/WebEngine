@@ -6,6 +6,8 @@ import {
   startPopoverRuntime,
   stopPopoverRuntime,
 } from './popover-runtime.js';
+import { __resetLayerStackForTests } from '../shared/layer-stack.js';
+import { __resetLightLayersForTests } from '../shared/light-layer.js';
 import {
   flushMotion,
   stubMotionDuration,
@@ -64,6 +66,8 @@ const mockRect = (element: HTMLElement | null, value: RectInit) => {
 
 afterEach(() => {
   stopPopoverRuntime();
+  __resetLightLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
   vi.restoreAllMocks();
 });
@@ -198,7 +202,7 @@ describe('createPopover', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open modal or drawer overlay', () => {
+  it('closes on Escape even when a dialog element has no dialog runtime', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -219,44 +223,31 @@ describe('createPopover', () => {
     document.body.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
     );
-    expect(popover?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-modal')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
-    );
-
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(popover?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-drawer')?.setAttribute('hidden', '');
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
     expect(popover?.hasAttribute('hidden')).toBe(true);
+    expect(document.getElementById('open-modal')?.hasAttribute('hidden')).toBe(
+      false
+    );
 
     controller.destroy();
   });
 
-  it('yields Escape to a modal runtime that already consumed the key', async () => {
+  it('lets a popover opened after a modal own the first Escape', async () => {
     const { createModal, stopModalRuntime } = await import(
       '../modal/modal-runtime.js'
     );
     document.body.innerHTML = `
-      <div modal-overlay id="open-modal">
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
         <div modal>
           <button type="button" modal-close aria-label="Close">×</button>
           <div modal-header><h2>Account</h2></div>
-        </div>
-      </div>
-      <button type="button" id="demo-open" aria-controls="demo-pop">Open</button>
-      <div popover-root id="demo-pop">
-        <div popover-panel>
-          <button type="button" popover-close aria-label="Close">×</button>
-          <div popover-body>Help</div>
+          <button type="button" id="demo-open" aria-controls="demo-pop">Help</button>
+          <div popover-root id="demo-pop" hidden>
+            <div popover-panel>
+              <button type="button" popover-close aria-label="Close">×</button>
+              <div popover-body>Help</div>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -265,19 +256,27 @@ describe('createPopover', () => {
 
     const modal = createModal();
     const popover = createPopover({ root: document.body });
-    const overlay = document.getElementById('open-modal');
+    const overlay = document.getElementById('host-modal');
     const root = document.getElementById('demo-pop');
+    const pressEscape = () => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Escape',
+        })
+      );
+    };
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        bubbles: true,
-        cancelable: true,
-        key: 'Escape',
-      })
-    );
+    modal.open(document.getElementById('open-modal'));
+    popover.open(document.getElementById('demo-open'));
+    pressEscape();
 
+    expect(root?.hasAttribute('hidden')).toBe(true);
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+
+    pressEscape();
     expect(overlay?.hasAttribute('hidden')).toBe(true);
-    expect(root?.hasAttribute('hidden')).toBe(false);
 
     modal.destroy();
     popover.destroy();
@@ -366,7 +365,7 @@ describe('createPopover', () => {
     controller.destroy();
   });
 
-  it('dismisses on outside click and stays open for clicks inside', () => {
+  it('dismisses on outside click and stays open for clicks inside', async () => {
     document.body.innerHTML = `
       ${popoverMarkup}
       <button type="button" id="outside">Outside</button>
@@ -388,6 +387,15 @@ describe('createPopover', () => {
     root?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(root?.hasAttribute('hidden')).toBe(false);
 
+    outside?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(root?.hasAttribute('hidden')).toBe(true);
+
+    controller.open(opener);
+    expect(root?.hasAttribute('hidden')).toBe(false);
+    outside?.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true })
+    );
+    await Promise.resolve();
     outside?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(root?.hasAttribute('hidden')).toBe(true);
 

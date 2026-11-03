@@ -29,23 +29,30 @@
  * Open on opener click / Enter / Space (native buttons use click).
  * ArrowDown on a closed opener opens and focuses the first enabled item
  * (or the previously active item). ArrowUp opens onto the last enabled
- * item. Close on Escape (yields when an open [modal-overlay] or
- * [drawer-overlay] exists — menu sits with popover in the dialog-adjacent
- * band), outside click, Tab (closes without activating; focus returns
- * to the opener so Tab's default can move to the next/previous control),
- * or after activating an item. Activating an item clicks it and restores
- * focus to the opener. Disabled items are intercepted on capture so
- * author click handlers never run. Opening one managed menu closes the
- * others. Modal / drawer / popover are not auto-closed. ArrowUp/Down on
- * a closed menu apply only to the opener. A controller claims opener
- * clicks only when it can resolve a panel (custom `menuSelector` can
- * coexist with the auto singleton).
+ * item. Close on Escape from the layer stack (the last layer opened owns
+ * it; this runtime does not handle Escape itself), outside pointerdown
+ * when this menu is the top layer, Tab (closes without activating only
+ * while it is the top layer; focus returns to the opener so Tab's default
+ * can move to the next/previous control), or after activating an item.
+ * Activating an item clicks it and restores focus to the opener. A
+ * cascade close does not restore focus. Disabled items are intercepted
+ * on capture so author click handlers never run. Opening one managed
+ * menu closes the others. Modal / drawer / popover are not auto-closed.
+ * ArrowUp/Down on a closed menu apply only to the opener. A controller
+ * claims opener clicks only when it can resolve a panel (custom
+ * `menuSelector` can coexist with the auto singleton).
  */
 
 import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { controlIds } from '../shared/ids.js';
-import { hasOpenDialogOverlay } from '../shared/overlays.js';
+import { isTopLayer } from '../shared/layer-stack.js';
+import {
+  createLightLayers,
+  lightOutsideAlreadyDismissed,
+  markLightOutsideDismissed,
+  type LightLayerController,
+} from '../shared/light-layer.js';
 
 export type MenuOptions = {
   root?: ParentNode;
@@ -162,6 +169,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const changes = createJuiceChanges<MenuState>('menu');
+  let layers: LightLayerController;
 
   const getMenuRoots = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
@@ -437,11 +445,19 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     }
   };
 
-  const hideMenu = (menuRoot: HTMLElement, restore: boolean) => {
+  const hideMenu = (
+    menuRoot: HTMLElement,
+    restore: boolean,
+    release: 'now' | 'after-pointer' = 'now'
+  ) => {
+    if (!isMenuOpen(menuRoot)) return;
+
     ensureMenuAccessibility(menuRoot);
     setOpenState(menuRoot, false);
     setExpanded(menuRoot, false);
     applyRovingTabindex(menuRoot, null);
+    if (release === 'after-pointer') layers.popAfterPointer(menuRoot);
+    else layers.pop(menuRoot);
     if (restore) {
       restoreFocus(menuRoot);
     } else {
@@ -470,6 +486,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
     const item = pickOpenItem(menuRoot, prefer);
     setActiveItem(menuRoot, item, true);
+    layers.connect(menuRoot, true);
 
     if (!item) {
       const panel = getPanel(menuRoot);
@@ -491,6 +508,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     if (isMenuOpen(menuRoot)) {
       ensureMenuAccessibility(menuRoot);
       setExpanded(menuRoot, true);
+      layers.connect(menuRoot, false);
       return;
     }
     const opener =
@@ -581,6 +599,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
       setExpanded(menuRoot, isMenuOpen(menuRoot));
       changes.note(menuRoot, { open: isMenuOpen(menuRoot) });
     });
+    layers.reconcile();
   };
 
   const resolveItemFromEvent = (target: Element, menuRoot: HTMLElement) => {
@@ -648,6 +667,8 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
     const openMenu = getOpenMenuRoot();
     if (!openMenu) return;
+    if (lightOutsideAlreadyDismissed()) return;
+    if (!isTopLayer(openMenu)) return;
     if (!claimEvent(event)) return;
     hideMenu(openMenu, false);
   };
@@ -660,18 +681,9 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     const menuRoot = resolveContainingRoot(target);
     const openMenu = getOpenMenuRoot();
 
-    if (event.key === 'Escape') {
-      if (!openMenu) return;
-      if (hasOpenDialogOverlay() || event.defaultPrevented) return;
-      if (!claimEvent(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close(openMenu);
-      return;
-    }
-
     if (event.key === 'Tab') {
       if (!openMenu) return;
+      if (!isTopLayer(openMenu)) return;
       if (!claimEvent(event)) return;
       // Restore to the opener so Tab's default keeps sequential focus
       // (hiding the focused menuitem would drop the tab origin).
@@ -782,6 +794,21 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
       ? new MutationObserver(() => scheduleSync())
       : null;
 
+  layers = createLightLayers({
+    kind: 'menu',
+    getElements: getMenuRoots,
+    isOpen: isMenuOpen,
+    dismiss: (menuRoot, reason) => {
+      if (!isManagedRoot(menuRoot)) return;
+      if (reason === 'outside') {
+        markLightOutsideDismissed();
+        hideMenu(menuRoot, false, 'after-pointer');
+        return;
+      }
+      hideMenu(menuRoot, reason === 'escape');
+    },
+  });
+
   document.addEventListener('click', handleDisabledItemClickCapture, true);
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('keydown', handleDocumentKeydown);
@@ -820,6 +847,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
       document.removeEventListener('click', handleDocumentClick);
       document.removeEventListener('keydown', handleDocumentKeydown);
       observer?.disconnect();
+      layers.destroy();
     },
     sync,
     open,

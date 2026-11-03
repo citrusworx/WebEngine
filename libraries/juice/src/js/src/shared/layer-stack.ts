@@ -1,11 +1,11 @@
 /**
  * Internal open-order overlay stack. Not a public export.
  *
- * B2a wires modal, drawer, and sheet so the last one opened owns Escape
- * and backdrop presses. Popover, menu, and combobox still use the
- * type-ranked queries in overlays.ts until B2b. Toast and tooltip stay
- * off the stack. Sheet body scroll lock is acquireScrollLock. Modal
- * and drawer do not lock scroll.
+ * Modal, drawer, sheet, popover, menu, and combobox share this stack
+ * so the last one opened owns Escape and outside pointerdown. Dialog
+ * outside presses stay backdrop-only. Toast and tooltip stay off the
+ * stack. Sheet body scroll lock is acquireScrollLock. Modal and drawer
+ * do not lock scroll.
  *
  * Order is open time. The last push is the top. Pushing an element that
  * is already stacked refreshes that slot in place (kind, modal, dismiss,

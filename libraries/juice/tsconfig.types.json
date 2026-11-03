@@ -53,6 +53,7 @@
     "src/js/src/shared/overlays.ts",
     "src/js/src/shared/layer-stack.ts",
     "src/js/src/shared/dialog-layer.ts",
+    "src/js/src/shared/light-layer.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"

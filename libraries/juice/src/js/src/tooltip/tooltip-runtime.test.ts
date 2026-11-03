@@ -230,78 +230,84 @@ describe('createTooltip', () => {
     controller.destroy();
   });
 
-  it('closes on Escape and yields to modal, drawer, popover, menu, and combobox', () => {
+  it('closes on Escape without closing an underlying dialog or popover', async () => {
+    const { createModal, stopModalRuntime } = await import(
+      '../modal/modal-runtime.js'
+    );
+    const { createPopover, stopPopoverRuntime } = await import(
+      '../popover/popover-runtime.js'
+    );
     document.body.innerHTML = `
-      <div modal-overlay id="open-modal">
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
         <div modal><h2>Account</h2></div>
       </div>
+      <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+      <div popover-root id="host-pop" hidden>
+        <div popover-panel><div popover-body>Help</div></div>
+      </div>
       <button type="button" id="demo-save" aria-describedby="tip-1">Save</button>
-      <div tooltip-root id="tip-1">
+      <div tooltip-root id="tip-1" hidden>
         <div tooltip-panel role="tooltip">Saves your draft</div>
+      </div>
+      <div toast-region>
+        <div toast id="open-toast">Saved.</div>
       </div>
     `;
     stopTooltipRuntime();
+    stopModalRuntime();
+    stopPopoverRuntime();
 
-    const controller = createTooltip({ root: document.body, hideDelay: 0 });
+    const tooltip = createTooltip({ root: document.body, hideDelay: 0 });
+    const modal = createModal();
+    const popover = createPopover({ root: document.body });
     const tip = document.getElementById('tip-1');
     const pressEscape = () => {
       document.body.dispatchEvent(
-        new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+        new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Escape',
+        })
       );
     };
 
-    pressEscape();
-    expect(tip?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-modal')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
-    );
-
-    pressEscape();
-    expect(tip?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-drawer')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div popover-root id="open-pop"><div popover-panel>Help</div></div>`
-    );
-
-    pressEscape();
-    expect(tip?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-pop')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>`
-    );
-
-    pressEscape();
-    expect(tip?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-menu')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div combobox><ul combobox-list id="open-list"><li combobox-option>Apple</li></ul></div>`
-    );
-
-    pressEscape();
-    expect(tip?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-list')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div toast-region><div toast id="open-toast">Saved.</div></div>`
-    );
-
+    modal.open(document.getElementById('open-modal'));
+    tooltip.show(document.getElementById('demo-save'));
     pressEscape();
     expect(tip?.hasAttribute('hidden')).toBe(true);
+    expect(document.getElementById('host-modal')?.hasAttribute('hidden')).toBe(
+      false
+    );
     expect(document.getElementById('open-toast')?.hasAttribute('hidden')).toBe(
       false
     );
 
-    controller.destroy();
+    tooltip.show(document.getElementById('demo-save'));
+    modal.close(document.getElementById('host-modal'));
+    popover.open(document.getElementById('open-pop'));
+    pressEscape();
+    expect(tip?.hasAttribute('hidden')).toBe(true);
+    expect(document.getElementById('host-pop')?.hasAttribute('hidden')).toBe(
+      false
+    );
+    expect(document.getElementById('open-toast')?.hasAttribute('hidden')).toBe(
+      false
+    );
+
+    pressEscape();
+    expect(document.getElementById('host-pop')?.hasAttribute('hidden')).toBe(
+      true
+    );
+    expect(document.getElementById('open-toast')?.hasAttribute('hidden')).toBe(
+      false
+    );
+
+    popover.destroy();
+    modal.destroy();
+    tooltip.destroy();
+    stopPopoverRuntime();
+    stopModalRuntime();
   });
 
   it('keeps only one tooltip open at a time', () => {

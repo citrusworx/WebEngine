@@ -21,12 +21,12 @@
  * `aria-activedescendant` plus `combobox-option="active"` paint.
  * Committed choice is `aria-selected="true"`.
  *
- * Open on input focus, typing, or trigger click. Close on Escape
- * (yields when an open [modal-overlay], [drawer-overlay],
- * [popover-root], or [menu] exists — those surfaces own Escape first;
- * menu sits with popover in the dialog-adjacent band),
- * outside click, blur (option mousedown preventDefault so the input
- * keeps focus through click-to-select), or after select.
+ * Open on input focus, typing, or trigger click. Close on Escape from
+ * the layer stack (the last layer opened owns it; this runtime does not
+ * handle Escape itself), outside pointerdown when this list is the top
+ * layer, blur (option mousedown preventDefault so the input keeps focus
+ * through click-to-select), or after select. A cascade close uses the
+ * same hide path and does not move focus.
  *
  * Filter: case-insensitive substring against option text and, when
  * present, `data-value`. Non-matches get `hidden` on the option.
@@ -38,7 +38,7 @@
  *   Home / End           first / last visible option while open
  *                        (closed: native input cursor)
  *   Enter                select the active option
- *   Escape               close (yields to open dialog / popover / menu)
+ *   Escape               close when this list is the top layer
  *   Tab                  close without committing the active option
  *                        (APG manual selection). Focus moves on.
  *
@@ -56,11 +56,13 @@
 
 import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
+import { isTopLayer } from '../shared/layer-stack.js';
 import {
-  hasOpenDialogOverlay,
-  hasOpenMenu,
-  hasOpenPopover,
-} from '../shared/overlays.js';
+  createLightLayers,
+  lightOutsideAlreadyDismissed,
+  markLightOutsideDismissed,
+  type LightLayerController,
+} from '../shared/light-layer.js';
 
 export type ComboboxOptions = {
   root?: ParentNode;
@@ -174,9 +176,6 @@ const isInputDisabled = (input: HTMLElement) => {
 const isComposingKey = (event: KeyboardEvent) =>
   event.isComposing || event.keyCode === 229;
 
-const shouldYieldEscape = () =>
-  hasOpenDialogOverlay() || hasOpenPopover() || hasOpenMenu();
-
 const noopController = (): ComboboxController => ({
   destroy: () => {},
   sync: () => {},
@@ -198,6 +197,7 @@ export const createCombobox = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const changes = createJuiceChanges<ComboboxState>('combobox');
+  let layers: LightLayerController;
 
   const getComboboxes = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
@@ -432,12 +432,21 @@ export const createCombobox = (
     changes.note(combobox, readComboboxState(combobox));
   };
 
-  const hideCombobox = (combobox: HTMLElement) => {
+  const hideCombobox = (
+    combobox: HTMLElement,
+    release: 'now' | 'after-pointer' = 'now'
+  ) => {
+    const wasOpen = isListOpen(combobox);
+
     ensureComboboxAccessibility(combobox);
     setOpenState(combobox, false);
     setExpanded(combobox, false);
     setActiveOption(combobox, null);
     revealOptions(combobox);
+    if (wasOpen) {
+      if (release === 'after-pointer') layers.popAfterPointer(combobox);
+      else layers.pop(combobox);
+    }
     publishCombobox(combobox);
   };
 
@@ -455,6 +464,7 @@ export const createCombobox = (
     applyFilter(combobox);
     setOpenState(combobox, true);
     setExpanded(combobox, true);
+    layers.connect(combobox, true);
     publishCombobox(combobox);
   };
 
@@ -467,6 +477,7 @@ export const createCombobox = (
       ensureComboboxAccessibility(combobox);
       applyFilter(combobox);
       setExpanded(combobox, true);
+      layers.connect(combobox, false);
       return;
     }
     showCombobox(combobox);
@@ -576,6 +587,7 @@ export const createCombobox = (
       setExpanded(combobox, false);
       publishCombobox(combobox);
     });
+    layers.reconcile();
   };
 
   const resolveOptionFromEvent = (target: Element, combobox: HTMLElement) => {
@@ -623,7 +635,10 @@ export const createCombobox = (
       return;
     }
 
-    const openComboboxes = getComboboxes().filter(isListOpen);
+    if (lightOutsideAlreadyDismissed()) return;
+    const openComboboxes = getComboboxes().filter(
+      (openCombobox) => isListOpen(openCombobox) && isTopLayer(openCombobox)
+    );
     if (openComboboxes.length === 0) return;
     if (!claimEvent(event)) return;
     openComboboxes.forEach((openCombobox) => hideCombobox(openCombobox));
@@ -701,18 +716,8 @@ export const createCombobox = (
     if (!input && !trigger) return;
     if (input && isInputDisabled(input)) return;
 
-    if (event.key === 'Escape') {
-      if (!isListOpen(combobox)) return;
-      if (shouldYieldEscape() || event.defaultPrevented) return;
-      if (!claimEvent(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close(combobox);
-      return;
-    }
-
     if (event.key === 'Tab') {
-      if (!isListOpen(combobox)) return;
+      if (!isListOpen(combobox) || !isTopLayer(combobox)) return;
       if (!claimEvent(event)) return;
       close(combobox);
       return;
@@ -803,6 +808,21 @@ export const createCombobox = (
       ? new MutationObserver(() => scheduleSync())
       : null;
 
+  layers = createLightLayers({
+    kind: 'combobox',
+    getElements: getComboboxes,
+    isOpen: isListOpen,
+    dismiss: (combobox, reason) => {
+      if (!isManagedCombobox(combobox)) return;
+      if (reason === 'outside') {
+        markLightOutsideDismissed();
+        hideCombobox(combobox, 'after-pointer');
+        return;
+      }
+      hideCombobox(combobox);
+    },
+  });
+
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('mousedown', handleDocumentMouseDown);
   document.addEventListener('focusin', handleDocumentFocusIn);
@@ -841,6 +861,7 @@ export const createCombobox = (
       document.removeEventListener('input', handleDocumentInput);
       document.removeEventListener('keydown', handleDocumentKeydown);
       observer?.disconnect();
+      layers.destroy();
     },
     sync,
     open,

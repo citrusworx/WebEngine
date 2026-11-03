@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { __resetLayerStackForTests } from '../shared/layer-stack.js';
+import { __resetLightLayersForTests } from '../shared/light-layer.js';
 import {
   createMenu,
   startMenuRuntime,
@@ -33,6 +35,8 @@ const menuMarkup = `
 
 afterEach(() => {
   stopMenuRuntime();
+  __resetLightLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
   vi.restoreAllMocks();
 });
@@ -300,7 +304,7 @@ describe('createMenu', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open modal or drawer overlay', () => {
+  it('closes on Escape even when a dialog element has no dialog runtime', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -319,29 +323,66 @@ describe('createMenu', () => {
     document.body.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
     );
-    expect(panel?.hasAttribute('hidden')).toBe(false);
+    expect(panel?.hasAttribute('hidden')).toBe(true);
     expect(document.getElementById('open-modal')?.hasAttribute('hidden')).toBe(
       false
     );
 
-    document.getElementById('open-modal')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
-    );
-
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(panel?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-drawer')?.setAttribute('hidden', '');
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(panel?.hasAttribute('hidden')).toBe(true);
-
     controller.destroy();
+  });
+
+  it('lets a menu opened after a modal own the first Escape', async () => {
+    const { createModal, stopModalRuntime } = await import(
+      '../modal/modal-runtime.js'
+    );
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <div menu-root>
+            <button type="button" menu-button id="file-open">File</button>
+            <div menu id="file-menu" hidden>
+              <button type="button" menuitem>New</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    stopMenuRuntime();
+    stopModalRuntime();
+
+    const modal = createModal();
+    const menu = createMenu({ root: document.body });
+    const pressEscape = () => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Escape',
+        })
+      );
+    };
+
+    modal.open(document.getElementById('open-modal'));
+    menu.open(document.getElementById('file-open'));
+    pressEscape();
+
+    expect(document.getElementById('file-menu')?.hasAttribute('hidden')).toBe(
+      true
+    );
+    expect(document.getElementById('host-modal')?.hasAttribute('hidden')).toBe(
+      false
+    );
+
+    pressEscape();
+    expect(document.getElementById('host-modal')?.hasAttribute('hidden')).toBe(
+      true
+    );
+
+    menu.destroy();
+    modal.destroy();
+    stopModalRuntime();
   });
 
   it('closes on outside click without restoring focus', () => {
