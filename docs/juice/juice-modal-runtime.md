@@ -98,7 +98,7 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 3. Fill missing overlay, dialog, and title ids, plus `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading.
 4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[modal-close]` name (`aria-label="Close"`).
 5. Enter removes native `hidden`, then plays; exit plays first, and `hidden` is set only after it finishes, while opening one overlay closes any other open overlay.
-6. Trap focus and take Escape while this overlay is the top layer, including during exit, and restore focus to the opener after `hidden` is set. Modal does not lock page scroll.
+6. Trap focus and take Escape while this overlay is the top layer, including during exit, and restore focus to the opener after `hidden` is set. A `'cascade'` close does not restore that opener. Modal does not lock page scroll.
 7. Handle opener, close, and backdrop clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
 
 - Orphan `aria-controls` that do not target a `[modal-overlay]` are ignored.
@@ -114,7 +114,7 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
 Enter removes `hidden` on `[modal-overlay]`, moves focus in, then sets `data-motion-state="entering"`. The scrim fades in and the panel rises from `translateY(0.75rem)` on `--juice-motion-duration-base` and `--juice-motion-ease-enter`. The state becomes `entered` when that finishes.
 
-Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel drops to `translateY(0.75rem)` on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
+Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel drops to `translateY(0.75rem)` on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then. A `'cascade'` close skips that restore.
 
 <details>
 <summary>Edge cases</summary>

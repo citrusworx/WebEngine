@@ -15,7 +15,8 @@
  * only when this overlay is the top of the stack and that layer is modal.
  * A non-modal layer on top suspends the trap until it closes. Replacing
  * another open modal pops it, so layers above that modal dismiss with
- * reason 'cascade'. Focus return stays here.
+ * reason 'cascade'. A cascade close does not return focus. Escape, an
+ * explicit close, and a backdrop close still do.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[modal-overlay]` id. `[modal-close]` closes the containing overlay.

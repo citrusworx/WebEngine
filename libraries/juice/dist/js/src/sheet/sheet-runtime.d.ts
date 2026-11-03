@@ -17,7 +17,8 @@
  * stack and that layer is modal. `sheet-overlay="none"` never traps, and
  * while that non-modal sheet is the top layer it suspends the trap of a
  * modal underneath. The trap resumes when the sheet closes. Focus return
- * stays here.
+ * stays here. A cascade close does not return focus. Escape, an explicit
+ * close, and a backdrop close still do.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[sheet-overlay]` id. `[sheet-close]` closes the containing overlay.

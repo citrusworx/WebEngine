@@ -121,7 +121,7 @@ The first observation is silent. Later events fire when that shape changes. Ther
 3. Fill missing overlay, dialog, and title ids from `name` or `id` (`filters-overlay`, `filters-dialog`, `filters-title`).
 4. On open, write the resting `[detent]`: half when half is allowed, otherwise full when full is allowed, otherwise peek. While `[keyboard-open]` is set, that rest is `full` when full is allowed, otherwise the highest allowed detent.
 5. Enter removes native `hidden`, then plays. Exit plays first. `hidden` is set only after it finishes. Reduced motion, or a computed duration of `0`, does both in the same turn. An in-flight exit stays the open dialog until that commit. A new open of that same overlay cancels the exit.
-6. Modal sheets (boolean, omitted, or `"static"`) trap focus while the sheet is the top layer, move focus in, restore it when `hidden` is set, and set `aria-modal="true"`. `sheet-overlay="none"` does none of that, and while it is the top layer it suspends a modal trap underneath.
+6. Modal sheets (boolean, omitted, or `"static"`) trap focus while the sheet is the top layer, move focus in, restore it when `hidden` is set, and set `aria-modal="true"`. A `'cascade'` close does not restore the opener. `sheet-overlay="none"` does none of that, and while it is the top layer it suspends a modal trap underneath.
 7. Backdrop click closes unless `sheet-overlay="static"`, `sheet-overlay="none"`, or `closeOnBackdrop` is `false`. `[sheet-close]` closes. A click on the panel does not.
 8. Drag from the handle or the header after an `8px` slop. `[sheet-body]` hands off only when its `scrollTop` is `0` and the gesture moves down. Release snaps. See [Drag](#drag).
 

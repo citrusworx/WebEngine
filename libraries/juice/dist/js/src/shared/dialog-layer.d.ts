@@ -6,7 +6,9 @@
  * when the close commits (hidden is set), so an in-flight exit stays the
  * open dialog until then. Destroy drops the slot with no dismiss.
  * Replacing an open dialog pops it, so layers above dismiss top-down with
- * reason 'cascade'. The focus trap belongs to a runtime only when its
+ * reason 'cascade'. A cascade dismiss closes that dialog and skips opener
+ * focus restore. The dialog that was popped still restores when its own
+ * close asked for one. The focus trap belongs to a runtime only when its
  * overlay is the top of the stack and that layer is modal. A non-modal
  * sheet on top suspends the trap until it closes.
  *
@@ -19,6 +21,11 @@
  * presses, so they do not dismiss a dialog.
  */
 import { type LayerDismissReason, type LayerKind } from './layer-stack.js';
+/**
+ * Cascade means a parent layer closed this dialog. That close skips
+ * opener restore. Escape and outside still restore.
+ */
+export declare const dialogDismissRestoresFocus: (reason: LayerDismissReason) => reason is "escape" | "outside";
 export type DialogLayerController = {
     /** Stack an open overlay. bringToTop re-pushes an existing slot to the top. */
     connect: (overlay: HTMLElement, bringToTop?: boolean) => void;
