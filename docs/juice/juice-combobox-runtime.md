@@ -81,15 +81,15 @@ A real open or value change dispatches a bubbling `juice:change` from `[combobox
 - Focus stays on the input. The highlighted row is `aria-activedescendant` plus `combobox-option="active"`. There is no focus trap, and Tab is not wrapped.
 - Authors name the input. The runtime does not invent an accessible name.
 - ArrowDown and ArrowUp open the list if needed, then move among visible options without wrapping. Home and End move to the first or last visible option while the list is open. While closed, Home and End keep the native cursor.
-- Enter selects the active option. Tab closes without committing it. Enter or Space on a non-button trigger toggles the list. IME composition is ignored.
-- Escape closes without changing the input value, unless an open dialog overlay, popover, or menu already owns Escape. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Enter selects the active option. Tab closes without committing it, and only while this list is the top layer. Enter or Space on a non-button trigger toggles the list. IME composition is ignored.
+- Escape closes the list without changing the input value when this list is the top layer. A `'cascade'` close uses the same hide path and does not move focus. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 - `[combobox-list]` paints at z-index 1050. Theme paint uses `--juice-combobox-*` roles. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
 ## Behavior
 
 1. Find `[combobox]` roots and the input, optional trigger, list, and options inside each root. Orphan nodes outside a `[combobox]` are ignored.
 2. Fill missing `combobox`, `listbox`, and `option` roles, list and option ids, `aria-autocomplete="list"`, `aria-controls`, and trigger `aria-haspopup="listbox"`.
-3. Open on input focus, typing, or trigger click. Close on Escape (yielding to an open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[menu-root] [menu]:not([hidden])`), outside click, blur unless focus stays inside the combobox, Tab, or after select.
+3. Open on input focus, typing, or trigger click. Close on Escape when this list is the top layer, on an outside pointer when it is the top layer, on blur unless focus stays inside the combobox, on Tab while it is the top layer, or after select. The click that follows an outside pointer does not close the layer underneath. A `'cascade'` close does not move focus.
 4. Filter visible options with a case-insensitive substring of option text and, when present, `data-value`. Non-matches get `hidden`. An empty match set stays open.
 5. Write `aria-expanded` on the input and, when present, the trigger. Keyboard focus on a row is `aria-activedescendant` plus `combobox-option="active"`.
 6. Selection is single-select. The input becomes the option text, or `data-value` when that attribute is present. The chosen option gets `aria-selected="true"`. Siblings are cleared.
@@ -111,7 +111,7 @@ Placement is CSS only. `[combobox-list]` is absolutely positioned under the fiel
 
 - Generated ids prefer an existing element id. Otherwise they use the root `name` or `id` slug (`fruit-list`, `fruit-option-1`).
 - A trigger that is not a button, and not a link with `href`, gets `role="button"` and `tabindex="0"` when `tabindex` is missing.
-- A click inside the combobox that is not an option or the trigger does not close the list. An outside click closes every open list in the root.
+- A click inside the combobox that is not an option or the trigger does not close the list. An outside pointer closes the list when it is the top layer. The click that follows does not close the layer underneath.
 - Opening also closes other open comboboxes in the document that match the same root selector.
 - The runtime does not write layout `content="active"` or `content="hidden"`.
 - Escape is also ignored when the event is already `defaultPrevented`.

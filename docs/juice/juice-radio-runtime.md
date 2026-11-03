@@ -84,7 +84,7 @@ A selection change dispatches a bubbling `juice:change` from `[radiogroup]`. The
 3. Write binary `aria-checked` (`"true"` or `"false"`). `mixed` and any other value coerce to `"false"`. When more than one option is checked, keep the first in document order. Zero checked stays zero until something is selected. On a native radio, keep `.checked` in lockstep, including a static `aria-checked="true"` on an unchecked radio.
 4. Write a roving `tabindex`. The checked enabled radio is `"0"`. When that radio is disabled, or nothing is checked, the first enabled radio is `"0"`. Every other radio in the group is `"-1"`.
 5. Select on click for button hosts. `preventDefault` stops a missing `type` from submitting the form. Native radios follow `change` when the browser checks them, then the group is made exclusive. Enter and Space select the targeted radio. Arrow keys move among enabled radios, wrap, skip disabled radios, then focus and select that radio.
-6. Leave Escape to the overlay, popover, menu, and combobox yield order. Radio does not handle it.
+6. Leave Escape to [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Radio does not handle it.
 
 There is no focus trap. Nested `[radiogroup]` elements stay independent.
 

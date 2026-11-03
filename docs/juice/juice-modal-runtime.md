@@ -84,8 +84,8 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
 ## Accessibility
 
-- Escape closes the open overlay and returns focus to the opener; modal shares the highest band with drawer, and popover, combobox, toast, and tooltip yield. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
-- Tab and Shift+Tab wrap inside the open dialog.
+- Escape closes this overlay when it is the top layer and returns focus to the opener. A popover, menu, sheet, drawer, or combobox list opened after the modal takes that key first. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+- Tab and Shift+Tab wrap inside the dialog only while this overlay is the top layer. A non-modal sheet on top suspends the trap until that sheet closes.
 - Enter and Space activate non-button openers and `[modal-close]` controls.
 - Prefer `role="dialog"`, `aria-modal="true"`, and a labelled heading, which the runtime fills along with opener `aria-expanded`, `aria-haspopup="dialog"`, and an empty close name `aria-label="Close"`.
 - Overlay chrome is `z-index: 1000`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
@@ -98,13 +98,13 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 3. Fill missing overlay, dialog, and title ids, plus `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading.
 4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[modal-close]` name (`aria-label="Close"`).
 5. Enter removes native `hidden`, then plays; exit plays first, and `hidden` is set only after it finishes, while opening one overlay closes any other open overlay.
-6. Trap focus and honor Escape while the overlay is open, including during exit, and restore focus to the opener after `hidden` is set.
+6. Trap focus and take Escape while this overlay is the top layer, including during exit, and restore focus to the opener after `hidden` is set. Modal does not lock page scroll.
 7. Handle opener, close, and backdrop clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
 
 - Orphan `aria-controls` that do not target a `[modal-overlay]` are ignored.
 - A `name` or `id` on `[modal-overlay]` is the slug for generated ids (`seats-modal-dialog`, `seats-modal-title`), and a missing overlay id is `${slug}-overlay`.
-- Opening is exclusive among modals.
-- Modal and drawer stay independently exclusive: both may be open, and one Escape then closes both.
+- Opening is exclusive among modals. A replacement cascades layers opened above the old modal, with dismiss reason `'cascade'`, then closes the old modal. The replaced modal does not restore focus.
+- Modal and drawer may both be open. One Escape closes the one opened later. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 - Overlays use native `hidden`, never layout `content="active"` or `content="hidden"`.
 - Clicks on the dialog panel never close.
 - `modal-overlay="static"`, or `closeOnBackdrop: false`, opts out of backdrop click only; Escape and `[modal-close]` still dismiss.
@@ -119,7 +119,7 @@ Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and
 <details>
 <summary>Edge cases</summary>
 
-- The focus trap and Escape still apply during exit.
+- The focus trap and Escape still apply during exit while this overlay is the top layer.
 - A second Escape does not start a second close.
 - Reduced motion, or a computed duration of `0`, does the same steps in the same turn.
 - A new open cancels an in-flight exit.

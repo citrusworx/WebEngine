@@ -157,31 +157,81 @@ Shared helpers under `libraries/juice/src/js/src/shared/` are not a public multi
 
 ## Escape / layering
 
-When several surfaces are open, later bands yield so a higher band owns Escape. Highest band first. This is the keyboard contract, not the paint order. See [z-index bands](#z-index-bands).
+Open overlays follow [Nesting and Escape](#nesting-and-escape). Paint order is separate. See [Z-index bands](#z-index-bands).
 
-Modal, drawer, and sheet each handle Escape. They do not yield to each other. If more than one is open, one Escape can close each of them. Within sheets, Escape closes the last open overlay in DOM order.
+## Nesting and Escape
 
-| Order | Surface | Owns Escape when | Yields when |
-| --- | --- | --- | --- |
-| 1 | Modal / drawer / sheet | An open `[modal-overlay]`, `[drawer-overlay]`, or `[sheet-overlay]` without `hidden` | Does not yield to later bands. The three do not yield to each other |
-| 2 | Popover / menu | An open `[popover-root]` or an open `[menu]` | An open dialog overlay exists. Popover and menu do not yield to each other. Menu `hidden` is on `[menu]`, not `[menu-root]` |
-| 3 | Combobox | An open `[combobox-list]` | An open dialog, popover, or menu exists |
-| 4 | Toast / tooltip | See the note below | See the note below |
-| — | Banner, switch, slider, checkbox, radio, breadcrumb, progress, spinner, select, input, textarea, field, icon button, avatar, table, pagination, pressable, touchable row, keyboard avoider | Never | Dismiss, toggle, sort, or value stays on the control |
-| — | Accordion | The focused open item, or the last opened item, in that accordion | There is no global accordion Escape |
-| — | Disclosure | The focused open disclosure, or the last opened one | An open modal, drawer, or popover exists |
-| — | Tabs, wizard | Out of scope | Tabs ignores Escape. Wizard is not a dialog |
-| — | Navigation | On a mobile viewport, Escape closes open sidebars | Desktop navigation does not close on Escape |
+Modal, drawer, sheet, popover, menu, and an open combobox list share one open-order stack. The last one opened owns Escape and outside pointerdown. Tooltip and toast are not stack layers.
 
-Toast does not block tooltip Escape. With both open, the first Escape hides the tip and leaves toasts visible. The next Escape dismisses the most recently shown visible toast.
+The bookkeeping under `libraries/juice/src/js/src/shared/` is internal. It is not a public export, and the public `create` / `init` / `start` / `stop` contract is unchanged.
 
-Tooltip yields to an open dialog, popover, menu, or combobox list. Toast yields to those, plus an open tooltip.
+### Last opened wins
 
-Yield checks use internal overlay queries in `libraries/juice/src/js/src/shared/`. An open `[sheet-overlay]` counts, including `sheet-overlay="none"`, so menus and popovers yield while it is open. The public `create` / `init` / `start` / `stop` contract is unchanged.
+Escape and an outside pointer go to the layer opened most recently.
+
+A popover opened inside a dialog closes on the first Escape. The dialog stays open. The next Escape closes the dialog.
+
+A combobox list inside a popover inside a dialog closes from the inside out: the list, then the popover, then the dialog.
+
+A modal opened after a drawer closes before the drawer. A drawer opened after a modal closes before the modal. A sheet and a modal follow the same rule. Among several sheets, Escape closes the one opened last, including `sheet-overlay="none"`.
+
+One Escape closes one layer. An Escape whose default is already prevented, or that is still composing, closes nothing.
+
+An exiting layer stays in the order until `hidden` is set. A second Escape does not start a second close of a layer that is already exiting.
+
+### Cascade
+
+Closing a layer dismisses every layer opened above it, from the top down, with dismiss reason `'cascade'`. Each of those layers dispatches `juice:change` once, and then the layer that closed dispatches its own. `'cascade'` is that internal dismiss reason. It is not a field on `juice:change`.
+
+Closing a dialog that has an open combobox list and popover above it publishes the combobox, then the popover, then the dialog.
+
+Opening a modal that replaces another open modal cascades the layers above the old modal, closes the old modal, then opens the new one. Opening a drawer that replaces another open drawer does the same for layers above the old drawer.
+
+`'cascade'` does not return focus to a popover opener or a menu opener. Combobox cascade closes the list and leaves focus where it is. Escape and an explicit close still return popover and menu focus to the opener. Activating a menu item does too. A dialog's own close still returns focus to that dialog's opener, including when `'cascade'` started the dialog close. Replacing a dialog does not return focus for the dialog that was replaced.
+
+### Focus trap and Tab
+
+A modal traps Tab only while that overlay is the top layer. A drawer does the same. A modal sheet traps Tab only while it is the top layer.
+
+`sheet-overlay="none"` does not trap focus, does not move focus in, and does not restore it. While that non-modal sheet is the top layer, the modal underneath suspends its trap. The trap resumes when the sheet closes.
+
+A popover wraps Tab only while that popover is the top layer. Menu Tab closes the menu without activating an item, and only while that menu is the top layer. Focus returns to the opener so Tab can continue. Combobox Tab closes the list without committing the active option, and only while that list is the top layer.
+
+### Outside pointer
+
+A dialog closes from a backdrop press on its overlay element, and only when that dialog is the top layer. `modal-overlay="static"`, `drawer-overlay="static"`, `sheet-overlay="static"`, and `sheet-overlay="none"` keep the backdrop from closing. A press on an opener, or on the rest of the page, does not dismiss a dialog. A press on a lower backdrop closes only the top dialog.
+
+An outside pointer closes only the top popover, menu, or combobox list. The click that follows that pointer does not close the layer underneath.
+
+### Tooltip and toast
+
+An open tooltip takes Escape and hides only itself. The dialog, popover, menu, or list underneath stays open. The next Escape belongs to the top stack layer. Toast does not take that key from the tooltip: the tip hides, and visible toasts stay.
+
+A toast dismisses the most recently shown visible toast only when the stack is empty and no tooltip is open. A visible toast never takes Escape from a modal, drawer, sheet, popover, menu, combobox list, or tooltip.
+
+### Scroll lock
+
+Modal and drawer do not lock page scroll. A modal sheet uses a ref-counted lock on the inline `document.body.style.overflow`: the first modal sheet saves that value and sets `hidden`, and the last modal sheet to close restores it. Nested and sibling modal sheets stay locked until all of them close. `sheet-overlay="none"` does not lock.
+
+### Other Escape listeners
+
+While a stack layer is open, that layer takes the key before toast, disclosure, accordion, and navigation see it.
+
+| Surface | Escape |
+| --- | --- |
+| Banner, switch, slider, checkbox, radio, breadcrumb, progress, spinner, select, input, textarea, field, icon button, avatar, table, pagination, pressable, touchable row, keyboard avoider | The control keeps dismiss, toggle, sort, or value. Escape is not handled |
+| Accordion | Collapses the focused open item, or the last opened item, in that accordion. There is no page-wide accordion Escape |
+| Disclosure | Collapses the focused open disclosure, the one whose panel contains the target, or the last opened one, and returns focus to that trigger. It leaves the key alone when the event is already handled, or when an open `[modal-overlay]`, `[drawer-overlay]`, `[sheet-overlay]` (including `sheet-overlay="none"`), or `[popover-root]` exists |
+| Tabs, wizard | Tabs ignores Escape. Wizard is not a dialog |
+| Navigation | On a mobile viewport, Escape closes open sidebars. Desktop navigation stays open |
+
+Banner never takes Escape.
+
+An open `[sheet-overlay]`, including `sheet-overlay="none"`, still counts as an open dialog for toast and disclosure. Popover, menu, combobox, and tooltip follow open order.
 
 ## Z-index bands
 
-Core chrome sets these stacking values. They are structural bands, not a theme contract. There is no `--juice-z-*` token. Visual stacking is not the Escape order: toast paints above tooltip, and tooltip still owns Escape first when both are open.
+Core chrome sets these stacking values. They are structural bands, not a theme contract. There is no `--juice-z-*` token. Paint order and Escape order differ. Toast paints above tooltip. An open tooltip still takes Escape before that toast and before the top stack layer. See [Nesting and Escape](#nesting-and-escape).
 
 | Band | Surfaces | `z-index` | Notes |
 | --- | --- | --- | --- |

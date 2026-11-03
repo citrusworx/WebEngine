@@ -646,7 +646,7 @@ Expanded paint is `aria-expanded="true"` on the trigger. The chevron is `::after
 
 Do not style bare `[aria-expanded]`, `<details>`, or `<summary>`. Inline chrome — no overlay z-index.
 
-The disclosure runtime auto-enhances that markup (`sync` / `expand` / `collapse` / `toggle`, `aria-expanded` plus native `hidden` and `aria-hidden`, orphans ignored, Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover) — see [Disclosure Runtime](./juice-disclosure-runtime.md). Disclosure is the twentieth Emerging auto-enhance runtime and shipped in 0.9.2.
+The disclosure runtime auto-enhances that markup (`sync` / `expand` / `collapse` / `toggle`, `aria-expanded` plus native `hidden` and `aria-hidden`, orphans ignored, Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, sheet, or popover) — see [Disclosure Runtime](./juice-disclosure-runtime.md). Disclosure is the twentieth Emerging auto-enhance runtime and shipped in 0.9.2.
 
 Tide must bind a dark panel (`--tide-surface`) and a dark trigger (`--tide-surface-strong`), not `--tide-page`.
 

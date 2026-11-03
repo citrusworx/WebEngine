@@ -140,7 +140,7 @@ The first observation does not dispatch, so the initial `aria-pressed` write is 
 2. Check the accessible name. Do not invent one. In development, an unnamed host warns once.
 3. On `[toggle]`, write `aria-pressed` `"true"` or `"false"` and mirror `[pressed]`.
 4. Flip a toggle on click. Enter and Space flip a non-button, non-link toggle and call `preventDefault`. Disabled hosts do not flip.
-5. Leave Escape to the overlay, popover, menu, combobox, toast, and tooltip yield order. Icon button does not participate.
+5. Leave Escape to [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Icon button does not participate.
 
 ### Name
 

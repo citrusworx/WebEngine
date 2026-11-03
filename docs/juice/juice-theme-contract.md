@@ -708,7 +708,7 @@ A boolean `[disclosure]` attribute is fine: there is no HTML global `disclosure`
 
 Core CSS treats this as **inline** chrome — no floating overlay z-index band. Chevron motion honors `prefers-reduced-motion`.
 
-The disclosure runtime auto-enhances that markup (`sync` / `expand` / `collapse` / `toggle`): one trigger toggles one panel, orphans outside `[disclosure]` are ignored, and Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover. There is no exclusive group, no arrow roving, and no layout `content=`.
+The disclosure runtime auto-enhances that markup (`sync` / `expand` / `collapse` / `toggle`): one trigger toggles one panel, orphans outside `[disclosure]` are ignored, and Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, sheet, or popover. There is no exclusive group, no arrow roving, and no layout `content=`.
 
 No Sig Disclosure factory. Disclosure is the twentieth Emerging auto-enhance runtime and shipped in 0.9.2.
 

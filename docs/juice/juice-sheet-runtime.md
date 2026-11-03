@@ -106,8 +106,8 @@ The first observation is silent. Later events fire when that shape changes. Ther
 
 ## Accessibility
 
-- Escape closes the topmost open sheet in DOM order, including `sheet-overlay="none"` and including during exit. Sheet, drawer, and modal each handle Escape. [Escape and layering](./juice-runtime-behavior.md#escape--layering). [Known behaviors](#known-behaviors).
-- Tab and Shift+Tab wrap inside an open modal sheet. `sheet-overlay="none"` does not trap focus, does not move focus in, and does not restore it.
+- Escape closes this sheet when it is the most recently opened layer, including `sheet-overlay="none"` and including during exit. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). [Known behaviors](#known-behaviors).
+- Tab and Shift+Tab wrap inside a modal sheet only while that sheet is the top layer. `sheet-overlay="none"` does not trap focus, does not move focus in, and does not restore it. While that non-modal sheet is the top layer, a modal underneath suspends its trap until the sheet closes.
 - Enter and Space activate non-button openers and `[sheet-close]` controls.
 - The runtime sets `role="dialog"`, `aria-modal` (`"true"` for a modal sheet, `"false"` for `none`), and `aria-labelledby` from the header heading when the name is missing.
 - Opener `aria-expanded` stays in sync. A missing `aria-haspopup` becomes `"dialog"`. An empty close name becomes `aria-label="Close"`.
@@ -121,15 +121,15 @@ The first observation is silent. Later events fire when that shape changes. Ther
 3. Fill missing overlay, dialog, and title ids from `name` or `id` (`filters-overlay`, `filters-dialog`, `filters-title`).
 4. On open, write the resting `[detent]`: half when half is allowed, otherwise full when full is allowed, otherwise peek. While `[keyboard-open]` is set, that rest is `full` when full is allowed, otherwise the highest allowed detent.
 5. Enter removes native `hidden`, then plays. Exit plays first. `hidden` is set only after it finishes. Reduced motion, or a computed duration of `0`, does both in the same turn. An in-flight exit stays the open dialog until that commit. A new open of that same overlay cancels the exit.
-6. Modal sheets (boolean, omitted, or `"static"`) trap focus, move focus in, restore it when `hidden` is set, and set `aria-modal="true"`. `sheet-overlay="none"` does none of that.
+6. Modal sheets (boolean, omitted, or `"static"`) trap focus while the sheet is the top layer, move focus in, restore it when `hidden` is set, and set `aria-modal="true"`. `sheet-overlay="none"` does none of that, and while it is the top layer it suspends a modal trap underneath.
 7. Backdrop click closes unless `sheet-overlay="static"`, `sheet-overlay="none"`, or `closeOnBackdrop` is `false`. `[sheet-close]` closes. A click on the panel does not.
 8. Drag from the handle or the header after an `8px` slop. `[sheet-body]` hands off only when its `scrollTop` is `0` and the gesture moves down. Release snaps. See [Drag](#drag).
 
 Opening one sheet does not close another. Several sheets may be open together.
 
-Scroll lock is modal only. A shared counter sets `document.body.style.overflow` to `"hidden"` on the first modal sheet and restores the previous inline value when the last one closes. Nested and sibling modal sheets stay locked until all of them close. `destroy()` releases the locks that controller holds. The counter does not touch `documentElement`. `sheet-overlay="none"` does not lock.
+Scroll lock is modal only. A ref-counted lock sets `document.body.style.overflow` to `"hidden"` on the first modal sheet and restores the previous inline value when the last one closes. Nested and sibling modal sheets stay locked until all of them close. `destroy()` releases the locks that controller holds. The counter does not touch `documentElement`. `sheet-overlay="none"` does not lock. Modal and drawer do not lock scroll. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
-`hasOpenDialogOverlay` matches `[sheet-overlay]:not([hidden])` along with modal and drawer, so popover, menu, combobox, toast, and tooltip keep yielding. An open `sheet-overlay="none"` counts.
+An open `[sheet-overlay]`, including `sheet-overlay="none"`, still counts as an open dialog for toast and disclosure. Popover, menu, combobox, and tooltip follow open order. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 There is no `Sheet()` factory.
 
@@ -158,7 +158,7 @@ Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and
 <details>
 <summary>Edge cases</summary>
 
-- The focus trap and Escape still apply during exit on a modal sheet. Escape still applies on `sheet-overlay="none"`.
+- The focus trap and Escape still apply during exit on a modal sheet while that sheet is the top layer. Escape still applies on `sheet-overlay="none"` while that sheet is the top layer.
 - A second Escape does not start a second close of a sheet that is already exiting.
 - A new open cancels an in-flight exit and writes the resting detent again.
 - Duration tokens live in [Animations](./juice-animations.md).
@@ -171,8 +171,8 @@ These are the current contract. They are easy to misread from the chrome alone.
 
 - **Reopen resets.** Every open transition writes the ranked default detent (half when half is allowed, otherwise full, otherwise peek), including over a previous snap and over an author `[detent]`. A sheet that is already open keeps a valid `[detent]` until a gesture, the keyboard, or the next open replaces it.
 - **Keyboard snap stays.** Gaining `[keyboard-open]` snaps to `full`, or to the highest allowed detent when full is not allowed. Closing the keyboard does not restore the previous detent.
-- **Escape is per dialog runtime.** Sheet, drawer, and modal each listen for Escape. The claim is per runtime, so one press can close a sheet and a drawer and a modal when all three are open. Within sheets, Escape closes the last open overlay in DOM order.
-- **Non-modal still counts as a dialog overlay.** An open `sheet-overlay="none"` is included in `hasOpenDialogOverlay`. Menus, popovers, combobox lists, toasts, and tooltips yield while it is open. It still has no focus trap and no scroll lock.
+- **Escape follows open order.** The most recently opened layer takes the key. One press closes that layer. Among sheets, that is the sheet opened last. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+- **Non-modal sheet.** `sheet-overlay="none"` stays in the open order, so it can own Escape, and it suspends a modal focus trap underneath. It has no focus trap and no scroll lock. Toast and disclosure still treat it as an open dialog overlay.
 - **Body handoff reads one scroller.** The gesture reads `[sheet-body].scrollTop` only. A nested scroller inside the body is not a separate handoff.
 - **No back button.** History is out of scope. This runtime does not push state and does not listen for `popstate`.
 

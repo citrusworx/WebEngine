@@ -79,7 +79,7 @@ An unchanged `shown` write does not dispatch, and this surface stays Emerging.
 
 ## Accessibility
 
-- Escape dismisses the most recently shown visible toast only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, `[combobox-list]`, or `[tooltip-root]` exists. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the most recently shown visible toast only when no modal, drawer, sheet, popover, menu, combobox list, or tooltip is open. A toast never takes Escape from those. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 - An open tip hides while toasts remain, because toast does not block tooltip Escape.
 - Enter and Space activate non-button `[toast-close]` controls.
 - There is no focus trap: Tab is not wrapped, and show does not move focus into the toast.
@@ -95,7 +95,7 @@ An unchanged `shown` write does not dispatch, and this surface stays Emerging.
 4. Fill an empty `[toast-close]` name (`aria-label="Dismiss"`) and button role and tabindex on non-native closes.
 5. Enter removes native `hidden`, then plays; exit plays first, and `hidden` is set only after it finishes, while the region stays, `show()` never hides siblings, and show does not move focus into the toast.
 6. Auto-dismiss after `defaultDuration` (`5000`) or `toast-duration`; that timer is reading time, so reduced motion does not shorten it, it pauses while pointer or focus is inside the toast, and `0`, `Infinity`, or a negative number is sticky.
-7. Handle `[toast-close]` clicks, Escape for the most recently shown visible toast when no open modal or drawer overlay, popover, menu, combobox list, or tooltip exists, and Enter or Space on non-button closes.
+7. Handle `[toast-close]` clicks, Escape for the most recently shown visible toast when no stack layer or tooltip is open, and Enter or Space on non-button closes.
 
 - Orphan `[toast]` nodes that are not inside `[toast-region]` are ignored.
 - Toast is not exclusive: this runtime does not close a modal or a drawer, and those dialog runtimes do not close a toast.

@@ -74,7 +74,7 @@ An unchanged `shown` write does not dispatch, and this surface stays Emerging.
 
 ## Accessibility
 
-- Escape hides the open tip only when no `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]` is open, and toast does not block that Escape. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Escape hides the open tip and leaves the dialog, popover, menu, or list underneath open. Toast does not take that key. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 - There is no focus trap: Tab is not wrapped, and focus never moves into the tip.
 - Show and hide use hover (`mouseover` / `mouseout`) and keyboard focus (`focusin` / `focusout`).
 - Prefer `role="tooltip"` on the panel, which the runtime fills, along with a missing root id and a trigger `aria-describedby` that includes that id.
@@ -90,7 +90,7 @@ An unchanged `shown` write does not dispatch, and this surface stays Emerging.
 5. Opening one managed tooltip hides any other open tooltip.
 6. Do not move focus into the tip or trap focus; the tip has `pointer-events: none` in chrome, so the delay is not a hover bridge onto the tip.
 7. Place the root with `position: fixed` from the trigger's `getBoundingClientRect` plus an 8px gap, flip once if the preferred side overflows, and reposition on show, window resize, and capture scroll.
-8. Hide the open tip on Escape, yielding to an open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]`, while toast does not block that Escape.
+8. Hide the open tip on Escape. That key hides only the tip. A dialog, popover, menu, or combobox list underneath stays open, and toast does not take the key.
 
 - Orphan `aria-describedby` or `aria-controls` that do not target a `[tooltip-root]` are ignored.
 - A `name` or `id` on `[tooltip-root]` is the slug for generated ids (`help-root`), and a missing root id is `${slug}-root`.
