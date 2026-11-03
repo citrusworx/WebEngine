@@ -267,7 +267,7 @@ The last column is how `bind` treats `state.set`. Read-only means the signal can
 | `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | read-only. Opt-in `juice:longpress` is a separate event; `bind` follows `juice:change` |
 | `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | read-only |
 | `keyboard-avoider` | `[keyboard-avoider]` | `{ open: boolean, inset: number }` | `getState` | read-only. `juice:change` fires when `open` flips or `inset` jumps by the threshold. Smaller steps update the custom property and `getState` without moving the signal |
-| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | not a `JuiceRuntimeName`. Binding waits until juiceui publishes `sheet` |
+| `sheet` | `[sheet-overlay]` | `{ open: boolean, detent: "peek" \| "half" \| "full", dragging: boolean, modal: boolean }` | `isOpen`, `getState` | not a `JuiceRuntimeName` in npm `@citrusworx/sigjs` **1.0.0** or workspace **1.1.0** yet. Binding is unblocked and is not done |
 
 ### State notes
 
