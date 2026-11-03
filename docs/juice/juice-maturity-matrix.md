@@ -98,7 +98,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Table (`[table]`) | Emerging | Sortable grid. The twenty-eighth runtime. Shipped in 0.9.3. See [Table](./juice-table.md). |
 | Pressable (`[pressable]`) | Emerging | Transient press. The twenty-ninth runtime. Shipped in 0.9.4. See [Pressable](./juice-pressable.md). |
 | Touchable row (`[touchable-row]`) | Emerging | 44px row. The thirtieth runtime. Shipped in 0.9.4. See [Touchable row](./juice-touchable-row.md). |
-| Keyboard avoider (`[keyboard-avoider]`) | Emerging | Software-keyboard inset. The thirty-first runtime. Shipped in 0.9.5. Not a `JuiceRuntimeName`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). |
+| Keyboard avoider (`[keyboard-avoider]`) | Emerging | Software-keyboard inset. The thirty-first runtime. Shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). |
 | Sheet (`[sheet-overlay]`) | Emerging | Bottom sheet. The thirty-second runtime. On master, not in npm 0.9.5. Not a `JuiceRuntimeName`. See [Sheet](./juice-sheet-runtime.md). |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
 | Generator/config pipeline | Draft | The config exists, but the workflow around it is still early and evolving. |
@@ -221,8 +221,8 @@ If you are building with Juice today:
 - use `[safe-area]` from core CSS as Emerging — shipped in 0.9.3, and not an auto-enhance runtime. See [Safe Area](./juice-safe-area.md)
 - use `[avatar]` as Emerging — shipped in 0.9.3. The twenty-seventh auto-enhance runtime. See [Avatar](./juice-avatar.md)
 - use `[table]` as Emerging — shipped in 0.9.3. The twenty-eighth auto-enhance runtime. See [Table](./juice-table.md)
-- use `[pressable]` as Emerging — shipped in 0.9.4. The twenty-ninth auto-enhance runtime. `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Pressable](./juice-pressable.md)
-- use `[touchable-row]` as Emerging — shipped in 0.9.4. The thirtieth auto-enhance runtime. `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Touchable Row](./juice-touchable-row.md)
+- use `[pressable]` as Emerging — shipped in 0.9.4. The twenty-ninth auto-enhance runtime. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. See [Pressable](./juice-pressable.md)
+- use `[touchable-row]` as Emerging — shipped in 0.9.4. The thirtieth auto-enhance runtime. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. See [Touchable Row](./juice-touchable-row.md)
 - use the shipped auto-enhance runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row) and the Sig Accordion factory as Emerging
 - valid markup should work after importing the JS entry, but that surface is not Stable. Checkbox and radio are two runtimes.
 - Breadcrumb is a light trail. Progress is a progressbar.

@@ -186,7 +186,7 @@ Layout roles stay on `:root`. Color falls through `--juice-sheet-*` to `--juice-
 
 ## Sig `bind()`
 
-`@citrusworx/sigjs/juice` `bind()` does not include sheet. `JuiceRuntimeName` stops at twenty-eight names, through `table`. Passing `"sheet"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
+`@citrusworx/sigjs/juice` `bind()` does not include sheet. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `JuiceRuntimeName` is thirty-one names, through keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** stop at twenty-eight names, through `table`. Passing `"sheet"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
 
 `juice:change` and `getState()` still work without Sig. Listen on the overlay, or call `getState()` on the controller.
 

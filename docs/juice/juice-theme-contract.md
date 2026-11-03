@@ -1324,7 +1324,7 @@ Muted Citrusmint copy (`p`, `span`, `li`, `label`) is 1.95:1 on the page and 2.1
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ### Touchable row (optional override)
 
@@ -1362,7 +1362,7 @@ A 92% mix would be 4.03:1 on the Citrusmint page. The runtime auto-enhances `[to
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 `[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5.
 
@@ -1619,7 +1619,7 @@ Icon button is the twenty-sixth Emerging auto-enhance runtime and shipped in 0.9
 
 Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3. Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-two stay Emerging. Keyboard avoider is the thirty-first, shipped in 0.9.5, and is not a `JuiceRuntimeName`. Sheet is the thirty-second, on master, not in npm 0.9.5, and is not a `JuiceRuntimeName`.
+Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-two stay Emerging. Keyboard avoider is the thirty-first and shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. Sheet is the thirty-second, on master, not in npm 0.9.5, and is not a `JuiceRuntimeName`.
 
 Skeleton chrome and docs shipped in 0.9.3 (CSS-only, not a runtime). `--juice-skeleton-*` stays a core default.
 

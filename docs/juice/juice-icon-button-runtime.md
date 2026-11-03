@@ -204,7 +204,7 @@ Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-
 
 ## Sig
 
-`@citrusworx/sigjs/juice` binds 28 runtimes through `table` on master and in `@citrusworx/sigjs@0.7.2`. Icon button is one of those 28. `JuiceRuntimeName` includes `"icon-button"`.
+npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** bind 28 runtimes through `table`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) binds 31, through keyboard-avoider. Icon button is in both lists. `JuiceRuntimeName` includes `"icon-button"`. `sheet` is not a name.
 
 `bind(host)` and `bind(host, "icon-button")` seed a signal from `getState()`. The host matcher looks for `[icon-button]` after earlier matchers, so a host that already matches (for example `[switch]`) stays on that runtime.
 

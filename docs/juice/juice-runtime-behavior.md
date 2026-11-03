@@ -230,7 +230,7 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-The table is the whole contract. Pressable is the twenty-ninth runtime, touchable row is the thirtieth, keyboard avoider is the thirty-first, and sheet is the thirty-second, on master and not in npm 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-one through keyboard-avoider. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is in this table and is not a `JuiceRuntimeName`. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
+The table is the whole contract. Pressable is the twenty-ninth runtime and shipped in 0.9.4. Touchable row is the thirtieth and shipped in 0.9.4. Keyboard avoider is the thirty-first and shipped in 0.9.5. Sheet is the thirty-second, on master and not in npm 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names the thirty-one through keyboard-avoider. npm `@citrusworx/sigjs` `latest` is **1.0.0** and stops at `table`. `sheet` is in this table and is not a `JuiceRuntimeName`. Binding it waits until `@citrusworx/juiceui` publishes `sheet`.
 
 The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 

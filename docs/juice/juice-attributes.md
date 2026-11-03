@@ -265,7 +265,7 @@ Space is, on a custom button host that is not a native Space control, so the pag
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ### Touchable row
 
@@ -300,7 +300,7 @@ Space is `preventDefault`'d on those hosts. `a` and `button` keep the native cli
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ### Keyboard avoider
 
@@ -315,7 +315,7 @@ Software-keyboard inset. Mobile-Critical. There is no `<keyboard-avoider>` eleme
 
 `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root`. They are not restated on `[theme]`.
 
-See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. `@citrusworx/sigjs/juice` `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet yet.
+See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ### Cards
 
