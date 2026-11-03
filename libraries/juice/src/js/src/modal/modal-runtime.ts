@@ -7,9 +7,15 @@
  * Enter removes `hidden`, then plays. Exit plays first; `hidden` is set
  * only after it finishes. Focus moves in when `hidden` is removed and
  * restores when `hidden` is set. Reduced motion (or a zero computed
- * duration) does both in the same turn. An in-flight exit stays the open
- * dialog for Escape and the focus trap until that commit, and a new open
- * cancels it.
+ * duration) does both in the same turn. An in-flight exit stays on the
+ * layer stack for Escape and the focus trap until that commit, and a new
+ * open cancels it. Escape and backdrop presses follow open order on the
+ * internal layer stack. This runtime does not handle Escape itself, so a
+ * defaultPrevented Escape never closes the dialog. Tab and focus-in trap
+ * only when this overlay is the top of the stack and that layer is modal.
+ * A non-modal layer on top suspends the trap until it closes. Replacing
+ * another open modal pops it, so layers above that modal dismiss with
+ * reason 'cascade'. Focus return stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[modal-overlay]` id. `[modal-close]` closes the containing overlay.
@@ -18,9 +24,16 @@
  */
 
 import { createJuiceChanges } from '../shared/change.js';
+import {
+  backdropPressTop,
+  createDialogLayers,
+  outsidePressIsBackdrop,
+  type DialogLayerController,
+} from '../shared/dialog-layer.js';
 import { createEventClaim } from '../shared/events.js';
 import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
+import { topLayer } from '../shared/layer-stack.js';
 import { createElementMotion } from '../shared/motion.js';
 
 export type ModalOptions = {
@@ -102,6 +115,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
   const changes = createJuiceChanges<ModalState>('modal');
+  let layers!: DialogLayerController;
 
   let idCounter = 0;
 
@@ -331,6 +345,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
 
     ensureDialogAccessibility(overlay);
     motion.exit(overlay, () => {
+      layers.pop(overlay);
       setOpenState(overlay, false);
       setOpenerState(overlay, false);
       if (restore) {
@@ -360,6 +375,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     ensureDialogAccessibility(overlay);
     setOpenState(overlay, true);
     setOpenerState(overlay, true);
+    layers.connect(overlay, true);
     moveFocusIn(overlay);
     motion.enter(overlay);
   };
@@ -370,6 +386,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     if (isOverlayOpen(overlay) && !isClosing(overlay)) {
       ensureDialogAccessibility(overlay);
       setOpenerState(overlay, true);
+      layers.connect(overlay, false);
       return;
     }
 
@@ -420,6 +437,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
       setOpenerState(overlay, isOverlayOpen(overlay));
       changes.note(overlay, { open: isOverlayOpen(overlay) });
     });
+    layers.reconcile();
   };
 
   const allowsBackdropClose = (overlay: HTMLElement) => {
@@ -461,6 +479,9 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
       }
 
       if (target === overlay && allowsBackdropClose(overlay)) {
+        const armed = backdropPressTop();
+        const owner = armed === undefined ? (topLayer()?.el ?? null) : armed;
+        if (owner !== overlay) return;
         if (!claimEvent(event)) return;
         close(overlay);
       }
@@ -473,10 +494,12 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     toggle(opener);
   };
 
-  const getOpenOverlay = () =>
-    getOverlays().find((overlay) => isOverlayOpen(overlay) && !isClosing(overlay)) ??
-    getOverlays().find(isOverlayOpen) ??
-    null;
+  const focusTrapOverlay = () => {
+    const top = topLayer();
+    if (!top?.modal || top.kind !== 'modal') return null;
+    if (!isManagedOverlay(top.el) || !isOverlayOpen(top.el)) return null;
+    return top.el;
+  };
 
   const trapFocus = (event: KeyboardEvent, overlay: HTMLElement) =>
     wrapTabFocus(event, getDialog(overlay));
@@ -486,17 +509,9 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
-    const openOverlay = getOpenOverlay();
-
-    if (openOverlay && event.key === 'Escape') {
-      if (!claimEvent(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close(openOverlay);
-      return;
-    }
-
-    if (openOverlay && event.key === 'Tab') {
+    if (event.key === 'Tab') {
+      const openOverlay = focusTrapOverlay();
+      if (!openOverlay) return;
       if (!claimEvent(event)) return;
       trapFocus(event, openOverlay);
       return;
@@ -524,7 +539,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
   };
 
   const handleFocusIn = (event: Event) => {
-    const openOverlay = getOpenOverlay();
+    const openOverlay = focusTrapOverlay();
     if (!openOverlay) return;
 
     const target = event.target;
@@ -551,6 +566,24 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     typeof MutationObserver !== 'undefined'
       ? new MutationObserver(() => scheduleSync())
       : null;
+
+  layers = createDialogLayers({
+    kind: 'modal',
+    selector: settings.overlaySelector,
+    getOverlays,
+    isOpen: isOverlayOpen,
+    isClosing,
+    isModal: () => true,
+    shouldStack: () => true,
+    dismiss: (overlay, reason) => {
+      if (!isManagedOverlay(overlay)) return;
+      if (reason === 'outside') {
+        if (!outsidePressIsBackdrop()) return;
+        if (!allowsBackdropClose(overlay)) return;
+      }
+      close(overlay);
+    },
+  });
 
   rootEvents.addEventListener('click', handleRootClick);
   rootEvents.addEventListener('keydown', handleRootKeydown, true);
@@ -582,6 +615,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
       rootEvents.removeEventListener('focusin', handleFocusIn, true);
       observer?.disconnect();
       motion.destroy();
+      layers.destroy();
     },
     sync,
     open,

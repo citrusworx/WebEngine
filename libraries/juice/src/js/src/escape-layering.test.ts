@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createAccordion,
@@ -13,6 +13,12 @@ import {
   createCombobox,
   stopComboboxRuntime,
 } from './combobox/combobox-runtime.js';
+import { JUICE_CHANGE_EVENT } from './shared/change.js';
+import { __resetDialogLayersForTests } from './shared/dialog-layer.js';
+import {
+  __resetLayerStackForTests,
+  topLayer,
+} from './shared/layer-stack.js';
 import {
   createDrawer,
   stopDrawerRuntime,
@@ -23,8 +29,13 @@ import {
 } from './menu/menu-runtime.js';
 import {
   createModal,
+  startModalRuntime,
   stopModalRuntime,
 } from './modal/modal-runtime.js';
+import {
+  createSheet,
+  stopSheetRuntime,
+} from './sheet/sheet-runtime.js';
 import {
   createPopover,
   stopPopoverRuntime,
@@ -39,8 +50,19 @@ import {
 } from './tooltip/tooltip-runtime.js';
 
 /**
- * Escape / layering contract (highest owns Escape first):
- * 1. open [modal-overlay] / [drawer-overlay] — independently exclusive
+ * Escape / layering contract.
+ *
+ * Modal, drawer, and sheet share one open-order stack. The last one
+ * opened owns Escape. A backdrop press (the pointer target is the
+ * overlay element) closes only the top dialog. Presses on openers and
+ * the rest of the page do not dismiss. Tab and focus-in trap only when
+ * the top of the stack is itself modal. A non-modal sheet on top
+ * suspends that trap until it closes. Replacing an open modal or drawer
+ * pops it, so layers above dismiss with reason 'cascade'. Popover, menu,
+ * combobox, toast, and tooltip are not on that stack yet. They still
+ * yield through the type rank below, and any open dialog overlay still
+ * outranks them:
+ * 1. open dialog overlay (modal / drawer / sheet), last opened first
  * 2. open [popover-root] ≈ open [menu] (dialog-adjacent band)
  * 3. open [combobox-list]
  * 4. most-recent visible [toast]
@@ -155,6 +177,9 @@ afterEach(() => {
   stopTooltipRuntime();
   stopBannerRuntime();
   stopAccordionRuntime();
+  stopSheetRuntime();
+  __resetDialogLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
 });
 
@@ -333,5 +358,469 @@ describe('Escape / layering contract', () => {
 
     accordion.destroy();
     banner.destroy();
+  });
+
+  const pressBackdrop = (target: HTMLElement) => {
+    target.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true })
+    );
+    target.dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
+  };
+
+  it('closes a modal opened from a drawer before the drawer', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+      <div drawer-overlay id="host-drawer" hidden>
+        <div drawer>
+          <h2>Filters</h2>
+          <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+          <div modal-overlay id="host-modal" hidden>
+            <div modal><h2>Account</h2></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const drawer = createDrawer({ root: document.body });
+    const modal = createModal({ root: document.body });
+
+    drawer.open(document.getElementById('open-drawer'));
+    modal.open(document.getElementById('open-modal'));
+    pressEscape();
+
+    expect(isHidden('host-modal')).toBe(true);
+    expect(isHidden('host-drawer')).toBe(false);
+
+    pressEscape();
+
+    expect(isHidden('host-drawer')).toBe(true);
+    modal.destroy();
+    drawer.destroy();
+  });
+
+  it('closes a drawer opened from a modal before the modal', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+          <div drawer-overlay id="host-drawer" hidden>
+            <div drawer><h2>Filters</h2></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const drawer = createDrawer({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    drawer.open(document.getElementById('open-drawer'));
+    pressEscape();
+
+    expect(isHidden('host-drawer')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
+
+    pressEscape();
+
+    expect(isHidden('host-modal')).toBe(true);
+    drawer.destroy();
+    modal.destroy();
+  });
+
+  it('lets the last opened dialog own Escape between a modal sheet and a modal', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-sheet" aria-controls="host-sheet">Sheet</button>
+      <div sheet-overlay id="host-sheet" hidden>
+        <div sheet><h2>Sheet</h2></div>
+      </div>
+      <button type="button" id="open-modal" aria-controls="host-modal">Modal</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Modal</h2></div>
+      </div>
+    `;
+    const sheet = createSheet({ root: document.body });
+    const modal = createModal({ root: document.body });
+
+    sheet.open(document.getElementById('open-sheet'));
+    modal.open(document.getElementById('open-modal'));
+    pressEscape();
+
+    expect(isHidden('host-modal')).toBe(true);
+    expect(isHidden('host-sheet')).toBe(false);
+
+    sheet.close(document.getElementById('host-sheet'));
+    modal.open(document.getElementById('open-modal'));
+    sheet.open(document.getElementById('open-sheet'));
+    pressEscape();
+
+    expect(isHidden('host-sheet')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
+
+    sheet.destroy();
+    modal.destroy();
+  });
+
+  it('suspends the modal focus trap while a non-modal sheet is the top layer', () => {
+    document.body.innerHTML = `
+      <button type="button" id="outside">Elsewhere</button>
+      <button type="button" id="open-modal" aria-controls="host-modal">Modal</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Modal</h2>
+          <button type="button" id="modal-first">Save</button>
+          <button type="button" id="modal-last">Done</button>
+        </div>
+      </div>
+      <button type="button" id="open-sheet" aria-controls="host-sheet">Sheet</button>
+      <div sheet-overlay="none" id="host-sheet" hidden>
+        <div sheet>
+          <h2>Sheet</h2>
+          <button type="button" id="sheet-action">Keep</button>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const sheet = createSheet({ root: document.body });
+    const sheetAction = document.getElementById('sheet-action');
+    const outside = document.getElementById('outside');
+    const modalHost = document.getElementById('host-modal');
+    const modalFirst = document.getElementById('modal-first');
+    const modalLast = document.getElementById('modal-last');
+
+    modal.open(document.getElementById('open-modal'));
+    sheet.open(document.getElementById('open-sheet'));
+
+    sheetAction?.focus();
+    expect(document.activeElement).toBe(sheetAction);
+    const tab = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Tab',
+    });
+    sheetAction?.dispatchEvent(tab);
+
+    expect(tab.defaultPrevented).toBe(false);
+    expect(document.activeElement).toBe(sheetAction);
+    expect(modalHost?.contains(document.activeElement)).toBe(false);
+
+    outside?.focus();
+    expect(document.activeElement).toBe(outside);
+    expect(isHidden('host-sheet')).toBe(false);
+    expect(isHidden('host-modal')).toBe(false);
+
+    pressEscape();
+
+    expect(isHidden('host-sheet')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
+
+    modalFirst?.focus();
+    outside?.focus();
+    expect(modalHost?.contains(document.activeElement)).toBe(true);
+
+    modalLast?.focus();
+    const resume = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Tab',
+    });
+    modalLast?.dispatchEvent(resume);
+    expect(resume.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(modalFirst);
+
+    pressEscape();
+    expect(isHidden('host-modal')).toBe(true);
+    sheet.destroy();
+    modal.destroy();
+  });
+
+  it('closes only the top dialog when a lower backdrop is pressed', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+      <div drawer-overlay id="host-drawer" hidden>
+        <div drawer><h2>Filters</h2></div>
+      </div>
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+    `;
+    const drawer = createDrawer({ root: document.body });
+    const modal = createModal({ root: document.body });
+
+    drawer.open(document.getElementById('open-drawer'));
+    modal.open(document.getElementById('open-modal'));
+    pressBackdrop(document.getElementById('host-drawer') as HTMLElement);
+
+    expect(isHidden('host-modal')).toBe(true);
+    expect(isHidden('host-drawer')).toBe(false);
+
+    pressBackdrop(document.getElementById('host-drawer') as HTMLElement);
+
+    expect(isHidden('host-drawer')).toBe(true);
+    modal.destroy();
+    drawer.destroy();
+  });
+
+  it('emits juice:change top-down when a lower dialog pop cascades', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+      <div drawer-overlay id="host-drawer" hidden>
+        <div drawer><h2>Filters</h2></div>
+      </div>
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+    `;
+    const seen: Array<{ id: string; runtime: string; open: boolean }> = [];
+    const onChange = (event: Event) => {
+      if (!(event instanceof CustomEvent)) return;
+      const detail = event.detail as {
+        runtime?: string;
+        state?: { open?: boolean };
+      };
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !detail.runtime) return;
+      if (typeof detail.state?.open !== 'boolean') return;
+      seen.push({
+        id: target.id,
+        runtime: detail.runtime,
+        open: detail.state.open,
+      });
+    };
+    document.body.addEventListener(JUICE_CHANGE_EVENT, onChange);
+
+    const drawer = createDrawer({ root: document.body });
+    const modal = createModal({ root: document.body });
+    drawer.open(document.getElementById('open-drawer'));
+    modal.open(document.getElementById('open-modal'));
+    seen.length = 0;
+
+    drawer.close(document.getElementById('host-drawer'));
+
+    expect(seen).toEqual([
+      { id: 'host-modal', runtime: 'modal', open: false },
+      { id: 'host-drawer', runtime: 'drawer', open: false },
+    ]);
+    expect(isHidden('host-modal')).toBe(true);
+    expect(isHidden('host-drawer')).toBe(true);
+
+    document.body.removeEventListener(JUICE_CHANGE_EVENT, onChange);
+    modal.destroy();
+    drawer.destroy();
+  });
+
+  it('cascades layers above a modal when a later modal replaces it', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-a" aria-controls="modal-a">A</button>
+      <div modal-overlay id="modal-a" hidden>
+        <div modal><h2>A</h2></div>
+      </div>
+      <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+      <div drawer-overlay id="host-drawer" hidden>
+        <div drawer><h2>Filters</h2></div>
+      </div>
+      <button type="button" id="open-b" aria-controls="modal-b">B</button>
+      <div modal-overlay id="modal-b" hidden>
+        <div modal><h2>B</h2></div>
+      </div>
+    `;
+    const seen: Array<{ id: string; runtime: string; open: boolean }> = [];
+    const onChange = (event: Event) => {
+      if (!(event instanceof CustomEvent)) return;
+      const detail = event.detail as {
+        runtime?: string;
+        state?: { open?: boolean };
+      };
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !detail.runtime) return;
+      if (typeof detail.state?.open !== 'boolean') return;
+      seen.push({
+        id: target.id,
+        runtime: detail.runtime,
+        open: detail.state.open,
+      });
+    };
+    document.body.addEventListener(JUICE_CHANGE_EVENT, onChange);
+
+    const modal = createModal({ root: document.body });
+    const drawer = createDrawer({ root: document.body });
+    modal.open(document.getElementById('open-a'));
+    drawer.open(document.getElementById('open-drawer'));
+    seen.length = 0;
+
+    modal.open(document.getElementById('open-b'));
+
+    expect(seen).toEqual([
+      { id: 'host-drawer', runtime: 'drawer', open: false },
+      { id: 'modal-a', runtime: 'modal', open: false },
+      { id: 'modal-b', runtime: 'modal', open: true },
+    ]);
+    expect(isHidden('host-drawer')).toBe(true);
+    expect(isHidden('modal-a')).toBe(true);
+    expect(isHidden('modal-b')).toBe(false);
+    expect(topLayer()?.el.id).toBe('modal-b');
+    expect(topLayer()?.kind).toBe('modal');
+
+    document.body.removeEventListener(JUICE_CHANGE_EVENT, onChange);
+    drawer.destroy();
+    modal.destroy();
+  });
+
+  it('restores the original body overflow after two modal sheets close', () => {
+    document.body.innerHTML = `
+      <div sheet-overlay id="sheet-a" hidden><div sheet><h2>A</h2></div></div>
+      <div sheet-overlay id="sheet-b" hidden><div sheet><h2>B</h2></div></div>
+    `;
+    document.body.style.overflow = 'scroll';
+    const sheet = createSheet({ root: document.body });
+    const first = document.getElementById('sheet-a');
+    const second = document.getElementById('sheet-b');
+
+    sheet.open(first);
+    sheet.open(second);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    sheet.close(second);
+    expect(document.body.style.overflow).toBe('hidden');
+    sheet.close(first);
+    expect(document.body.style.overflow).toBe('scroll');
+
+    sheet.destroy();
+  });
+
+  it('drops stack listeners when a dialog host is destroyed while another is open', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+      <button type="button" id="open-drawer" aria-controls="host-drawer">Filters</button>
+      <div drawer-overlay id="host-drawer" hidden>
+        <div drawer><h2>Filters</h2></div>
+      </div>
+    `;
+    const add = vi.spyOn(document, 'addEventListener');
+    const remove = vi.spyOn(document, 'removeEventListener');
+    const modal = createModal({ root: document.body });
+    const drawer = createDrawer({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    drawer.open(document.getElementById('open-drawer'));
+
+    const stackAdds = add.mock.calls.filter(
+      (call) => call[0] === 'keydown' && call[2] === true
+    );
+    expect(stackAdds).toHaveLength(1);
+    expect(topLayer()?.el.id).toBe('host-drawer');
+
+    modal.destroy();
+    drawer.destroy();
+
+    const stackRemoves = remove.mock.calls.filter(
+      (call) => call[0] === 'keydown' && call[2] === true
+    );
+    expect(stackRemoves).toHaveLength(1);
+    expect(topLayer()).toBeNull();
+
+    document.body.innerHTML = `
+      <button type="button" id="open-fresh" aria-controls="fresh-modal">Again</button>
+      <div modal-overlay id="fresh-modal" hidden>
+        <div modal><h2>Again</h2></div>
+      </div>
+    `;
+    const fresh = createModal({ root: document.body });
+    fresh.open(document.getElementById('open-fresh'));
+    pressEscape();
+
+    expect(isHidden('fresh-modal')).toBe(true);
+    expect(topLayer()).toBeNull();
+    pressEscape();
+    fresh.destroy();
+  });
+
+  it('does not attach a second listener when the modal runtime starts twice', () => {
+    stopModalRuntime();
+    const add = vi.spyOn(window, 'addEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const captureAdds = (type: string) =>
+      add.mock.calls.filter((call) => call[0] === type && call[2] === true).length;
+
+    startModalRuntime();
+    expect(captureAdds('keydown')).toBe(1);
+    expect(captureAdds('pointerdown')).toBe(1);
+
+    startModalRuntime();
+    expect(captureAdds('keydown')).toBe(1);
+    expect(captureAdds('pointerdown')).toBe(1);
+
+    stopModalRuntime();
+    expect(
+      remove.mock.calls.filter((call) => call[0] === 'keydown' && call[2] === true)
+    ).toHaveLength(1);
+
+    add.mockClear();
+    startModalRuntime();
+    expect(captureAdds('keydown')).toBe(1);
+    expect(captureAdds('pointerdown')).toBe(1);
+    stopModalRuntime();
+  });
+
+  it('ignores a defaultPrevented Escape on the top dialog', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    modal.open(document.getElementById('open-modal'));
+    const consume = (event: Event) => {
+      if (event instanceof KeyboardEvent && event.key === 'Escape') {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', consume, true);
+
+    pressEscape();
+    expect(isHidden('host-modal')).toBe(false);
+
+    window.removeEventListener('keydown', consume, true);
+    pressEscape();
+    expect(isHidden('host-modal')).toBe(true);
+    modal.destroy();
+  });
+
+  it('does not leave a nested popover visibly open after Escape closes its modal', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+          <div popover-root id="host-pop" hidden>
+            <div popover-panel><div popover-body>Help</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const popover = createPopover({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    popover.open(document.getElementById('open-pop'));
+    pressEscape();
+
+    const popoverRoot = document.getElementById('host-pop');
+    expect(isHidden('host-modal')).toBe(true);
+    expect(popoverRoot?.closest('[hidden]')?.id).toBe('host-modal');
+
+    pressEscape();
+
+    expect(popoverRoot?.hasAttribute('hidden')).toBe(true);
+    modal.destroy();
+    popover.destroy();
   });
 });

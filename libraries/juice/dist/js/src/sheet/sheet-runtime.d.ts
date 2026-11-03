@@ -9,8 +9,15 @@
  * only after it finishes. Focus moves in when a modal `hidden` is removed
  * and restores when that `hidden` is set. Reduced motion (or a zero
  * computed duration) does both in the same turn. An in-flight exit stays
- * the open dialog for Escape and the focus trap until that commit, and a
- * new open of that same overlay cancels it.
+ * on the layer stack for Escape and the focus trap until that commit, and
+ * a new open of that same overlay cancels it. Escape and backdrop presses
+ * follow open order on the internal layer stack. This runtime does not
+ * handle Escape itself, so a defaultPrevented Escape never closes the
+ * sheet. Tab and focus-in trap only when this overlay is the top of the
+ * stack and that layer is modal. `sheet-overlay="none"` never traps, and
+ * while that non-modal sheet is the top layer it suspends the trap of a
+ * modal underneath. The trap resumes when the sheet closes. Focus return
+ * stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[sheet-overlay]` id. `[sheet-close]` closes the containing overlay.
@@ -18,11 +25,12 @@
  * `closeOnBackdrop` is false. `sheet-overlay="none"` is non-modal: no
  * focus trap, no scroll lock, no backdrop close. Escape still closes.
  *
- * Scroll lock is modal only (boolean / omitted / "static"). A shared
- * counter locks `document.body` overflow on the first modal sheet and
- * restores the previous inline overflow when the last one closes, so
- * nested and sibling modal sheets do not unlock early. Several sheets
- * may be open together. This runtime does not close siblings.
+ * Scroll lock is modal only (boolean / omitted / "static"). It uses the
+ * layer stack's ref-counted body overflow lock: the first modal sheet
+ * saves the inline overflow and sets `hidden`, and the last release
+ * restores that saved value. Nested and sibling modal sheets do not
+ * unlock early. Non-modal sheets do not lock. Several sheets may be
+ * open together. This runtime does not close siblings.
  *
  * Detents. `sheet-detents` on `[sheet]` is the allowed set (`~=` words).
  * Absent, or with no known word, the set is "half full". Rank is

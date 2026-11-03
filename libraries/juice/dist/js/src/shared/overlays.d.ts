@@ -7,6 +7,10 @@
  *   toast / tooltip. Menu closed vs open is native `hidden` on `[menu]`,
  *   not on `[menu-root]`. Sheet closed vs open is native `hidden` on
  *   `[sheet-overlay]`, including `sheet-overlay="none"`.
+ *
+ * Modal, drawer, and sheet take their own Escape from the layer stack.
+ * These queries stay the interim yield for popover, menu, combobox,
+ * toast, and tooltip until those runtimes join the stack.
  */
 export declare const hasOpenDialogOverlay: () => boolean;
 export declare const hasOpenPopover: () => boolean;

@@ -1,11 +1,11 @@
 /**
  * Internal open-order overlay stack. Not a public export.
  *
- * B1 does not wire this into any runtime. Escape still uses the
- * type-ranked queries in overlays.ts. Sheet keeps its own body scroll
- * lock. B2 will send modal, drawer, sheet, popover, menu, and combobox
- * through this stack so the last one opened owns Escape and outside
- * clicks. Toast and tooltip stay off the stack.
+ * B2a wires modal, drawer, and sheet so the last one opened owns Escape
+ * and backdrop presses. Popover, menu, and combobox still use the
+ * type-ranked queries in overlays.ts until B2b. Toast and tooltip stay
+ * off the stack. Sheet body scroll lock is acquireScrollLock. Modal
+ * and drawer do not lock scroll.
  *
  * Order is open time. The last push is the top. Pushing an element that
  * is already stacked refreshes that slot in place (kind, modal, dismiss,
@@ -16,7 +16,7 @@
  *
  * pop() removes this entry without calling its dismiss, because the
  * caller is already closing it. Layers above it are dismissed first,
- * top-down, with reason 'outside', and then this entry is removed.
+ * top-down, with reason 'cascade', and then this entry is removed.
  * Pass { cascade: false } or call removeLayer(el) to drop one entry
  * with no dismiss calls and no focus return. That is the destroy path.
  *
@@ -43,8 +43,8 @@
  * descendant of el, so the runtime passes containsTarget that also
  * includes the portaled node.
  *
- * acquireScrollLock is a ref-counted inline body overflow lock for
- * sheet to adopt later. Modal and drawer do not lock scroll in S3.
+ * acquireScrollLock is the ref-counted inline body overflow lock sheet
+ * uses. Modal and drawer do not lock scroll in S3.
  * The first acquire saves body.style.overflow and sets 'hidden'. The
  * last release restores the saved inline value. Release is idempotent.
  * A stylesheet overflow is not read or written.
@@ -53,7 +53,7 @@
  * __resetLayerStackForTests is for unit tests, not the public entry.
  */
 export type LayerKind = 'modal' | 'drawer' | 'sheet' | 'popover' | 'menu' | 'combobox';
-export type LayerDismissReason = 'escape' | 'outside';
+export type LayerDismissReason = 'escape' | 'outside' | 'cascade';
 export interface LayerEntry {
     el: HTMLElement;
     kind: LayerKind;
