@@ -4,7 +4,7 @@ A sheet is a bottom-anchored dialog rooted at `[sheet-overlay]`.
 
 Emerging. The thirty-second runtime. Shipped in `@citrusworx/juiceui@0.9.6` (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`).
 
-`createSheet`, `initSheet`, `startSheetRuntime`, and `stopSheetRuntime` shipped in 0.9.6. `@citrusworx/sigjs/juice` `bind` does not name `sheet`. It is not a `JuiceRuntimeName`. Binding sheet is unblocked and is not done.
+`createSheet`, `initSheet`, `startSheetRuntime`, and `stopSheetRuntime` shipped in 0.9.6. npm `@citrusworx/sigjs` **1.1.2** `bind` names `sheet`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. `juice:change` comes from `[sheet-overlay]`. **1.1.1** does not name `sheet`.
 
 Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
@@ -186,7 +186,7 @@ Layout roles stay on `:root`. Color falls through `--juice-sheet-*` to `--juice-
 
 ## Sig `bind()`
 
-`@citrusworx/sigjs/juice` `bind()` does not include sheet. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Binding sheet is unblocked and is not done. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `JuiceRuntimeName` is thirty-one names, through keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** stop at twenty-eight names, through `table`. Passing `"sheet"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
+npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. Sheet binds on **0.9.6** or newer and throws on **0.9.5**. `juice:change` comes from `[sheet-overlay]`. **1.1.1** does not name sheet (thirty-one names, through keyboard-avoider). npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** stop at twenty-eight names, through `table`. This runtime does not call `bind`, and Juice does not import Sig.
 
 `juice:change` and `getState()` still work without Sig. Listen on the overlay, or call `getState()` on the controller.
 

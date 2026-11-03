@@ -1,6 +1,6 @@
 # API reference
 
-Every public export of workspace `@citrusworx/sigjs` **1.1.0** (not published). npm `latest` is **1.0.0**. The 1.0.0 signatures match `dist/*.d.ts` in that published tarball. **1.1.0** adds `pressable`, `touchable-row`, `keyboard-avoider`, and `sheet` to `JuiceRuntimeName`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. The classification (stable, experimental, internal) is [API surface](./api-surface.md).
+Every public export of `@citrusworx/sigjs` **1.1.2**. npm `latest` is **1.1.2** (published 2026-11-03, `gitHead` `e4c4a0fc`). **1.1.2** binds all thirty-two Juice runtimes, including `sheet`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** (published 2026-11-03, `gitHead` `850e91bb`) names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`. The classification (stable, experimental, internal) is [API surface](./api-surface.md).
 
 ## Entry points
 
@@ -38,11 +38,11 @@ Every public export of workspace `@citrusworx/sigjs` **1.1.0** (not published). 
 | [`RouteFactory`](#routefactory) | type | 0.3.0 (exported). 0.2.0 was `() => Node` and not exported |
 | [`RouteView`](#routeview) | type | 0.3.0 |
 | [`RouteMap`](#routemap) | type | 0.3.0 |
-| [`bind`](#bind) | function | 0.4.0. Icon button, avatar, and table in 0.7.2. Pressable, touchable-row, keyboard-avoider, and sheet in workspace 1.1.0 |
+| [`bind`](#bind) | function | 0.4.0. Icon button, avatar, and table in 0.7.2. Pressable, touchable-row, and keyboard-avoider in 1.1.1. Sheet in 1.1.2 |
 | [`JuiceBinding`](#juicebinding) | type | 0.4.0 |
 | [`JuiceSignal`](#juicesignal) | type | 0.4.0 |
-| [`JuiceRuntimeName`](#juiceruntimename) | type | 0.4.0, three names added in 0.7.2, four more in workspace 1.1.0 |
-| [`JuiceRuntimeState`](#juiceruntimestate) | type | 0.4.0, three local shapes in 0.7.2, four more in workspace 1.1.0 |
+| [`JuiceRuntimeName`](#juiceruntimename) | type | 0.4.0, three names added in 0.7.2, three more in 1.1.1, `sheet` in 1.1.2 |
+| [`JuiceRuntimeState`](#juiceruntimestate) | type | 0.4.0, three local shapes in 0.7.2, three more in 1.1.1, sheet in 1.1.2 |
 
 `0.6.0` was published from a build that `package.json` never recorded. `0.7.0` is the versioned release that kept `untrack` and `bindList`.
 
@@ -1128,7 +1128,7 @@ There is still no shared `Signal<T>` type.
 
 | | |
 |---|---|
-| Since | 0.4.0 for the original names. `"icon-button"`, `"avatar"`, and `"table"` in 0.7.2. `"pressable"`, `"touchable-row"`, `"keyboard-avoider"`, and `"sheet"` in workspace 1.1.0 (not published) |
+| Since | 0.4.0 for the original names. `"icon-button"`, `"avatar"`, and `"table"` in 0.7.2. `"pressable"`, `"touchable-row"`, and `"keyboard-avoider"` in 1.1.1. `"sheet"` in 1.1.2 |
 | Entry | `./juice` |
 | Status | Stable |
 | Kind | type |
@@ -1145,7 +1145,7 @@ type JuiceRuntimeName =
   | "sheet";
 ```
 
-Thirty-two names in workspace 1.1.0. Published 1.0.0 stops at `"table"`. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On 0.9.5, binding `"sheet"` throws because `startSheetRuntime` is missing.
+Thirty-two names in npm **1.1.2**. **1.1.1** stops at `"keyboard-avoider"` (thirty-one) and does not name `"sheet"`. Published 1.0.0 stops at `"table"`. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On 0.9.5, binding `"sheet"` in **1.1.2** throws because `startSheetRuntime` is missing. `juice:change` for sheet comes from `[sheet-overlay]`.
 
 Adding a name later would be a minor. Renaming one is a major. Inference attributes and which Juice versions can bind each name are in [Runtime binding](./sig-juice-integration.md#runtime-binding).
 
@@ -1155,7 +1155,7 @@ Adding a name later would be a minor. Renaming one is a major. Inference attribu
 
 | | |
 |---|---|
-| Since | 0.4.0. Three local shapes in 0.7.2. Four more in workspace 1.1.0 |
+| Since | 0.4.0. Three local shapes in 0.7.2. Three more in 1.1.1. Sheet in 1.1.2 |
 | Entry | `./juice` |
 | Status | Stable |
 | Kind | type |

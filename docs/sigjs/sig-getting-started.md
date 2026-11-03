@@ -10,7 +10,7 @@ Sig is signals plus a JSX factory that creates real DOM nodes. It is not React. 
 npm install @citrusworx/sigjs
 ```
 
-npm `latest` is **1.0.0** (published 2026-10-29). `yarn add @citrusworx/sigjs` and `pnpm add @citrusworx/sigjs` install the same version. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install 1.0.0.
+npm `latest` is **1.1.2** (published 2026-11-03, `gitHead` `e4c4a0fc`). It binds all 32 Juice runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** binds 31 runtimes and does not name sheet. `yarn add @citrusworx/sigjs` and `pnpm add @citrusworx/sigjs` install the same version. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install 1.0.0.
 
 ## JSX
 
