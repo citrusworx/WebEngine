@@ -20,6 +20,7 @@ import {
   topLayer,
 } from './shared/layer-stack.js';
 import { __resetLightLayersForTests } from './shared/light-layer.js';
+import { flushMotion, stubMotionDuration } from './shared/motion-test-utils.js';
 import {
   createDrawer,
   stopDrawerRuntime,
@@ -60,9 +61,11 @@ import {
  * only the top light layer and leaves the layer under it open. Tab and
  * focus-in trap only when the top of the stack is itself modal. A
  * non-modal sheet on top suspends that trap until it closes. Popping a
- * layer dismisses layers above it with reason 'cascade'. Tooltip and
- * toast stay off the stack. An open tooltip consumes Escape and closes
- * only itself. A toast never takes Escape while a stack layer is open.
+ * layer dismisses layers above it with reason 'cascade'. A dialog
+ * dismissed that way does not return focus. The dialog that was popped
+ * still does. Tooltip and toast stay off the stack. An open tooltip
+ * consumes Escape and closes only itself. A toast never takes Escape
+ * while a stack layer is open.
  * [banner] never steals Escape. [accordion] Escape stays contextual.
  */
 
@@ -1018,4 +1021,181 @@ describe('Escape / layering contract', () => {
     popover.destroy();
     modal.destroy();
   });
+});
+
+describe('cascade dialog focus', () => {
+  type Kind = 'modal' | 'drawer' | 'sheet';
+
+  const pairs: Array<{ label: string; lower: Kind; upper: Kind }> = [
+    { label: 'modal then modal', lower: 'modal', upper: 'modal' },
+    { label: 'modal then drawer', lower: 'modal', upper: 'drawer' },
+    { label: 'modal then sheet', lower: 'modal', upper: 'sheet' },
+  ];
+
+  const markup = (kind: Kind, id: string, openerId: string) => {
+    const opener = `<button type="button" id="${openerId}" aria-controls="${id}">Open ${id}</button>`;
+    if (kind === 'drawer') {
+      return `${opener}
+        <div drawer-overlay id="${id}" hidden>
+          <div drawer>
+            <h2>${id}</h2>
+            <button type="button">Keep</button>
+          </div>
+        </div>`;
+    }
+    if (kind === 'sheet') {
+      return `${opener}
+        <div sheet-overlay id="${id}" hidden>
+          <div sheet>
+            <h2>${id}</h2>
+            <button type="button">Keep</button>
+          </div>
+        </div>`;
+    }
+    return `${opener}
+      <div modal-overlay id="${id}" hidden>
+        <div modal>
+          <h2>${id}</h2>
+          <button type="button">Keep</button>
+        </div>
+      </div>`;
+  };
+
+  const createDialog = (kind: Kind, selector?: string) => {
+    const root = document.body;
+    if (kind === 'drawer') {
+      return createDrawer(
+        selector ? { root, overlaySelector: selector } : { root }
+      );
+    }
+    if (kind === 'sheet') {
+      return createSheet(
+        selector ? { root, overlaySelector: selector } : { root }
+      );
+    }
+    return createModal(
+      selector ? { root, overlaySelector: selector } : { root }
+    );
+  };
+
+  /**
+   * Modals that share a selector close each other on open. Two modals stay
+   * on the stack together when each controller owns its own overlay.
+   */
+  const mountPair = (lowerKind: Kind, upperKind: Kind) => {
+    document.body.innerHTML =
+      markup(lowerKind, 'lower', 'open-lower') +
+      markup(upperKind, 'upper', 'open-upper');
+
+    const separateModals = lowerKind === 'modal' && upperKind === 'modal';
+    const lower = createDialog(
+      lowerKind,
+      separateModals ? '#lower' : undefined
+    );
+    const upper = createDialog(
+      upperKind,
+      separateModals ? '#upper' : undefined
+    );
+    const lowerOpener = document.getElementById('open-lower') as HTMLElement;
+    const upperOpener = document.getElementById('open-upper') as HTMLElement;
+    const lowerOverlay = document.getElementById('lower') as HTMLElement;
+    const upperOverlay = document.getElementById('upper') as HTMLElement;
+
+    lowerOpener.focus();
+    lower.open(lowerOpener);
+    upperOpener.focus();
+    upper.open(upperOpener);
+
+    return {
+      lower,
+      upper,
+      lowerOpener,
+      upperOpener,
+      lowerOverlay,
+      upperOverlay,
+      destroy: () => {
+        upper.destroy();
+        lower.destroy();
+      },
+    };
+  };
+
+  const recordFocus = () => {
+    const focused: HTMLElement[] = [];
+    const original = HTMLElement.prototype.focus;
+    vi.spyOn(HTMLElement.prototype, 'focus').mockImplementation(function (
+      this: HTMLElement,
+      options?: FocusOptions
+    ) {
+      focused.push(this);
+      original.call(this, options);
+    });
+    return focused;
+  };
+
+  const finishExit = async (overlay: HTMLElement) => {
+    overlay.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+  };
+
+  const assertLowerOpener = (
+    focused: readonly HTMLElement[],
+    lowerOpener: HTMLElement,
+    upperOpener: HTMLElement
+  ) => {
+    expect(document.activeElement).toBe(lowerOpener);
+    expect(focused).toContain(lowerOpener);
+    expect(focused).not.toContain(upperOpener);
+  };
+
+  for (const pair of pairs) {
+    it(`returns focus to the lower opener when a nested ${pair.label} closes instantly`, () => {
+      const mounted = mountPair(pair.lower, pair.upper);
+      const focused = recordFocus();
+
+      try {
+        mounted.lower.close(mounted.lowerOverlay);
+
+        expect(mounted.lowerOverlay.hasAttribute('hidden')).toBe(true);
+        expect(mounted.upperOverlay.hasAttribute('hidden')).toBe(true);
+        assertLowerOpener(focused, mounted.lowerOpener, mounted.upperOpener);
+      } finally {
+        vi.restoreAllMocks();
+        mounted.destroy();
+      }
+    });
+
+    it(`returns focus to the lower opener when a nested ${pair.label} closes after a timed exit`, async () => {
+      const mounted = mountPair(pair.lower, pair.upper);
+      stubMotionDuration('120ms');
+      const focused = recordFocus();
+
+      try {
+        mounted.lower.close(mounted.lowerOverlay);
+
+        expect(mounted.lowerOverlay.hasAttribute('hidden')).toBe(false);
+        expect(mounted.upperOverlay.hasAttribute('hidden')).toBe(false);
+        expect(mounted.lowerOverlay.getAttribute('data-motion-state')).toBe(
+          'exiting'
+        );
+
+        await finishExit(mounted.lowerOverlay);
+
+        expect(mounted.lowerOverlay.hasAttribute('hidden')).toBe(true);
+        expect(mounted.upperOverlay.hasAttribute('hidden')).toBe(false);
+        expect(mounted.upperOverlay.getAttribute('data-motion-state')).toBe(
+          'exiting'
+        );
+        assertLowerOpener(focused, mounted.lowerOpener, mounted.upperOpener);
+
+        await finishExit(mounted.upperOverlay);
+
+        expect(mounted.upperOverlay.hasAttribute('hidden')).toBe(true);
+        assertLowerOpener(focused, mounted.lowerOpener, mounted.upperOpener);
+      } finally {
+        vi.restoreAllMocks();
+        mounted.destroy();
+      }
+    });
+  }
 });

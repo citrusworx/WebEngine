@@ -187,7 +187,7 @@ Closing a dialog that has an open combobox list and popover above it publishes t
 
 Opening a modal that replaces another open modal cascades the layers above the old modal, closes the old modal, then opens the new one. Opening a drawer that replaces another open drawer does the same for layers above the old drawer.
 
-`'cascade'` does not return focus to a popover opener or a menu opener. Combobox cascade closes the list and leaves focus where it is. Escape and an explicit close still return popover and menu focus to the opener. Activating a menu item does too. A dialog's own close still returns focus to that dialog's opener, including when `'cascade'` started the dialog close. Replacing a dialog does not return focus for the dialog that was replaced.
+`'cascade'` does not return focus to a popover, menu, or dialog opener. Combobox cascade closes the list and leaves focus where it is. Escape and an explicit close still return popover and menu focus to the opener. Activating a menu item does too. A dialog closed by Escape, an explicit close, or a backdrop press still returns focus to its opener. A dialog closed by `'cascade'` does not. Replacing a dialog does not return focus for the dialog that was replaced.
 
 ### Focus trap and Tab
 
