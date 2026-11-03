@@ -154,7 +154,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Page chrome
 
-- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime; not a `JuiceRuntimeName`)
+- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime; a `JuiceRuntimeName` on workspace `@citrusworx/sigjs` **1.1.0**, not on npm **1.0.0**)
 
 #### Feedback
 

@@ -151,7 +151,7 @@ The full index, including how to choose between similar components, is [Runtime 
 
 | Component | Markup | What it is | Docs |
 | --- | --- | --- | --- |
-| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Shipped in 0.9.5. Not a `JuiceRuntimeName`. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
 
 ### Auto-start
 
@@ -201,12 +201,12 @@ Select, input, and textarea publish through native `input` and `change`. They st
 
 The contract covers all thirty-two runtimes. `juice:change` and `JUICE_CHANGE_EVENT` shipped in 0.9.3. Pressable and touchable row dispatch that contract from 0.9.4. Keyboard avoider dispatches it from 0.9.5. Sheet dispatches it on master and is not in the 0.9.5 npm cut.
 
-`@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`, on master and in `@citrusworx/sigjs@0.7.2`.
+npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** `bind` names twenty-eight runtimes, through `table`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names thirty-one, through keyboard-avoider. `sheet` is not a `JuiceRuntimeName`.
 
-- `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values.
-- Pressable, touchable row, keyboard avoider, and sheet are not.
+- `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values on npm **1.0.0** and on the workspace tree.
+- Pressable, touchable row, and keyboard avoider are `JuiceRuntimeName` values on workspace **1.1.0** and are not names on npm **1.0.0**. Sheet is not a name on either tree.
 - `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
-- Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3.
+- Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
 
 Juice works without Sig. The optional adapter is `@citrusworx/sigjs/juice` only.
 

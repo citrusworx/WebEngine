@@ -966,7 +966,7 @@ Body ink is 4.62:1 on the page and 5.17:1 on the strong surface. Muted copy on a
 
 Inline press — no overlay z-index. The pressable runtime auto-enhances `[pressable]` (`sync` / `getState`, transient `[pressed]`, opt-in `juice:longpress`, Space `preventDefault` on a custom button host) — see [Pressable](./juice-pressable.md).
 
-Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ## Touchable row chrome roles
 
@@ -994,13 +994,13 @@ Citrusmint is the floor at 4.62:1 on the page and 5.17:1 on the strong surface. 
 
 Inline row — no overlay z-index. The touchable-row runtime auto-enhances `[touchable-row]` (`sync` / `getState`, independent `[selected]`, Enter and Space on an `li` or `div`) — see [Touchable Row](./juice-touchable-row.md).
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ## Keyboard avoider chrome roles
 
 `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. Do not restate them on `[theme]`. The inset is a registered `<length>` (`0px`). Duration and easing point at the motion tokens. There is no keyboard hue.
 
-The runtime writes the inset on `<html>` while open. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet yet.
+The runtime writes the inset on `<html>` while open. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 ## Sheet chrome roles
 

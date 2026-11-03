@@ -26,7 +26,7 @@ That means it should work for:
 
 The user should not need to manually initialize sheet in their app code.
 
-There is no `Sheet()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name sheet, keyboard-avoider, pressable, or touchable-row. There is no `JuiceRuntimeName` for any of those four. `JuiceRuntimeName` stops at twenty-eight names, through `table`.
+There is no `Sheet()` Sig factory. Markup plus the runtime is the contract. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 
 This surface is Emerging, not Stable. Valid markup should lay out from core CSS, and importing the JS entry should open and drag it, but the API is still likely to evolve.
 

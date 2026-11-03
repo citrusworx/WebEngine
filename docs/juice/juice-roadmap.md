@@ -447,7 +447,7 @@ Safe area chrome shipped in 0.9.3. Safe area is CSS-only and is not a runtime.
 * Native buttons, inputs, textareas, selects, summaries, and contenteditable hosts keep Space. Enter is never `preventDefault`'d.
 * The runtime does not add `role` or `tabindex`. `[icon-button][toggle]` and `aria-pressed` keep latched `[pressed]`.
 * Disabled hosts do not press, and the `:where()` gate does not clear a latched icon-button ring. No pseudo-element and no position.
-* No Sig Pressable factory. `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet.
+* No Sig Pressable factory. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
 * Docs in this pass. Pressable shipped in 0.9.4.
 * The twenty-ninth Emerging auto-enhance runtime. See [Pressable](./juice-pressable.md).
 
@@ -462,7 +462,7 @@ Safe area chrome shipped in 0.9.3. Safe area is CSS-only and is not a runtime.
 * Enter and Space on an `li` or `div` dispatch one click. Space on those hosts is `preventDefault`'d.
 * Native `a` and `button` keep their click. A canceled `[pressable-longpress]` still selects.
 * A suppressed long-press click does not. No Sig TouchableRow factory.
-* `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. Docs in this pass.
+* Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Docs in this pass.
 * Shipped in 0.9.4. The thirtieth Emerging auto-enhance runtime.
 * See [Touchable Row](./juice-touchable-row.md).
 
@@ -471,7 +471,7 @@ Safe area chrome shipped in 0.9.3. Safe area is CSS-only and is not a runtime.
 * Translate-only and footer-only keep Safe Area's own padding. Footer mode on `nav[fixed]` sets `bottom: auto`, so the bar does not stretch. Put padding mode on a drawer's scroll body.
 * DOM-first runtime (#311): `createKeyboardAvoider` / `initKeyboardAvoider` / `startKeyboardAvoiderRuntime` / `stopKeyboardAvoiderRuntime`. State is `{ open, inset }`.
 * `open` is the overlap greater than `threshold` (default 80) and an editable field focused. There is no MutationObserver. No Sig KeyboardAvoider factory.
-* `bind()` does not name keyboard-avoider, pressable, touchable-row, or sheet yet. Shipped in 0.9.5. The thirty-first Emerging auto-enhance runtime.
+* Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Shipped in 0.9.5. The thirty-first Emerging auto-enhance runtime.
 * See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md).
 
 * **Sheet A→B→C.** Bottom sheet on `[sheet-overlay]` / `[sheet]` (chrome in #316, runtime in #317). Detents are `peek`, `half`, and `full`. Color falls through optional `--juice-sheet-*` to `--juice-drawer-*`. Layout roles stay on `:root`. There is no required sheet role and no theme edit.
@@ -483,13 +483,13 @@ Safe area chrome shipped in 0.9.3. Safe area is CSS-only and is not a runtime.
 * **Mobile-Critical.** Safe area shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is done on master and is not in npm 0.9.5. Five of seven are done. SwipeActions and PullToRefresh remain. They are not in this tree. This note does not describe their markup.
 
 * **Sig hookup is done.** All thirty-two runtimes expose `getState()`. Twenty-nine dispatch `juice:change`; select, input, and textarea publish through native `input` and `change` (#247).
-* Icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet are seven of the twenty-nine that dispatch `juice:change`. Pressable, touchable row, keyboard avoider, and sheet are not `JuiceRuntimeName` values yet.
+* Icon button, avatar, table, pressable, touchable row, keyboard avoider, and sheet are seven of the twenty-nine that dispatch `juice:change`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names pressable, touchable-row, and keyboard-avoider. npm **1.0.0** does not. Sheet is not a `JuiceRuntimeName`.
 * The table is [Runtime Behavior](./juice-runtime-behavior.md#juicechange). Juice works without Sig: that contract is DOM, and the runtimes do not import Sig.
 * The optional adapter is `@citrusworx/sigjs/juice` `bind(host, runtime?)` (#249), documented in [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding). Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back).
-* Avatar and table are read-only. `JuiceRuntimeName` is twenty-eight names, including icon-button, avatar, and table (PR #295, npm `@citrusworx/sigjs@0.7.2`).
-* On a Juice build that does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2 do not export them; they shipped in 0.9.3), binding that runtime throws `needs a newer @citrusworx/juiceui`. The module still loads, and the other runtimes still bind.
+* Avatar and table are read-only. npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** `JuiceRuntimeName` is twenty-eight names, including icon-button, avatar, and table (PR #295). Workspace **1.1.0** (not published) is thirty-one names, through keyboard-avoider. `sheet` is not a name.
+* On a Juice build that does not export the matching `start*Runtime`, binding that runtime throws `needs a newer @citrusworx/juiceui`. Published `@citrusworx/juiceui` 0.9.1 and 0.9.2 export none of icon-button, avatar, table, pressable, touchable-row, or keyboard-avoider. Icon-button, avatar, and table shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. The module still loads, and the other runtimes still bind.
 * This is not a Juice subpath and not a per-runtime Sig factory. `juice:change` and `getState()` shipped in 0.9.3, including icon button, avatar, and table. Pressable and touchable row dispatch them from 0.9.4.
-* `bind` shipped in `@citrusworx/sigjs@0.4.0` and names all twenty-eight in **0.7.2**.
+* `bind` shipped in `@citrusworx/sigjs@0.4.0` and names all twenty-eight in **0.7.2** and in npm **1.0.0**. Workspace **1.1.0** (not published) names thirty-one, through keyboard-avoider. `sheet` is not a name.
 
 See [Surfaces](./juice-surfaces.md) [Theme Contract](./juice-theme-contract.md)
 
@@ -631,7 +631,7 @@ Safe area chrome shipped in 0.9.3 (CSS-only, not a runtime).
 * Do not invent a next version number; the next cut happens when new Juice changesets exist.
 * **Sig hookup.** `juice:change` and `getState()` shipped in 0.9.3 and cover thirty-one runtimes in npm 0.9.5. Sheet, the thirty-second, dispatches that contract on master and is not in that cut.
 * Pressable is the twenty-ninth. Touchable row is the thirtieth.
-* `bind` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. Optional `bind` lives at `@citrusworx/sigjs/juice` and names all twenty-eight (`JuiceRuntimeName` includes icon-button, avatar, and table).
+* Optional `bind` lives at `@citrusworx/sigjs/juice`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names thirty-one, through keyboard-avoider. npm **1.0.0** names twenty-eight, through `table` (`JuiceRuntimeName` includes icon-button, avatar, and table). `sheet` is not a name.
 * Icon-button writes back on a `[toggle]` host. Avatar and table are read-only.
 * A Juice build that does not export those three start functions throws `needs a newer @citrusworx/juiceui` for that runtime only. Juice still runs with no Sig import.
 * See [Runtime Behavior](./juice-runtime-behavior.md#juicechange).
@@ -866,7 +866,7 @@ Enter is left alone. The runtime does not add `role` or `tabindex`.
 
 A disabled pressable does not clear an icon-button's latched ring. No focus trap, no Escape handler, and no Sig Pressable factory.
 
-`@citrusworx/sigjs/juice` `bind` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Pressable](./juice-pressable.md).
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. See [Pressable](./juice-pressable.md).
 
 Touchable row **A→B→C shipped in 0.9.4**: core roles (`--juice-touchable-row-*`), touchable-row runtime, and these docs. Valid `[touchable-row]` markup auto-enhances.
 
@@ -880,7 +880,7 @@ Enter and Space on an `li` or `div` dispatch one click. Space on those hosts doe
 
 There is no motion role and no single-select group. No focus trap, no Escape handler, and no Sig TouchableRow factory.
 
-`@citrusworx/sigjs/juice` `bind` does not name pressable, touchable-row, keyboard-avoider, or sheet yet. See [Touchable Row](./juice-touchable-row.md).
+Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. See [Touchable Row](./juice-touchable-row.md).
 
 Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, Sig Pagination, Sig Disclosure, Sig Spinner, Sig Select, Sig Input, Sig Textarea, Sig Field, Sig IconButton, Sig Avatar, Sig Table, or Sig Pressable or Sig TouchableRow factory stays later.
 
@@ -1038,7 +1038,7 @@ Do not invent a next version number.
 The next stage is post-0.9.5 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* the Sig hookup is done (`juice:change` + `getState()` for all thirty-two runtimes, optional `@citrusworx/sigjs/juice` `bind` for twenty-eight (through `table`; pressable is not a `JuiceRuntimeName` yet)). Icon-button writes back on a `[toggle]` host.
+* the Sig hookup is done (`juice:change` + `getState()` for all thirty-two runtimes, optional `@citrusworx/sigjs/juice` `bind` for thirty-one names on workspace `@citrusworx/sigjs` **1.1.0** (not published), through keyboard-avoider, and twenty-eight names on npm **1.0.0**, through `table`. `sheet` is not a name). Icon-button writes back on a `[toggle]` host.
 * Avatar and table are read-only. Binding one of those three on published `@citrusworx/juiceui` 0.9.1 or 0.9.2 throws `needs a newer @citrusworx/juiceui`, because those npm cuts do not export their start functions. The three exports shipped in 0.9.3.
 * Thirty-one Juice runtimes are in npm 0.9.5. Sheet, the thirty-second, is on master and is not in that cut. Juice still runs without Sig
 * modal / dialog A→B→C is in 0.6.0 drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0
@@ -1048,7 +1048,7 @@ The next stage is post-0.9.5 refinement:
 * table A→B→C shipped in 0.9.3. Skeleton chrome shipped in 0.9.3 (CSS-only, not a runtime)
 * list chrome and docs shipped in 0.9.3 (CSS-only, not a runtime) badge `--juice-badge-*` roles shipped in 0.9.3 (CSS-only, not a runtime; the base layout shipped in npm 0.9.2)
 * safe area chrome shipped in 0.9.3 (CSS-only, not a runtime). Pressable A→B→C shipped in 0.9.4 (the twenty-ninth Emerging auto-enhance runtime)
-* touchable row A→B→C shipped in 0.9.4 (the thirtieth Emerging auto-enhance runtime; `bind()` does not name pressable, touchable-row, keyboard-avoider, or sheet yet). Keyboard avoider shipped in 0.9.5. Sheet A→B→C is on master (the thirty-second Emerging auto-enhance runtime, not in npm 0.9.5). Mobile-Critical is five of seven: SwipeActions and PullToRefresh remain. Grow the next runtime only when the markup contract is honest
+* touchable row A→B→C shipped in 0.9.4 (the thirtieth Emerging auto-enhance runtime). Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet. Keyboard avoider shipped in 0.9.5. Sheet A→B→C is on master (the thirty-second Emerging auto-enhance runtime, not in npm 0.9.5). Mobile-Critical is five of seven: SwipeActions and PullToRefresh remain. Grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

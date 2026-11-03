@@ -2,7 +2,7 @@
 
 Touchable row is a 44px action row. `createTouchableRow` activates an `li` or `div` from Enter or Space, and toggles selection when the row opts in.
 
-Emerging. The thirtieth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. `bind` does not name `touchable-row`. Not a `JuiceRuntimeName`.
+Emerging. The thirtieth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind` names `touchable-row`. npm `@citrusworx/sigjs` **1.0.0** does not.
 
 Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
@@ -418,7 +418,7 @@ Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-
 
 ## Sig
 
-`@citrusworx/sigjs/juice` binds 28 runtimes through `table` on master and in `@citrusworx/sigjs@0.7.2`. Touchable row is not one of them. `bind` does not name `touchable-row` or `pressable`. Neither is a `JuiceRuntimeName`.
+npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** bind 28 runtimes through `table`. Touchable row and pressable are not names on that cut. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind` names both. `sheet` is not a `JuiceRuntimeName`.
 
 This runtime does not call `bind`, and Juice does not import Sig. `juice:change` and `getState()` still work without Sig. State stays `{ selected: boolean, disabled: boolean }`.
 
