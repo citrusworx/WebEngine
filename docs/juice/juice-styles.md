@@ -73,7 +73,7 @@ Juice usage today usually falls into these groups:
 
 ### Bottom sheets
 
-- `sheet` — bottom dialog on `[sheet-overlay]` / `[sheet]`, with `[sheet-handle]`, `[sheet-header]`, `[sheet-body]`, `[sheet-footer]`, and `[sheet-close]`. Detents are `peek`, `half`, and `full`. See [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). On master, not in npm 0.9.5. The thirty-second Emerging runtime. Mobile-Critical. Layout roles stay on `:root`. Color falls through to drawer roles.
+- `sheet` — bottom dialog on `[sheet-overlay]` / `[sheet]`, with `[sheet-handle]`, `[sheet-header]`, `[sheet-body]`, `[sheet-footer]`, and `[sheet-close]`. Detents are `peek`, `half`, and `full`. See [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Shipped in 0.9.6. The thirty-second Emerging runtime. Mobile-Critical. Layout roles stay on `:root`. Color falls through to drawer roles.
 
 ### Theme scoping
 
