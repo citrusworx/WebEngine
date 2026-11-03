@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { __resetDialogLayersForTests } from '../shared/dialog-layer.js';
+import { __resetLayerStackForTests } from '../shared/layer-stack.js';
 import {
   createDrawer,
   startDrawerRuntime,
@@ -39,6 +41,8 @@ const drawerMarkup = `
 
 afterEach(() => {
   stopDrawerRuntime();
+  __resetDialogLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
 });
 

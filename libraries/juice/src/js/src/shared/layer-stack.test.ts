@@ -161,7 +161,7 @@ describe('layer stack', () => {
     expect(seen).toEqual(['second']);
   });
 
-  it('dismisses layers above a popped entry top-down with reason outside', () => {
+  it('dismisses layers above a popped entry top-down with reason cascade', () => {
     const bottom = mount('bottom');
     mount('middle');
     mount('top');
@@ -169,15 +169,15 @@ describe('layer stack', () => {
     bottom.pop();
 
     expect(dismissals).toEqual([
-      { id: 'top', reason: 'outside' },
-      { id: 'middle', reason: 'outside' },
+      { id: 'top', reason: 'cascade' },
+      { id: 'middle', reason: 'cascade' },
     ]);
     expect(topLayer()).toBeNull();
 
     bottom.pop();
     expect(dismissals).toEqual([
-      { id: 'top', reason: 'outside' },
-      { id: 'middle', reason: 'outside' },
+      { id: 'top', reason: 'cascade' },
+      { id: 'middle', reason: 'cascade' },
     ]);
   });
 
@@ -603,7 +603,9 @@ describe('layer stack', () => {
     for (const source of sources) {
       const text = readFileSync(source, 'utf8');
       expect(text).not.toContain('layer-stack');
+      expect(text).not.toContain('dialog-layer');
       expect(text).not.toContain('pushLayer');
+      expect(text).not.toContain('createDialogLayers');
       expect(text).not.toContain('__resetLayerStackForTests');
     }
 

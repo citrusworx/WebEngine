@@ -2,6 +2,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { JUICE_CHANGE_EVENT } from '../shared/change.js';
+import { __resetDialogLayersForTests } from '../shared/dialog-layer.js';
+import { __resetLayerStackForTests } from '../shared/layer-stack.js';
 import {
   flushMotion,
   stubMotionDuration,
@@ -100,6 +102,8 @@ const useClock = () => {
 
 afterEach(() => {
   stopSheetRuntime();
+  __resetDialogLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();

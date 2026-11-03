@@ -7,9 +7,12 @@
  * Enter removes `hidden`, then plays. Exit plays first; `hidden` is set
  * only after it finishes. Focus moves in when `hidden` is removed and
  * restores when `hidden` is set. Reduced motion (or a zero computed
- * duration) does both in the same turn. An in-flight exit stays the open
- * dialog for Escape and the focus trap until that commit, and a new open
- * cancels it.
+ * duration) does both in the same turn. An in-flight exit stays on the
+ * layer stack for Escape and the focus trap until that commit, and a new
+ * open cancels it. Escape and backdrop presses follow open order on the
+ * internal layer stack. This runtime does not handle Escape itself, so a
+ * defaultPrevented Escape never closes the dialog. Tab and focus-in trap
+ * only when this overlay is the top modal layer. Focus return stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[modal-overlay]` id. `[modal-close]` closes the containing overlay.

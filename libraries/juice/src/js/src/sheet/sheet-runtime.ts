@@ -9,8 +9,12 @@
  * only after it finishes. Focus moves in when a modal `hidden` is removed
  * and restores when that `hidden` is set. Reduced motion (or a zero
  * computed duration) does both in the same turn. An in-flight exit stays
- * the open dialog for Escape and the focus trap until that commit, and a
- * new open of that same overlay cancels it.
+ * on the layer stack for Escape and the focus trap until that commit, and
+ * a new open of that same overlay cancels it. Escape and backdrop presses
+ * follow open order on the internal layer stack. This runtime does not
+ * handle Escape itself, so a defaultPrevented Escape never closes the
+ * sheet. Tab and focus-in trap only when this overlay is the top modal
+ * layer. `sheet-overlay="none"` never traps. Focus return stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[sheet-overlay]` id. `[sheet-close]` closes the containing overlay.
@@ -18,11 +22,12 @@
  * `closeOnBackdrop` is false. `sheet-overlay="none"` is non-modal: no
  * focus trap, no scroll lock, no backdrop close. Escape still closes.
  *
- * Scroll lock is modal only (boolean / omitted / "static"). A shared
- * counter locks `document.body` overflow on the first modal sheet and
- * restores the previous inline overflow when the last one closes, so
- * nested and sibling modal sheets do not unlock early. Several sheets
- * may be open together. This runtime does not close siblings.
+ * Scroll lock is modal only (boolean / omitted / "static"). It uses the
+ * layer stack's ref-counted body overflow lock: the first modal sheet
+ * saves the inline overflow and sets `hidden`, and the last release
+ * restores that saved value. Nested and sibling modal sheets do not
+ * unlock early. Non-modal sheets do not lock. Several sheets may be
+ * open together. This runtime does not close siblings.
  *
  * Detents. `sheet-detents` on `[sheet]` is the allowed set (`~=` words).
  * Absent, or with no known word, the set is "half full". Rank is
@@ -64,9 +69,16 @@
  */
 
 import { createJuiceChanges } from '../shared/change.js';
+import {
+  backdropPressTop,
+  createDialogLayers,
+  outsidePressIsBackdrop,
+  type DialogLayerController,
+} from '../shared/dialog-layer.js';
 import { createEventClaim } from '../shared/events.js';
 import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
+import { acquireScrollLock, topLayer, topModalLayer } from '../shared/layer-stack.js';
 import { createElementMotion, prefersReducedMotion } from '../shared/motion.js';
 
 export type SheetDetent = 'peek' | 'half' | 'full';
@@ -138,9 +150,13 @@ const TITLE_ID_PREFIX = 'juice-sheet-title';
 const claimEvent = createEventClaim();
 const focusRestorers = new WeakMap<HTMLElement, HTMLElement>();
 
-const modalLockHolds = new Map<HTMLElement, number>();
-let modalLockCount = 0;
-let savedBodyOverflow: string | null = null;
+type ScrollHold = {
+  overlay: HTMLElement;
+  release: () => void;
+  released: boolean;
+};
+
+const scrollHolds = new Set<ScrollHold>();
 
 const slugFromName = (name: string) =>
   name
@@ -264,43 +280,30 @@ const resolvedDetent = (sheet: HTMLElement): SheetDetent => {
   return readDetentAttr(sheet, allowed) ?? restingDetent(allowed);
 };
 
+const releaseScrollHold = (hold: ScrollHold) => {
+  if (hold.released) return;
+  hold.released = true;
+  scrollHolds.delete(hold);
+  hold.release();
+};
+
 const pruneDisconnectedLocks = () => {
-  for (const overlay of [...modalLockHolds.keys()]) {
-    if (overlay.isConnected) continue;
-    modalLockHolds.delete(overlay);
-    modalLockCount = Math.max(0, modalLockCount - 1);
-  }
-  if (modalLockCount === 0 && savedBodyOverflow !== null) {
-    document.body.style.overflow = savedBodyOverflow;
-    savedBodyOverflow = null;
+  if (typeof document === 'undefined') return;
+  for (const hold of [...scrollHolds]) {
+    if (hold.overlay.isConnected) continue;
+    releaseScrollHold(hold);
   }
 };
 
 const retainModalLock = (overlay: HTMLElement) => {
   pruneDisconnectedLocks();
-  const next = (modalLockHolds.get(overlay) ?? 0) + 1;
-  modalLockHolds.set(overlay, next);
-  if (next !== 1) return;
-  if (modalLockCount === 0) {
-    savedBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-  }
-  modalLockCount += 1;
-};
-
-const releaseModalLock = (overlay: HTMLElement) => {
-  const current = modalLockHolds.get(overlay) ?? 0;
-  if (current === 0) return;
-  if (current === 1) {
-    modalLockHolds.delete(overlay);
-    modalLockCount = Math.max(0, modalLockCount - 1);
-    if (modalLockCount === 0) {
-      document.body.style.overflow = savedBodyOverflow ?? '';
-      savedBodyOverflow = null;
-    }
-    return;
-  }
-  modalLockHolds.set(overlay, current - 1);
+  const hold: ScrollHold = {
+    overlay,
+    release: acquireScrollLock(),
+    released: false,
+  };
+  scrollHolds.add(hold);
+  return () => releaseScrollHold(hold);
 };
 
 type Sample = { y: number; t: number };
@@ -356,7 +359,8 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
   const changes = createJuiceChanges<SheetState>('sheet');
-  const heldLocks = new Set<HTMLElement>();
+  const heldLocks = new Map<HTMLElement, () => void>();
+  let layers!: DialogLayerController;
 
   let idCounter = 0;
   let destroyed = false;
@@ -612,14 +616,14 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   const lockModal = (overlay: HTMLElement) => {
     if (!isModalOverlay(overlay)) return;
     if (heldLocks.has(overlay)) return;
-    heldLocks.add(overlay);
-    retainModalLock(overlay);
+    heldLocks.set(overlay, retainModalLock(overlay));
   };
 
   const unlockModal = (overlay: HTMLElement) => {
-    if (!heldLocks.has(overlay)) return;
+    const release = heldLocks.get(overlay);
+    if (!release) return;
     heldLocks.delete(overlay);
-    releaseModalLock(overlay);
+    release();
   };
 
   const rememberRestorer = (
@@ -736,6 +740,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     ensureDialogAccessibility(overlay);
     const modal = isModalOverlay(overlay);
     motion.exit(overlay, () => {
+      layers.pop(overlay);
       const baseline = readState(overlay);
       overlay.hidden = true;
       setOpenerState(overlay, false);
@@ -772,6 +777,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     }
     if (baseline) publish(overlay, baseline);
     else publish(overlay);
+    layers.connect(overlay, true);
     motion.enter(overlay);
   };
 
@@ -781,6 +787,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     if (isOverlayOpen(overlay) && !isClosing(overlay)) {
       ensureDialogAccessibility(overlay);
       setOpenerState(overlay, true);
+      layers.connect(overlay, false);
       const sheet = findSheet(overlay);
       if (sheet && !readDetentAttr(sheet, allowedDetents(sheet))) {
         writeDetent(sheet, restingDetent(allowedDetents(sheet)));
@@ -842,7 +849,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   const sync = () => {
     if (destroyed) return;
     pruneDisconnectedLocks();
-    for (const overlay of [...heldLocks]) {
+    for (const overlay of [...heldLocks.keys()]) {
       if (!overlay.isConnected) heldLocks.delete(overlay);
     }
     getOverlays().forEach((overlay) => {
@@ -861,6 +868,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
       }
       publish(overlay);
     });
+    layers.reconcile();
   };
 
   const allowsBackdropClose = (overlay: HTMLElement) => {
@@ -914,6 +922,9 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
       }
 
       if (target === overlay && allowsBackdropClose(overlay)) {
+        const armed = backdropPressTop();
+        const owner = armed === undefined ? (topLayer()?.el ?? null) : armed;
+        if (owner !== overlay) return;
         if (!claimEvent(event)) return;
         close(overlay);
       }
@@ -928,13 +939,12 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     toggle(opener);
   };
 
-  const topmost = (predicate: (overlay: HTMLElement) => boolean) => {
-    const open = getOverlays().filter(
-      (overlay) => isOverlayOpen(overlay) && findSheet(overlay) && predicate(overlay)
-    );
-    const active = open.filter((overlay) => !isClosing(overlay));
-    const pool = active.length > 0 ? active : open;
-    return pool[pool.length - 1] ?? null;
+  const focusTrapOverlay = () => {
+    const top = topModalLayer();
+    if (!top || top.kind !== 'sheet' || !top.modal) return null;
+    if (!isManagedOverlay(top.el) || !isModalOverlay(top.el)) return null;
+    if (!isOverlayOpen(top.el)) return null;
+    return top.el;
   };
 
   const trapFocus = (event: KeyboardEvent, overlay: HTMLElement) => {
@@ -948,23 +958,9 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
-    const openOverlay = topmost(() => true);
-    const modalOverlay = topmost(isModalOverlay);
-
-    if (openOverlay && event.key === 'Escape') {
-      if (!isActiveHost(openOverlay)) return;
-      if (!claimEvent(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close(openOverlay);
-      return;
-    }
-
-    if (
-      modalOverlay &&
-      openOverlay === modalOverlay &&
-      event.key === 'Tab'
-    ) {
+    if (event.key === 'Tab') {
+      const modalOverlay = focusTrapOverlay();
+      if (!modalOverlay) return;
       if (!claimEvent(event)) return;
       trapFocus(event, modalOverlay);
       return;
@@ -996,10 +992,8 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   };
 
   const handleFocusIn = (event: Event) => {
-    const openOverlay = topmost(() => true);
-    if (!openOverlay || !isModalOverlay(openOverlay) || isClosing(openOverlay)) {
-      return;
-    }
+    const openOverlay = focusTrapOverlay();
+    if (!openOverlay) return;
 
     const target = event.target;
     if (!(target instanceof Node) || openOverlay.contains(target)) return;
@@ -1177,6 +1171,25 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
       ? new MutationObserver(() => snapOpenSheetsForKeyboard())
       : null;
 
+  layers = createDialogLayers({
+    kind: 'sheet',
+    selector: settings.overlaySelector,
+    getOverlays,
+    isOpen: isOverlayOpen,
+    isClosing,
+    isModal: isModalOverlay,
+    shouldStack: (overlay) => isActiveHost(overlay),
+    dismiss: (overlay, reason) => {
+      if (!findSheet(overlay)) return;
+      if (reason === 'escape' && !isActiveHost(overlay)) return;
+      if (reason === 'outside') {
+        if (!outsidePressIsBackdrop()) return;
+        if (!allowsBackdropClose(overlay)) return;
+      }
+      close(overlay);
+    },
+  });
+
   rootEvents.addEventListener('click', handleRootClick);
   rootEvents.addEventListener('keydown', handleRootKeydown, true);
   rootEvents.addEventListener('focusin', handleFocusIn, true);
@@ -1228,8 +1241,9 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
       document.removeEventListener('pointercancel', handlePointerCancel);
       observer?.disconnect();
       keyboardObserver?.disconnect();
+      for (const overlay of [...heldLocks.keys()]) unlockModal(overlay);
       motion.destroy();
-      for (const overlay of [...heldLocks]) unlockModal(overlay);
+      layers.destroy();
     },
     sync,
     open,
