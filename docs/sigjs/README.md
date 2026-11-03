@@ -49,7 +49,7 @@ Use it when a page is mostly static and only a few values change: a counter, a f
 
 | Page | What it covers |
 |---|---|
-| [Sig.js + Juice](./sig-juice-integration.md) | Attributes, and `bind` against Juice 0.9.1–0.9.5 |
+| [Sig.js + Juice](./sig-juice-integration.md) | Attributes, and `bind` against Juice 0.9.1–0.9.6 |
 | [Juice](../juice/README.md) | Layout and themes |
 | [WebEngine](../webengine/webengine-getting-started.md) | Why the engine does not bootstrap Sig |
 
@@ -92,6 +92,6 @@ Component functions run once per mount. They build DOM. They are not render func
 
 Workspace `@citrusworx/sigjs` is **1.1.0**, not published yet. npm `latest` is **1.0.0**. Core reactivity, the JSX factory, `mount`, and `SigRouter` match that published cut. `bindList` and `ListItem` are experimental.
 
-The optional Juice adapter in this workspace binds 31 runtime names, through keyboard-avoider. npm **1.0.0** binds 28. `sheet` binding waits until juiceui publishes it. See [Status](./sig-status.md) for the matrix.
+The optional Juice adapter in this workspace binds 32 runtime names, through sheet. npm **1.0.0** binds 28. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. See [Status](./sig-status.md) for the matrix.
 
 Sibling libraries: [Juice](../juice/README.md), [Nectarine](../nectarine/README.md), [Seltzer](../seltzer/README.md), [Grapevine](../grapevine/README.md).

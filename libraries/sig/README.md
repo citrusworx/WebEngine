@@ -83,7 +83,7 @@ Juice styles the elements Sig creates. Attributes such as `stack` and `card` are
 import { bind } from "@citrusworx/sigjs/juice";
 ```
 
-`bind` in this workspace follows 31 Juice runtime names, through keyboard-avoider. npm **1.0.0** follows 28, through table. Icon button, avatar, and table need `@citrusworx/juiceui` **0.9.3** or newer. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**. **0.9.2** loads the adapter and throws if you bind any of those six. `sheet` is not a name until juiceui publishes it.
+`bind` in this workspace follows 32 Juice runtime names, through sheet. npm **1.0.0** follows 28, through table. Icon button, avatar, and table need `@citrusworx/juiceui` **0.9.3** or newer. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**. Sheet needs **0.9.6**. **0.9.2** loads the adapter and throws if you bind any of those seven. **0.9.5** binds 31 and throws on sheet. **0.9.6** binds all 32.
 
 **0.9.1** cannot load the adapter at all. The table is in [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 

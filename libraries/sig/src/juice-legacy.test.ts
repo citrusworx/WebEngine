@@ -13,7 +13,7 @@ const tsc = require.resolve("typescript/bin/tsc");
 const newer = (runtime: string, exportName: string) =>
     `Sig juice bind: "${runtime}" needs a newer @citrusworx/juiceui that exports ${exportName}.`;
 
-test("older Juice still imports the adapter, binds switch, and refuses the six newer runtimes", () => {
+test("older Juice still imports the adapter, binds switch, and refuses the seven newer runtimes", () => {
     execFileSync(process.execPath, [tsc, "-p", sigRoot, "--pretty", "false"], {
         encoding: "utf8",
     });
@@ -24,16 +24,19 @@ test("older Juice still imports the adapter, binds switch, and refuses the six n
         .find((line) => line.startsWith("import type"));
     expect(imported).toBeTruthy();
     expect(imported).not.toMatch(
-        /\b(IconButtonState|AvatarState|TableState|PressableState|TouchableRowState|KeyboardAvoiderState)\b/
+        /\b(IconButtonState|AvatarState|TableState|PressableState|TouchableRowState|KeyboardAvoiderState|SheetState)\b/
     );
     expect(declarations).toContain("pressed: boolean");
     expect(declarations).toContain("longPressed: boolean");
     expect(declarations).toContain("fallback: boolean");
     expect(declarations).toContain('direction: "ascending" | "descending" | "none"');
     expect(declarations).toContain("inset: number");
+    expect(declarations).toContain('detent: "peek" | "half" | "full"');
+    expect(declarations).toContain("dragging: boolean");
     expect(declarations).toContain('"pressable"');
     expect(declarations).toContain('"touchable-row"');
     expect(declarations).toContain('"keyboard-avoider"');
+    expect(declarations).toContain('"sheet"');
 
     const result = spawnSync(
         process.execPath,
@@ -77,5 +80,7 @@ test("older Juice still imports the adapter, binds switch, and refuses the six n
             "keyboard-avoider",
             "startKeyboardAvoiderRuntime"
         ),
+        sheet: newer("sheet", "startSheetRuntime"),
+        "sheet:inferred": newer("sheet", "startSheetRuntime"),
     });
 });

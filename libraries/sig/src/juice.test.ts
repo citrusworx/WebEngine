@@ -21,6 +21,7 @@ import {
     stopTableRuntime,
     stopTextareaRuntime,
     stopTouchableRowRuntime,
+    stopSheetRuntime,
 } from "@citrusworx/juiceui";
 
 const bindings: Array<{ dispose: () => void }> = [];
@@ -58,6 +59,7 @@ const stopRuntimes = () => {
     stopPressableRuntime();
     stopTouchableRowRuntime();
     stopKeyboardAvoiderRuntime();
+    stopSheetRuntime();
     restoreKeyboardHarness();
 };
 
@@ -1170,4 +1172,172 @@ test("does not write keyboard-avoider state back to the host", () => {
     expect(document.documentElement.style.getPropertyValue("--juice-keyboard-inset")).toBe(
         ""
     );
+});
+
+const sheetMarkup = `
+  <div sheet-overlay id="host" hidden>
+    <div sheet>
+      <button type="button" sheet-close aria-label="Close">Close</button>
+      <div sheet-header><h2>Details</h2></div>
+    </div>
+  </div>
+  <button type="button" id="open" aria-controls="host">Open</button>
+`;
+
+const sheetRest = {
+    open: false,
+    detent: "half" as const,
+    dragging: false,
+    modal: true,
+};
+
+const bindSheet = (selector = "#host") => {
+    stopSheetRuntime();
+    return track(bind(requireElement(selector), "sheet"));
+};
+
+// Juice focus listeners evaluate `instanceof FocusEvent`. The Sig jsdom
+// register does not install that constructor, so a sheet open would throw
+// inside those listeners.
+if (typeof globalThis.FocusEvent === "undefined") {
+    (globalThis as { FocusEvent: typeof FocusEvent }).FocusEvent = window.FocusEvent;
+}
+
+const click = (selector: string) => {
+    requireElement(selector).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+};
+
+test("seeds a sheet signal from getState", () => {
+    document.body.innerHTML = sheetMarkup;
+
+    const binding = bindSheet();
+
+    expect(binding.state.get()).toEqual(sheetRest);
+    expect(requireElement("#host").hasAttribute("hidden")).toBe(true);
+    expect(requireElement("[sheet]").hasAttribute("detent")).toBe(false);
+});
+
+test("seeds a non-modal sheet with modal false", () => {
+    document.body.innerHTML = `
+      <div sheet-overlay="none" id="host" hidden>
+        <div sheet><h2>Quiet</h2></div>
+      </div>
+    `;
+
+    expect(bindSheet().state.get()).toEqual({
+        open: false,
+        detent: "half",
+        dragging: false,
+        modal: false,
+    });
+});
+
+test("does not treat the first sheet observation as a change", () => {
+    document.body.innerHTML = sheetMarkup;
+    const host = requireElement("#host");
+    const events: Event[] = [];
+    host.addEventListener("juice:change", (event) => {
+        events.push(event);
+    });
+
+    const binding = bindSheet();
+    const seen = watch(binding.state);
+
+    expect(events).toHaveLength(0);
+    expect(binding.state.get()).toEqual(sheetRest);
+    expect(seen.count).toBe(1);
+    seen.stop();
+});
+
+test("updates a sheet signal when the sheet opens and closes", () => {
+    document.body.innerHTML = sheetMarkup;
+    const host = requireElement("#host");
+    const targets: Array<EventTarget | null> = [];
+    host.addEventListener("juice:change", (event) => {
+        targets.push(event.target);
+    });
+    const binding = bindSheet();
+    const seen = watch(binding.state);
+
+    click("#open");
+
+    expect(binding.state.get()).toEqual({
+        open: true,
+        detent: "half",
+        dragging: false,
+        modal: true,
+    });
+    expect(host.hasAttribute("hidden")).toBe(false);
+    expect(requireElement("[sheet]").getAttribute("detent")).toBe("half");
+    expect(targets).toEqual([host]);
+    expect(seen.count).toBe(2);
+
+    click("#open");
+
+    expect(binding.state.get()).toEqual(sheetRest);
+    expect(host.hasAttribute("hidden")).toBe(true);
+    expect(targets).toHaveLength(2);
+    expect(targets[1]).toBe(host);
+    expect(seen.count).toBe(3);
+    seen.stop();
+});
+
+test("infers sheet from the sheet-overlay attribute", () => {
+    document.body.innerHTML = sheetMarkup;
+    stopSheetRuntime();
+
+    expect(track(bind(requireElement("#host"))).state.get()).toEqual(sheetRest);
+});
+
+test("does not infer sheet from the inner sheet panel", () => {
+    document.body.innerHTML = sheetMarkup;
+
+    expect(() => bind(requireElement("[sheet]"))).toThrow(/could not infer/);
+});
+
+test("removes sheet listeners on dispose", () => {
+    document.body.innerHTML = sheetMarkup;
+    const host = requireElement("#host");
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = bindSheet();
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    click("#open");
+
+    expect(binding.state.get()).toEqual(sheetRest);
+    expect(host.hasAttribute("hidden")).toBe(false);
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("does not write sheet state back to the host", () => {
+    document.body.innerHTML = sheetMarkup;
+    const host = requireElement("#host");
+    const binding = bindSheet();
+
+    binding.state.set({
+        open: true,
+        detent: "full",
+        dragging: true,
+        modal: false,
+    });
+
+    expect(binding.state.get()).toEqual({
+        open: true,
+        detent: "full",
+        dragging: true,
+        modal: false,
+    });
+    expect(host.hasAttribute("hidden")).toBe(true);
+    expect(requireElement("[sheet]").getAttribute("detent")).toBeNull();
+    expect(requireElement("[sheet]").hasAttribute("dragging")).toBe(false);
 });

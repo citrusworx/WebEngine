@@ -190,7 +190,7 @@ import "@citrusworx/juiceui/styles";
 </main>
 ```
 
-`stack`, `card`, and `padding` are HTML attributes. They are not Sig APIs. To follow a Juice widget's state, use `bind`. Compatibility with Juice 0.9.1 through 0.9.5 is the table in [Runtime binding](./sig-juice-integration.md#runtime-binding).
+`stack`, `card`, and `padding` are HTML attributes. They are not Sig APIs. To follow a Juice widget's state, use `bind`. Compatibility with Juice 0.9.1 through 0.9.6 is the table in [Runtime binding](./sig-juice-integration.md#runtime-binding).
 
 ## WebEngine
 

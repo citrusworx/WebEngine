@@ -4,7 +4,7 @@ Use this before publishing `@citrusworx/sigjs`.
 
 Workspace `libraries/sig/package.json` is **1.1.0** (not published yet). `libraries/sig/CHANGELOG.md` records **1.1.0**, **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**. npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`).
 
-**1.0.0** is the **0.7.2** API (published 2026-10-27, `gitHead` `c794c06f`, PR #295). **1.1.0** adds pressable, touchable-row, and keyboard-avoider to `JuiceRuntimeName`. `sheet` is not a name until juiceui publishes it. Do **not** republish `1.0.0`, `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`. Do **not** publish **1.1.0** from this checklist until Drew does.
+**1.0.0** is the **0.7.2** API (published 2026-10-27, `gitHead` `c794c06f`, PR #295). **1.1.0** adds pressable, touchable-row, keyboard-avoider, and sheet to `JuiceRuntimeName`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. Do **not** republish `1.0.0`, `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`. Do **not** publish **1.1.0** from this checklist until Drew does.
 
 **0.7.0** was published 2026-10-21 (`gitHead` `747f2f71`, PR #270). **0.7.1** (2026-10-27, `gitHead` `b2f2b287`) is a stale build: the tarball matches **0.7.0** except the `version` field, and its published `dist/juice.d.ts` does not name icon-button, avatar, or table. **0.7.2** does. **1.0.0** keeps that **0.7.2** surface.
 
