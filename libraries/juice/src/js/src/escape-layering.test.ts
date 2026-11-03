@@ -19,6 +19,7 @@ import {
   __resetLayerStackForTests,
   topLayer,
 } from './shared/layer-stack.js';
+import { __resetLightLayersForTests } from './shared/light-layer.js';
 import {
   createDrawer,
   stopDrawerRuntime,
@@ -52,23 +53,17 @@ import {
 /**
  * Escape / layering contract.
  *
- * Modal, drawer, and sheet share one open-order stack. The last one
- * opened owns Escape. A backdrop press (the pointer target is the
- * overlay element) closes only the top dialog. Presses on openers and
- * the rest of the page do not dismiss. Tab and focus-in trap only when
- * the top of the stack is itself modal. A non-modal sheet on top
- * suspends that trap until it closes. Replacing an open modal or drawer
- * pops it, so layers above dismiss with reason 'cascade'. Popover, menu,
- * combobox, toast, and tooltip are not on that stack yet. They still
- * yield through the type rank below, and any open dialog overlay still
- * outranks them:
- * 1. open dialog overlay (modal / drawer / sheet), last opened first
- * 2. open [popover-root] ≈ open [menu] (dialog-adjacent band)
- * 3. open [combobox-list]
- * 4. most-recent visible [toast]
- * 5. open [tooltip-root] (toast does not block the tip)
- * 6. [banner] never steals Escape
- * 7. [accordion] Escape stays contextual; tabs / nav / wizard stay out of scope
+ * Modal, drawer, sheet, popover, menu, and combobox share one open-order
+ * stack. The last one opened owns Escape and outside pointerdown. A
+ * backdrop press closes only the top dialog. Presses on openers and the
+ * rest of the page do not dismiss a dialog. An outside pointer closes
+ * only the top light layer and leaves the layer under it open. Tab and
+ * focus-in trap only when the top of the stack is itself modal. A
+ * non-modal sheet on top suspends that trap until it closes. Popping a
+ * layer dismisses layers above it with reason 'cascade'. Tooltip and
+ * toast stay off the stack. An open tooltip consumes Escape and closes
+ * only itself. A toast never takes Escape while a stack layer is open.
+ * [banner] never steals Escape. [accordion] Escape stays contextual.
  */
 
 const resetDom = () => {
@@ -179,6 +174,7 @@ afterEach(() => {
   stopAccordionRuntime();
   stopSheetRuntime();
   __resetDialogLayersForTests();
+  __resetLightLayersForTests();
   __resetLayerStackForTests();
   resetDom();
 });
@@ -193,85 +189,117 @@ describe('Escape / layering contract', () => {
     destroyStacked(controllers);
   });
 
-  it('lets an open dialog overlay own Escape ahead of popover, menu, combobox, toast, and tooltip', () => {
-    const controllers = mountStacked();
-    document.getElementById('stack-drawer')?.setAttribute('hidden', '');
+  it('closes a popover opened inside a dialog before the dialog', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+          <div popover-root id="host-pop" hidden>
+            <div popover-panel><div popover-body>Help</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const popover = createPopover({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    popover.open(document.getElementById('open-pop'));
+    pressEscape();
+
+    expect(isHidden('host-pop')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
+    expect(topLayer()?.el.id).toBe('host-modal');
 
     pressEscape();
 
-    expect(isHidden('stack-modal')).toBe(true);
-    expect(isHidden('stack-pop')).toBe(false);
-    expect(isHidden('stack-menu')).toBe(false);
-    expect(isHidden('stack-combo-list')).toBe(false);
-    expect(isHidden('stack-toast')).toBe(false);
-    expect(isHidden('stack-tip')).toBe(false);
-    expect(isHidden('stack-banner')).toBe(false);
-
-    document.getElementById('stack-drawer')?.removeAttribute('hidden');
-    pressEscape();
-
-    expect(isHidden('stack-drawer')).toBe(true);
-    expect(isHidden('stack-pop')).toBe(false);
-    expect(isHidden('stack-menu')).toBe(false);
-    expect(isHidden('stack-combo-list')).toBe(false);
-    expect(isHidden('stack-toast')).toBe(false);
-    expect(isHidden('stack-tip')).toBe(false);
-    expect(isHidden('stack-banner')).toBe(false);
-
-    destroyStacked(controllers);
+    expect(isHidden('host-modal')).toBe(true);
+    expect(topLayer()).toBeNull();
+    popover.destroy();
+    modal.destroy();
   });
 
-  it('lets an open popover own Escape after dialogs, ahead of combobox, toast, and tooltip', () => {
-    const controllers = mountStacked();
-    document.getElementById('stack-modal')?.setAttribute('hidden', '');
-    document.getElementById('stack-drawer')?.setAttribute('hidden', '');
-    document.getElementById('stack-menu')?.setAttribute('hidden', '');
+  it('closes a menu opened inside a dialog before the dialog', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <div menu-root>
+            <button type="button" menu-button id="open-menu">File</button>
+            <div menu id="host-menu" hidden>
+              <button type="button" menuitem>New</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const menu = createMenu({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    menu.open(document.getElementById('open-menu'));
+    pressEscape();
+
+    expect(isHidden('host-menu')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
 
     pressEscape();
 
-    expect(isHidden('stack-pop')).toBe(true);
-    expect(isHidden('stack-combo-list')).toBe(false);
-    expect(isHidden('stack-toast')).toBe(false);
-    expect(isHidden('stack-tip')).toBe(false);
-    expect(isHidden('stack-banner')).toBe(false);
-
-    destroyStacked(controllers);
+    expect(isHidden('host-modal')).toBe(true);
+    menu.destroy();
+    modal.destroy();
   });
 
-  it('lets an open menu own Escape after dialogs, same band as popover, ahead of combobox, toast, and tooltip', () => {
-    const controllers = mountStacked();
-    document.getElementById('stack-modal')?.setAttribute('hidden', '');
-    document.getElementById('stack-drawer')?.setAttribute('hidden', '');
-    document.getElementById('stack-pop')?.setAttribute('hidden', '');
+  it('closes a combobox list inside a popover inside a dialog from the inside out', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+          <div popover-root id="host-pop" hidden>
+            <div popover-panel>
+              <div combobox id="host-combo">
+                <input combobox-input id="combo-input" type="text" />
+                <ul combobox-list id="host-list" hidden>
+                  <li combobox-option>Apple</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const popover = createPopover({ root: document.body });
+    const combobox = createCombobox({ root: document.body });
+    const input = document.getElementById('combo-input');
 
-    pressEscape();
-
-    expect(isHidden('stack-menu')).toBe(true);
-    expect(isHidden('stack-combo-list')).toBe(false);
-    expect(isHidden('stack-toast')).toBe(false);
-    expect(isHidden('stack-tip')).toBe(false);
-    expect(isHidden('stack-banner')).toBe(false);
-
-    destroyStacked(controllers);
-  });
-
-  it('lets an open combobox list own Escape after popover and menu, ahead of toast and tooltip', () => {
-    const controllers = mountStacked();
-    document.getElementById('stack-modal')?.setAttribute('hidden', '');
-    document.getElementById('stack-drawer')?.setAttribute('hidden', '');
-    document.getElementById('stack-pop')?.setAttribute('hidden', '');
-    document.getElementById('stack-menu')?.setAttribute('hidden', '');
-
-    const input = document.getElementById('stack-combo-input');
+    modal.open(document.getElementById('open-modal'));
+    popover.open(document.getElementById('open-pop'));
     input?.focus();
+    expect(isHidden('host-list')).toBe(false);
+    expect(topLayer()?.kind).toBe('combobox');
+
     pressEscape(input ?? document.body);
+    expect(isHidden('host-list')).toBe(true);
+    expect(isHidden('host-pop')).toBe(false);
+    expect(isHidden('host-modal')).toBe(false);
 
-    expect(isHidden('stack-combo-list')).toBe(true);
-    expect(isHidden('stack-toast')).toBe(false);
-    expect(isHidden('stack-tip')).toBe(false);
-    expect(isHidden('stack-banner')).toBe(false);
+    pressEscape();
+    expect(isHidden('host-pop')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
 
-    destroyStacked(controllers);
+    pressEscape();
+    expect(isHidden('host-modal')).toBe(true);
+    expect(topLayer()).toBeNull();
+
+    combobox.destroy();
+    popover.destroy();
+    modal.destroy();
   });
 
   it('hides the open tooltip on Escape while toasts remain, then dismisses the toast', () => {
@@ -793,7 +821,80 @@ describe('Escape / layering contract', () => {
     modal.destroy();
   });
 
-  it('does not leave a nested popover visibly open after Escape closes its modal', () => {
+  it('gives an open tooltip Escape without closing the popover or the toast under it', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+      <div popover-root id="host-pop" hidden>
+        <div popover-panel>
+          <button type="button" id="tip-trigger" aria-describedby="host-tip">Save</button>
+          <div popover-body>Help</div>
+        </div>
+      </div>
+      <div tooltip-root id="host-tip" hidden>
+        <div tooltip-panel role="tooltip">Saves your draft</div>
+      </div>
+      <div toast-region>
+        <div toast id="host-toast">Saved.</div>
+      </div>
+    `;
+    const popover = createPopover({ root: document.body });
+    const tooltip = createTooltip({ root: document.body, hideDelay: 0 });
+    const toast = createToast({ root: document.body, defaultDuration: 0 });
+
+    popover.open(document.getElementById('open-pop'));
+    tooltip.show(document.getElementById('tip-trigger'));
+    pressEscape();
+
+    expect(isHidden('host-tip')).toBe(true);
+    expect(isHidden('host-pop')).toBe(false);
+    expect(isHidden('host-toast')).toBe(false);
+    expect(topLayer()?.kind).toBe('popover');
+
+    pressEscape();
+
+    expect(isHidden('host-pop')).toBe(true);
+    expect(isHidden('host-toast')).toBe(false);
+    expect(topLayer()).toBeNull();
+
+    toast.destroy();
+    tooltip.destroy();
+    popover.destroy();
+  });
+
+  it('lets a dialog own Escape while a toast is visible', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+      <div toast-region>
+        <div toast id="host-toast">Saved.</div>
+      </div>
+    `;
+    const modal = createModal({ root: document.body });
+    const toast = createToast({ root: document.body, defaultDuration: 0 });
+    const event = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Escape',
+    });
+
+    modal.open(document.getElementById('open-modal'));
+    document.body.dispatchEvent(event);
+
+    expect(isHidden('host-modal')).toBe(true);
+    expect(isHidden('host-toast')).toBe(false);
+    expect(event.defaultPrevented).toBe(true);
+    expect(topLayer()).toBeNull();
+
+    pressEscape();
+    expect(isHidden('host-toast')).toBe(true);
+
+    toast.destroy();
+    modal.destroy();
+  });
+
+  it('cascades an open popover and listbox when their dialog closes', () => {
     document.body.innerHTML = `
       <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
       <div modal-overlay id="host-modal" hidden>
@@ -801,26 +902,120 @@ describe('Escape / layering contract', () => {
           <h2>Account</h2>
           <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
           <div popover-root id="host-pop" hidden>
-            <div popover-panel><div popover-body>Help</div></div>
+            <div popover-panel>
+              <div combobox id="host-combo">
+                <input combobox-input id="combo-input" type="text" />
+                <ul combobox-list id="host-list" hidden>
+                  <li combobox-option>Apple</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const seen: Array<{ id: string; runtime: string; open: boolean }> = [];
+    const onChange = (event: Event) => {
+      if (!(event instanceof CustomEvent)) return;
+      const detail = event.detail as {
+        runtime?: string;
+        state?: { open?: boolean };
+      };
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !detail.runtime) return;
+      if (typeof detail.state?.open !== 'boolean') return;
+      seen.push({
+        id: target.id,
+        runtime: detail.runtime,
+        open: detail.state.open,
+      });
+    };
+    document.body.addEventListener(JUICE_CHANGE_EVENT, onChange);
+
+    const modal = createModal({ root: document.body });
+    const popover = createPopover({ root: document.body });
+    const combobox = createCombobox({ root: document.body });
+
+    modal.open(document.getElementById('open-modal'));
+    popover.open(document.getElementById('open-pop'));
+    document.getElementById('combo-input')?.focus();
+    seen.length = 0;
+
+    modal.close(document.getElementById('host-modal'));
+
+    expect(seen).toEqual([
+      { id: 'host-combo', runtime: 'combobox', open: false },
+      { id: 'host-pop', runtime: 'popover', open: false },
+      { id: 'host-modal', runtime: 'modal', open: false },
+    ]);
+    expect(isHidden('host-list')).toBe(true);
+    expect(isHidden('host-pop')).toBe(true);
+    expect(isHidden('host-modal')).toBe(true);
+    expect(topLayer()).toBeNull();
+
+    document.body.removeEventListener(JUICE_CHANGE_EVENT, onChange);
+    combobox.destroy();
+    popover.destroy();
+    modal.destroy();
+  });
+
+  it('closes only the top layer on an outside pointerdown', async () => {
+    document.body.innerHTML = `
+      <button type="button" id="outside">Elsewhere</button>
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal>
+          <h2>Account</h2>
+          <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+          <div popover-root id="host-pop" hidden>
+            <div popover-panel>
+              <div combobox id="host-combo">
+                <input combobox-input id="combo-input" type="text" />
+                <ul combobox-list id="host-list" hidden>
+                  <li combobox-option>Apple</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
     const modal = createModal({ root: document.body });
     const popover = createPopover({ root: document.body });
+    const combobox = createCombobox({ root: document.body });
+    const outside = document.getElementById('outside') as HTMLElement;
 
     modal.open(document.getElementById('open-modal'));
     popover.open(document.getElementById('open-pop'));
-    pressEscape();
+    document.getElementById('combo-input')?.focus();
 
-    const popoverRoot = document.getElementById('host-pop');
-    expect(isHidden('host-modal')).toBe(true);
-    expect(popoverRoot?.closest('[hidden]')?.id).toBe('host-modal');
+    outside.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true })
+    );
+    await Promise.resolve();
+    outside.dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
 
-    pressEscape();
+    expect(isHidden('host-list')).toBe(true);
+    expect(isHidden('host-pop')).toBe(false);
+    expect(isHidden('host-modal')).toBe(false);
+    expect(topLayer()?.kind).toBe('popover');
 
-    expect(popoverRoot?.hasAttribute('hidden')).toBe(true);
-    modal.destroy();
+    outside.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true })
+    );
+    await Promise.resolve();
+    outside.dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
+
+    expect(isHidden('host-pop')).toBe(true);
+    expect(isHidden('host-modal')).toBe(false);
+    expect(topLayer()?.kind).toBe('modal');
+
+    combobox.destroy();
     popover.destroy();
+    modal.destroy();
   });
 });

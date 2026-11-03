@@ -34,21 +34,29 @@
  * No shift / size middleware. Repositions on open, window resize, and
  * capture scroll (rAF-throttled).
  *
- * Escape closes the open popover on bubble (after modal/drawer capture),
- * and also yields when an open [modal-overlay] or [drawer-overlay] exists
- * or the event is already defaultPrevented (those dialogs own Escape).
- * Menu sits in the same dialog-adjacent band as popover (peers do not
- * yield to each other). Combobox / toast / tooltip yield to an open
- * popover or menu. Opening one managed popover closes the others. Modal
- * / drawer / menu are not auto-closed.
+ * Escape and outside pointerdown come from the internal layer stack.
+ * The last layer opened owns them. This runtime does not handle Escape
+ * itself, so a defaultPrevented Escape never closes the popover. An
+ * outside pointer closes only this layer when it is on top. Closing a
+ * layer under this popover dismisses it with reason 'cascade' and does
+ * not restore focus; Escape and an explicit close still restore focus
+ * to the opener. Outside click does not. Tab traps only while this
+ * popover is the top of the stack. Opening one managed popover closes
+ * the others. Modal / drawer / menu are not auto-closed.
  */
 
 import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
+import { isTopLayer } from '../shared/layer-stack.js';
+import {
+  createLightLayers,
+  lightOutsideAlreadyDismissed,
+  markLightOutsideDismissed,
+  type LightLayerController,
+} from '../shared/light-layer.js';
 import { createElementMotion } from '../shared/motion.js';
-import { hasOpenDialogOverlay } from '../shared/overlays.js';
 
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
 
@@ -254,6 +262,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   const root = settings.root ?? document;
   const motion = createElementMotion();
   const changes = createJuiceChanges<PopoverState>('popover');
+  let layers: LightLayerController;
   const gap =
     typeof options.gap === 'number' && Number.isFinite(options.gap)
       ? options.gap
@@ -528,11 +537,17 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     changes.note(popover, { open: isPopoverOpen(popover) }, { baseline });
   };
 
-  const hidePopover = (popover: HTMLElement, restore: boolean) => {
+  const hidePopover = (
+    popover: HTMLElement,
+    restore: boolean,
+    release: 'now' | 'after-pointer' = 'now'
+  ) => {
     if (!isPopoverOpen(popover) || isClosing(popover)) return;
 
     ensurePopoverAccessibility(popover);
     motion.exit(popover, () => {
+      if (release === 'after-pointer') layers.popAfterPointer(popover);
+      else layers.pop(popover);
       setOpenState(popover, false);
       setOpenerState(popover, false);
       clearPlacement(popover);
@@ -562,6 +577,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     setOpenState(popover, true);
     setOpenerState(popover, true);
     applyPlacement(popover, opener);
+    layers.connect(popover, true);
     moveFocusIn(popover);
     motion.enter(popover);
   };
@@ -573,6 +589,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       ensurePopoverAccessibility(popover);
       setOpenerState(popover, true);
       applyPlacement(popover);
+      layers.connect(popover, false);
       return;
     }
 
@@ -633,6 +650,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       }
       changes.note(popover, { open: isPopoverOpen(popover) });
     });
+    layers.reconcile();
   };
 
   const resolveOpenerFromEvent = (target: Element) => {
@@ -682,7 +700,9 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     }
 
     const openPopover = getOpenPopover();
-    if (!openPopover) return;
+    if (!openPopover || isClosing(openPopover)) return;
+    if (lightOutsideAlreadyDismissed()) return;
+    if (!isTopLayer(openPopover)) return;
     if (!claimEvent(event)) return;
     close(openPopover, false);
   };
@@ -698,6 +718,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     const openPopover = getOpenPopover();
 
     if (openPopover && event.key === 'Tab') {
+      if (!isTopLayer(openPopover)) return;
       if (!claimEvent(event)) return;
       trapFocus(event, openPopover);
       return;
@@ -722,18 +743,6 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     if (!claimEvent(event)) return;
     event.preventDefault();
     toggle(opener);
-  };
-
-  const handleEscapeKeydown = (event: Event) => {
-    if (!(event instanceof KeyboardEvent) || event.key !== 'Escape') return;
-    if (hasOpenDialogOverlay() || event.defaultPrevented) return;
-
-    const openPopover = getOpenPopover();
-    if (!openPopover) return;
-    if (!claimEvent(event)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    close(openPopover);
   };
 
   let syncScheduled = false;
@@ -763,9 +772,30 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       ? new MutationObserver(() => scheduleSync())
       : null;
 
+  layers = createLightLayers({
+    kind: 'popover',
+    getElements: getPopovers,
+    isOpen: isPopoverOpen,
+    isClosing,
+    containsTarget: (popover, target) => {
+      if (target instanceof Node && popover.contains(target)) return true;
+      if (!(target instanceof Element)) return false;
+      const opener = resolveOpenerFromEvent(target);
+      return Boolean(opener && resolvePopoverFromControls(opener) === popover);
+    },
+    dismiss: (popover, reason) => {
+      if (!isManagedPopover(popover)) return;
+      if (reason === 'outside') {
+        markLightOutsideDismissed();
+        hidePopover(popover, false, 'after-pointer');
+        return;
+      }
+      hidePopover(popover, reason === 'escape');
+    },
+  });
+
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('keydown', handleDocumentKeydown, true);
-  document.addEventListener('keydown', handleEscapeKeydown);
   window.addEventListener('resize', schedulePlace);
   window.addEventListener('scroll', schedulePlace, true);
 
@@ -792,11 +822,11 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     destroy: () => {
       document.removeEventListener('click', handleDocumentClick);
       document.removeEventListener('keydown', handleDocumentKeydown, true);
-      document.removeEventListener('keydown', handleEscapeKeydown);
       window.removeEventListener('resize', schedulePlace);
       window.removeEventListener('scroll', schedulePlace, true);
       observer?.disconnect();
       motion.destroy();
+      layers.destroy();
     },
     sync,
     open,

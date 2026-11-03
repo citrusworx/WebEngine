@@ -21,12 +21,12 @@
  * `aria-activedescendant` plus `combobox-option="active"` paint.
  * Committed choice is `aria-selected="true"`.
  *
- * Open on input focus, typing, or trigger click. Close on Escape
- * (yields when an open [modal-overlay], [drawer-overlay],
- * [popover-root], or [menu] exists — those surfaces own Escape first;
- * menu sits with popover in the dialog-adjacent band),
- * outside click, blur (option mousedown preventDefault so the input
- * keeps focus through click-to-select), or after select.
+ * Open on input focus, typing, or trigger click. Close on Escape from
+ * the layer stack (the last layer opened owns it; this runtime does not
+ * handle Escape itself), outside pointerdown when this list is the top
+ * layer, blur (option mousedown preventDefault so the input keeps focus
+ * through click-to-select), or after select. A cascade close uses the
+ * same hide path and does not move focus.
  *
  * Filter: case-insensitive substring against option text and, when
  * present, `data-value`. Non-matches get `hidden` on the option.
@@ -38,7 +38,7 @@
  *   Home / End           first / last visible option while open
  *                        (closed: native input cursor)
  *   Enter                select the active option
- *   Escape               close (yields to open dialog / popover / menu)
+ *   Escape               close when this list is the top layer
  *   Tab                  close without committing the active option
  *                        (APG manual selection). Focus moves on.
  *

@@ -379,6 +379,59 @@ describe('createToast', () => {
     controller.destroy();
   });
 
+  it('does not swallow Escape from an open dialog on the layer stack', async () => {
+    const { createModal, stopModalRuntime } = await import(
+      '../modal/modal-runtime.js'
+    );
+    document.body.innerHTML = `
+      <button type="button" id="open-modal" aria-controls="host-modal">Account</button>
+      <div modal-overlay id="host-modal" hidden>
+        <div modal><h2>Account</h2></div>
+      </div>
+      <div toast-region>
+        <div toast id="demo-toast">
+          <div toast-body>Saved.</div>
+        </div>
+      </div>
+    `;
+    stopToastRuntime();
+    stopModalRuntime();
+
+    const toast = createToast({ root: document.body, defaultDuration: 0 });
+    const modal = createModal();
+    const event = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Escape',
+    });
+
+    modal.open(document.getElementById('open-modal'));
+    document.body.dispatchEvent(event);
+
+    expect(document.getElementById('host-modal')?.hasAttribute('hidden')).toBe(
+      true
+    );
+    expect(document.getElementById('demo-toast')?.hasAttribute('hidden')).toBe(
+      false
+    );
+    expect(event.defaultPrevented).toBe(true);
+
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Escape',
+      })
+    );
+    expect(document.getElementById('demo-toast')?.hasAttribute('hidden')).toBe(
+      true
+    );
+
+    modal.destroy();
+    toast.destroy();
+    stopModalRuntime();
+  });
+
   it('supports keyboard activation for non-button close controls', () => {
     document.body.innerHTML = `
       <div toast-region>

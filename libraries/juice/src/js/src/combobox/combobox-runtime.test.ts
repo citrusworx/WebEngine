@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { __resetLayerStackForTests } from '../shared/layer-stack.js';
+import { __resetLightLayersForTests } from '../shared/light-layer.js';
 import {
   createCombobox,
   startComboboxRuntime,
@@ -32,6 +34,8 @@ const comboboxMarkup = `
 
 afterEach(() => {
   stopComboboxRuntime();
+  __resetLightLayersForTests();
+  __resetLayerStackForTests();
   resetDom();
   vi.restoreAllMocks();
 });
@@ -318,11 +322,13 @@ describe('createCombobox', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open modal, drawer, popover, or menu', () => {
+  it('closes on Escape even when dialog, popover, or menu elements have no runtime', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
       </div>
+      <div popover-root id="open-pop"><div popover-panel>Help</div></div>
+      <div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>
       ${comboboxMarkup}
     `;
     stopComboboxRuntime();
@@ -337,49 +343,82 @@ describe('createCombobox', () => {
     input?.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
     );
-    expect(list?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-modal')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
-    );
-
-    input?.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(list?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-drawer')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div popover-root id="open-pop"><div popover-panel>Help</div></div>`
-    );
-
-    input?.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(list?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-pop')?.setAttribute('hidden', '');
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `<div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>`
-    );
-
-    input?.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
-    expect(list?.hasAttribute('hidden')).toBe(false);
-
-    document.getElementById('open-menu')?.setAttribute('hidden', '');
-    input?.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
     expect(list?.hasAttribute('hidden')).toBe(true);
     expect(input?.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById('open-modal')?.hasAttribute('hidden')).toBe(
+      false
+    );
+    expect(document.getElementById('open-pop')?.hasAttribute('hidden')).toBe(
+      false
+    );
+    expect(document.getElementById('open-menu')?.hasAttribute('hidden')).toBe(
+      false
+    );
 
     controller.destroy();
+  });
+
+  it('lets a list opened inside a popover own the first Escape', async () => {
+    const { createPopover, stopPopoverRuntime } = await import(
+      '../popover/popover-runtime.js'
+    );
+    document.body.innerHTML = `
+      <button type="button" id="open-pop" aria-controls="host-pop">Help</button>
+      <div popover-root id="host-pop" hidden>
+        <div popover-panel>
+          <div combobox id="host-combo">
+            <input combobox-input id="combo-input" type="text" />
+            <ul combobox-list id="combo-list" hidden>
+              <li combobox-option>Apple</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+    stopComboboxRuntime();
+    stopPopoverRuntime();
+
+    const popover = createPopover({ root: document.body });
+    const combobox = createCombobox({ root: document.body });
+    const input = document.getElementById('combo-input');
+    const pressEscape = () => {
+      input?.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Escape',
+        })
+      );
+    };
+
+    popover.open(document.getElementById('open-pop'));
+    input?.focus();
+    expect(document.getElementById('combo-list')?.hasAttribute('hidden')).toBe(
+      false
+    );
+
+    pressEscape();
+    expect(document.getElementById('combo-list')?.hasAttribute('hidden')).toBe(
+      true
+    );
+    expect(document.getElementById('host-pop')?.hasAttribute('hidden')).toBe(
+      false
+    );
+
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Escape',
+      })
+    );
+    expect(document.getElementById('host-pop')?.hasAttribute('hidden')).toBe(
+      true
+    );
+
+    combobox.destroy();
+    popover.destroy();
+    stopPopoverRuntime();
   });
 
   it('closes on Tab without committing the active option', () => {

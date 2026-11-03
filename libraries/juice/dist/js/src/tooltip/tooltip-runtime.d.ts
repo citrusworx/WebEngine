@@ -32,11 +32,12 @@
  * flip once to the opposite side. Repositions on open, window resize,
  * and capture scroll (rAF-throttled).
  *
- * Escape hides the open tip on bubble, but yields when an open
- * [modal-overlay], [drawer-overlay], [popover-root], [menu], or
- * [combobox-list] exists, or the event is already defaultPrevented
- * (same courtesy as toast / popover). Menu sits with popover in the
- * dialog-adjacent band. Toast does not block tooltip Escape — the tip
+ * Escape hides the open tip on window capture, before the layer stack's
+ * document listener. The tip is not a stack layer, so it does not take
+ * a place in last-opened-wins. One Escape dismisses only the tip and
+ * does not close a dialog, popover, menu, or listbox underneath. The
+ * next Escape is the stack's. A defaultPrevented or composing Escape
+ * does not hide the tip. Toast does not block tooltip Escape — the tip
  * can hide while toasts remain. Opening one managed tooltip closes the
  * others.
  */

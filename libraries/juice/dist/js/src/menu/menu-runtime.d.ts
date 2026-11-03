@@ -29,17 +29,18 @@
  * Open on opener click / Enter / Space (native buttons use click).
  * ArrowDown on a closed opener opens and focuses the first enabled item
  * (or the previously active item). ArrowUp opens onto the last enabled
- * item. Close on Escape (yields when an open [modal-overlay] or
- * [drawer-overlay] exists — menu sits with popover in the dialog-adjacent
- * band), outside click, Tab (closes without activating; focus returns
- * to the opener so Tab's default can move to the next/previous control),
- * or after activating an item. Activating an item clicks it and restores
- * focus to the opener. Disabled items are intercepted on capture so
- * author click handlers never run. Opening one managed menu closes the
- * others. Modal / drawer / popover are not auto-closed. ArrowUp/Down on
- * a closed menu apply only to the opener. A controller claims opener
- * clicks only when it can resolve a panel (custom `menuSelector` can
- * coexist with the auto singleton).
+ * item. Close on Escape from the layer stack (the last layer opened owns
+ * it; this runtime does not handle Escape itself), outside pointerdown
+ * when this menu is the top layer, Tab (closes without activating only
+ * while it is the top layer; focus returns to the opener so Tab's default
+ * can move to the next/previous control), or after activating an item.
+ * Activating an item clicks it and restores focus to the opener. A
+ * cascade close does not restore focus. Disabled items are intercepted
+ * on capture so author click handlers never run. Opening one managed
+ * menu closes the others. Modal / drawer / popover are not auto-closed.
+ * ArrowUp/Down on a closed menu apply only to the opener. A controller
+ * claims opener clicks only when it can resolve a panel (custom
+ * `menuSelector` can coexist with the auto singleton).
  */
 export type MenuOptions = {
     root?: ParentNode;

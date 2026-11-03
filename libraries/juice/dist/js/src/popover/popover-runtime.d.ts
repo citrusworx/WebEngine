@@ -34,13 +34,15 @@
  * No shift / size middleware. Repositions on open, window resize, and
  * capture scroll (rAF-throttled).
  *
- * Escape closes the open popover on bubble (after modal/drawer capture),
- * and also yields when an open [modal-overlay] or [drawer-overlay] exists
- * or the event is already defaultPrevented (those dialogs own Escape).
- * Menu sits in the same dialog-adjacent band as popover (peers do not
- * yield to each other). Combobox / toast / tooltip yield to an open
- * popover or menu. Opening one managed popover closes the others. Modal
- * / drawer / menu are not auto-closed.
+ * Escape and outside pointerdown come from the internal layer stack.
+ * The last layer opened owns them. This runtime does not handle Escape
+ * itself, so a defaultPrevented Escape never closes the popover. An
+ * outside pointer closes only this layer when it is on top. Closing a
+ * layer under this popover dismisses it with reason 'cascade' and does
+ * not restore focus; Escape and an explicit close still restore focus
+ * to the opener. Outside click does not. Tab traps only while this
+ * popover is the top of the stack. Opening one managed popover closes
+ * the others. Modal / drawer / menu are not auto-closed.
  */
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
 export type PopoverOptions = {

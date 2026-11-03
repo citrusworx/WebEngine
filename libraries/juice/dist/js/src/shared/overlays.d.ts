@@ -1,16 +1,16 @@
 /**
- * Internal open-surface queries for Escape yield. Not a public export.
+ * Internal open-surface queries. Not a public export.
  * Selectors match the polish A/B overlay contract.
  *
- * Yield order (highest owns Escape first):
- *   modal/drawer/sheet overlay → popover ≈ menu (same band) → combobox →
- *   toast / tooltip. Menu closed vs open is native `hidden` on `[menu]`,
- *   not on `[menu-root]`. Sheet closed vs open is native `hidden` on
- *   `[sheet-overlay]`, including `sheet-overlay="none"`.
+ * Modal, drawer, sheet, popover, menu, and combobox take Escape from
+ * the layer stack (last opened wins). These queries stay because toast
+ * and disclosure are not stack layers and still yield when one of those
+ * surfaces is open in the DOM. Tooltip does not consult them: an open
+ * tip consumes Escape itself and does not close the layer under it.
  *
- * Modal, drawer, and sheet take their own Escape from the layer stack.
- * These queries stay the interim yield for popover, menu, combobox,
- * toast, and tooltip until those runtimes join the stack.
+ * Menu closed vs open is native `hidden` on `[menu]`, not on
+ * `[menu-root]`. Sheet closed vs open is native `hidden` on
+ * `[sheet-overlay]`, including `sheet-overlay="none"`.
  */
 export declare const hasOpenDialogOverlay: () => boolean;
 export declare const hasOpenPopover: () => boolean;

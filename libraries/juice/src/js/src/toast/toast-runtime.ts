@@ -23,11 +23,12 @@
  *
  * Auto-dismiss pauses while pointer or focus is inside the toast, then resumes.
  *
- * Escape dismisses the most recently shown visible toast, but only when no
- * open [modal-overlay], [drawer-overlay], [popover-root], [menu],
- * [combobox-list], or [tooltip-root] exists (those surfaces own Escape
- * first; menu sits with popover). An open tip hides while toasts remain
- * — toast does not steal Escape from tooltip.
+ * Escape dismisses the most recently shown visible toast, but only when
+ * the layer stack is empty and no open dialog, popover, menu, combobox
+ * list, or tooltip is in the DOM. Toast is not a stack layer. It listens
+ * on bubble, so a stack Escape (capture, stopPropagation) never reaches
+ * it, and it does not preventDefault when it yields. An open tip hides
+ * while toasts remain — toast does not steal Escape from tooltip.
  *
  * Live region: sync fills missing aria-live="polite" and
  * aria-relevant="additions" on [toast-region]. Opt into assertive with
@@ -37,6 +38,8 @@
 
 import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
+import { topLayer } from '../shared/layer-stack.js';
+import { createElementMotion } from '../shared/motion.js';
 import {
   hasOpenComboboxList,
   hasOpenDialogOverlay,
@@ -44,7 +47,6 @@ import {
   hasOpenPopover,
   hasOpenTooltip,
 } from '../shared/overlays.js';
-import { createElementMotion } from '../shared/motion.js';
 
 export type ToastOptions = {
   root?: ParentNode;
@@ -117,6 +119,7 @@ const parseDuration = (raw: string | null, fallback: number) => {
 };
 
 const shouldYieldEscape = () =>
+  topLayer() != null ||
   hasOpenDialogOverlay() ||
   hasOpenPopover() ||
   hasOpenMenu() ||
