@@ -1,5 +1,16 @@
 # @citrusworx/juiceui
 
+## 0.9.6
+
+### Patch Changes
+
+- 0690e52: Align Juice docs with the published `@citrusworx/juiceui@0.9.5` npm cut (2026-10-30). Icon button, avatar, table, skeleton, list, safe area, `--juice-badge-*` roles, and `juice:change` shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. All thirty-one Emerging runtimes stay Emerging.
+- b356a45: Backfill the changelog for published 0.9.1 through 0.9.5 from changesets that already shipped, and correct docs that still described `bind()` as stopping at twenty-eight names. Workspace `@citrusworx/sigjs` 1.1.0 (not published) names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` 1.0.0 names twenty-eight, through table. `sheet` is still not a `JuiceRuntimeName`.
+- db3db40: Add sheet chrome (`[sheet-overlay]` > `[sheet]`, with `[sheet-handle]`, `[sheet-header]`, `[sheet-body]`, `[sheet-footer]`, and `[sheet-close]`). Detents are `peek`, `half`, and `full` (`sheet-detents`, default half full; current detent is `[detent]`). `sheet-overlay="none"` is non-modal. `sheet-overlay="static"` keeps the backdrop. Open and closed follow drawer (`hidden`, `data-motion-state`) with a bottom slide and a backdrop fade. Layout roles live on `:root`. Color falls back through optional `--juice-sheet-*` roles to `--juice-drawer-*`. No runtime. Shipped themes are not edited.
+- c40916c: Document sheet chrome and the sheet runtime (slice C). Sheet is the thirty-second Emerging auto-enhance runtime, on master and not in the published npm 0.9.5 cut. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
+- c40916c: Keep the sheet grab handle's 44px hit target inside the sheet. `[sheet] { overflow: hidden }` was clipping the part of that target above the top edge. The visible bar and the sheet layout are unchanged.
+- 8f79c90: Add the sheet runtime (`createSheet` / `initSheet` / `startSheetRuntime` / `stopSheetRuntime`). It opens and closes `[sheet-overlay]`, traps focus for modal sheets, snaps `sheet-detents`, and follows a drag on the handle, header, or top of the body. `juice:change` reports `{ open, detent, dragging, modal }`. An open sheet counts as a dialog overlay. While `html[keyboard-open]` is set, the sheet max-height still shrinks by the keyboard inset and the footer no longer pads by that inset a second time. The grab handle keeps its visible bar and gains a 44px hit target.
+
 0.9.1 through 0.9.5 below were backfilled from changesets whose introducing commits are ancestors of the published `gitHead`. `changeset version` was not run. Docs-only notes are not files in the npm tarball (`package.json` `files` is `dist`); they are listed because that commit is in the published git tree.
 
 ## 0.9.5
