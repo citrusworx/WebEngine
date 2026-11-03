@@ -81,7 +81,7 @@ A real expand or collapse dispatches a bubbling [juice:change](./juice-runtime-b
 - Authors own the trigger name. The runtime does not invent a visible label.
 - Enter and Space toggle non-button, non-link triggers. Those keys are prevented. Buttons and links keep the browser path.
 - Escape collapses the focused open disclosure, the one whose panel contains the target, or the last opened disclosure. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
-- Escape yields when the event is already handled, or when an open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists.
+- Escape yields when the event is already handled, or when an open `[modal-overlay]`, `[drawer-overlay]`, `[sheet-overlay]` (including `sheet-overlay="none"`), or `[popover-root]` exists. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 - There is no focus trap and no roving tabindex. Disclosure has no z-index. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
 ## Behavior

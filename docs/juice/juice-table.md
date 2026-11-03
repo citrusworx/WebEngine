@@ -294,7 +294,7 @@ The runtime performs six main jobs:
 3. Cycle that column `ascending`, then `descending`, then `none` on each activation. One column is active. The active `th` gets `aria-sort="ascending"` or `"descending"`. Every other sortable `th` in that table gets `aria-sort="none"`
 4. Reorder each `tbody` on its own. The footer stays put. `direction` `"none"` puts the remembered order back. Equal keys keep their original order
 5. Adopt an author `aria-sort` of `ascending` or `descending` as the initial state. That adoption is not a client reorder. Server HTML can already be sorted. The next activation continues the cycle. The first such header in the table wins
-6. Leave Escape, focus traps, and selection alone. Enter and Space stay with the browser: a native button turns them into a click. A key handler here would sort twice. Table does not participate in the overlay yield order. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering)
+6. Leave Escape, focus traps, and selection alone. Enter and Space stay with the browser: a native button turns them into a click. A key handler here would sort twice. Table does not handle Escape. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 A disabled button, `aria-disabled="true"` on that button, `[disabled]` on the `th`, or `aria-disabled="true"` on the `th` does not activate. A header whose `cellIndex` is negative does not activate.
 

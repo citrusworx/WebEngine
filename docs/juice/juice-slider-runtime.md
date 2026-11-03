@@ -85,7 +85,7 @@ A value change dispatches a bubbling `juice:change` from `[slider]`. The detail 
 3. Write `aria-valuemin` (default `0`), `aria-valuemax` (default `100`), `aria-valuenow` (default min, then clamped), and `aria-orientation="horizontal"` on the thumb. Thumb attributes win over the host. If max is below min, max is treated as min. Keep `--juice-slider-ratio` (unitless `0`–`1`) on the host for every range.
 4. On the thumb, ArrowLeft and ArrowDown decrease by 1, ArrowRight and ArrowUp increase by 1, PageDown decreases by 10, PageUp increases by 10, and Home and End jump to min and max. Keyboard deltas do not re-snap an existing fraction.
 5. Primary `pointerdown` on the track, fill, or thumb jumps to that position, focuses the thumb, and drags until `pointerup` or `pointercancel`. Pointer values snap to a step of 1 from min. The thumb captures the pointer when the platform allows it.
-6. Leave Escape, Enter, and Space alone. Slider does not take part in the overlay yield order.
+6. Leave Escape, Enter, and Space alone. Slider does not handle Escape. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Native `disabled` and `aria-disabled="true"` on the host or the thumb still sync role and value attributes, and they do not move the value. There is no focus trap and no exclusive-open rule.
 

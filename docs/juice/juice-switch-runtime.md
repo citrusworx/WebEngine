@@ -80,7 +80,7 @@ A checked change dispatches a bubbling `juice:change` from `[switch]`. The detai
 3. Write binary `aria-checked` (`"true"` or `"false"`). `mixed` and any other value coerce to `"false"`. On a checkbox host, keep `.checked` in lockstep, including a static `aria-checked="true"` on an unchecked box.
 4. Toggle on click for button hosts. `preventDefault` stops a missing `type` from submitting the form. Checkbox hosts follow the native `change` event so `:checked` paint and `aria-checked` stay aligned.
 5. Toggle on Enter and Space for both hosts. Native `disabled` and `aria-disabled="true"` are ignored.
-6. Leave Escape to the overlay, popover, menu, and combobox yield order. Switch does not handle it.
+6. Leave Escape to [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Switch does not handle it.
 
 There is no focus trap and no exclusive-open rule.
 

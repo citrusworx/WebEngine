@@ -223,7 +223,7 @@ The runtime performs five main jobs:
 2. Classify each child `<img>` that belongs to that host. An image inside a nested `[avatar]` belongs to the inner host
 3. Hide a broken or empty image with the `hidden` attribute, and set `[fallback]` on the avatar when nothing is loaded and nothing is still loading. A loaded image, or one that is still loading, stays visible. `[fallback]` comes off when a photo is showing or still loading
 4. Leave `alt`, `aria-label`, `aria-labelledby`, `title`, and the initials text untouched. No initials are invented. No accessible name is written
-5. Leave Escape, focus, and the keyboard alone. Avatar does not participate in the overlay yield order. There is no focus trap. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering)
+5. Leave Escape, focus, and the keyboard alone. Avatar does not handle Escape. There is no focus trap. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 `hidden` is removed only when this runtime set it. An author-hidden photo is left hidden, including after a later load.
 

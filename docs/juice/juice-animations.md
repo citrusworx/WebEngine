@@ -179,9 +179,9 @@ An in-flight exit stays the open surface until that commit. A new open cancels t
 
 ### Events and focus during exit
 
-For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. The focus trap and Escape still apply during exit. A second Escape does not start a second exit. Focus restores to the opener after `hidden` is set, not when the exit animation starts.
+For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. While that layer is still the top of the open order, its focus trap and Escape still apply during exit. A second Escape does not start a second exit. When the close restores focus, that restore runs after `hidden` is set. A `'cascade'` close of a popover or menu does not restore the opener. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
-Toast has no focus trap. Escape still dismisses the most recently shown visible toast (same yield rules as before). `hidden` is set after the exit finishes. Showing a toast that is exiting cancels the exit and leaves it open.
+Toast has no focus trap. Escape dismisses the most recently shown visible toast when no stack layer and no tooltip is open. `hidden` is set after the exit finishes. Showing a toast that is exiting cancels the exit and leaves it open.
 
 ## Reading-time timers
 

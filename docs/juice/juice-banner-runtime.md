@@ -89,7 +89,7 @@ A real show or dismiss dispatches a bubbling [juice:change](./juice-runtime-beha
 4. Show and dismiss with native `hidden`. `show()` never hides siblings.
 5. Remember dismiss when `banner-persist` is `session` or `local` and a `name` or `id` is set.
 6. Handle `[banner-close]` clicks, and Enter or Space on non-button closes.
-7. Leave Escape to the overlay yield order.
+7. Leave Escape to [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Banner does not handle it.
 
 There is no auto-dismiss timer. The banner stays until dismiss. This runtime does not close other surfaces, and they do not close a banner.
 

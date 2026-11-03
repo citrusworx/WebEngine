@@ -83,7 +83,7 @@ Select publishes value changes through native `input` and `change` and does not 
 2. When the author has not set `aria-label` or `aria-labelledby`, name the control from the first visible label. Order: an associated `<label for>`, a wrapping `<label>`, then `[select-label]`.
 3. A label that does not contain the control is referenced with `aria-labelledby`. An id is added only when that label has none (`juice-select-label-N`). A wrapping label is copied into `aria-label` as its visible text excluding the select.
 4. Hidden or empty labels are skipped. When nothing visible remains, no name is invented, and a name this runtime wrote is removed. An author name is kept. A blank value is not a name. `title` does not count and does not block a visible label. If the author later sets a name, a name this runtime wrote on the other attribute is removed.
-5. Leave change and keys on the platform control. Select claims no events and does not take part in the overlay yield order. There is no listbox, no Escape handler, and no focus trap. `[multiple]` and `size` listboxes stay native selects. Sync does not set `role`, `aria-expanded`, `aria-multiselectable`, or `tabindex`. The open list stays the platform popup.
+5. Leave change and keys on the platform control. Select claims no events. There is no listbox, no Escape handler, and no focus trap. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). `[multiple]` and `size` listboxes stay native selects. Sync does not set `role`, `aria-expanded`, `aria-multiselectable`, or `tabindex`. The open list stays the platform popup.
 
 There is no focus trap and no keyboard map.
 

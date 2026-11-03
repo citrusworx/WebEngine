@@ -130,6 +130,7 @@
               <button type="button" btn="outline" scale="sm" data-href="#wizard">Wizard</button>
               <button type="button" btn="outline" scale="sm" data-href="#tooltip">Tooltip</button>
               <button type="button" btn="outline" scale="sm" data-href="#combobox">Combobox</button>
+              <button type="button" btn="outline" scale="sm" data-href="#nesting">Nesting</button>
               <button type="button" btn="outline" scale="sm" data-href="#banner">Banner</button>
               <button type="button" btn="outline" scale="sm" data-href="#menu">Menu</button>
               <button type="button" btn="outline" scale="sm" data-href="#switch">Switch</button>
@@ -590,6 +591,65 @@
             </aside>
           </div>
         </section>
+
+        <section type="features" paddingY="roomy" id="nesting">
+          <div container>
+            <div section-header>
+              <h2>Nesting</h2>
+              <p>
+                Last opened wins. Open the account dialog, then the fruit
+                popover, then focus the field so the list opens. Escape closes
+                the list, then the popover, then the dialog. Focus Save to show
+                the tooltip: that Escape hides only the tip.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" aria-controls="demo-nest-modal">Open nested account</button>
+            </div>
+          </div>
+        </section>
+
+        <div modal-overlay id="demo-nest-modal" hidden>
+          <div modal role="dialog" aria-modal="true" aria-labelledby="demo-nest-title">
+            <button type="button" modal-close aria-label="Close">×</button>
+            <div modal-header>
+              <h2 id="demo-nest-title">Account</h2>
+            </div>
+            <div modal-body stack gap="1">
+              <p>
+                The popover and the fruit list sit inside this dialog. Escape
+                closes the newest one first.
+              </p>
+              <div row wrap gap="1">
+                <button type="button" aria-describedby="demo-nest-tip">Save</button>
+                <button type="button" btn="outline" aria-controls="demo-nest-pop">Pick a fruit</button>
+              </div>
+              <div tooltip-root id="demo-nest-tip" hidden>
+                <div tooltip-panel role="tooltip">Saves the account draft.</div>
+              </div>
+              <div popover-root id="demo-nest-pop" hidden>
+                <div popover-panel role="dialog">
+                  <button type="button" popover-close aria-label="Close">×</button>
+                  <div popover-header><h2>Fruit</h2></div>
+                  <div popover-body stack gap="0.75rem">
+                    <label for="demo-nest-fruit">Fruit</label>
+                    <div combobox name="demo-nest-fruit">
+                      <input id="demo-nest-fruit" combobox-input type="text" />
+                      <button type="button" combobox-trigger aria-label="Show fruits"></button>
+                      <ul combobox-list hidden>
+                        <li combobox-option>Apple</li>
+                        <li combobox-option>Banana</li>
+                        <li combobox-option data-value="apricot">Apricot</li>
+                        <li combobox-option>Cherry</li>
+                        <li combobox-option>Mango</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <section type="features" paddingY="roomy" id="banner">
           <div container>

@@ -68,7 +68,7 @@ Consumed Juice changesets (the 0.8.0 lane):
 | `juice-banner-theme-chrome` | **minor** | Banner theme chrome roles (`--juice-banner-*`) |
 | `juice-banner-runtime` | **minor** | DOM-first banner dismiss runtime (`show` / `dismiss`, persist) |
 | `juice-banner-runtime-docs` | **patch** | Banner runtime / maturity docs (slice C) |
-| `juice-escape-layering` | **patch** | Escape yield order across the eleven Emerging runtimes (polish A) |
+| `juice-escape-layering` | **patch** | Escape layering across the eleven Emerging runtimes (polish A). That ranked yield order is retired; see [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape) |
 | `juice-runtime-shared-primitives` | **patch** | Internal shared runtime primitives under `src/js/src/shared/` (polish B) |
 | `juice-runtime-docs-maturity` | **patch** | Docs / Limitations / z-index / maturity consistency (polish C) |
 | `juice-menu-theme-chrome` | **minor** | Menu theme chrome roles (`--juice-menu-*`) |
@@ -199,11 +199,11 @@ This is the stack that shipped in 0.7.0.
 * Runtime docs and maturity notes in #131. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`.
 * Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory.
 * **Toast A→B→C.** Shared `--juice-toast-*` roles for `[toast-region]` / `[toast]` / `[toast-close]` (#133).
-* DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when no open modal/drawer overlay exists. Runtime docs and maturity notes shipped with the cut.
+* DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when the stack is empty and no tooltip is open (the 0.7 cut checked an open modal or drawer). Runtime docs and maturity notes shipped with the cut.
 * Live region: `aria-live` polite + `aria-relevant`; `role="status"` vs `role="alert"` for error/assertive. Markup-first (no programmatic message factory).
 * Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory.
 * **Popover A→B→C.** Shared `--juice-popover-*` roles for `[popover-root]` / `[popover-panel]` / `[popover-close]` (#138).
-* DOM-first anchored runtime (#139): `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (yields to modal/drawer), outside click, Tab trap, exclusive popover open, dependency-free placement with one-axis flip (`position: fixed` from opener rect + gap 8).
+* DOM-first anchored runtime (#139): `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (last opened wins; the 0.7 cut yielded to an open modal or drawer), outside click, Tab trap while the popover is top, exclusive popover open, dependency-free placement with one-axis flip (`position: fixed` from opener rect + gap 8).
 * Non-modal dialog (`role="dialog"`, no `aria-modal`); focus moves into the panel and restores to the opener. Never a bare `popover` attribute.
 * Runtime docs and maturity notes shipped with the cut. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast.
 * No Sig Popover factory.
@@ -219,7 +219,7 @@ This is the stack that shipped in 0.8.0.
 * Runtime docs and maturity notes in #146. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover.
 * No Sig Wizard factory.
 * **Tooltip A→B→C.** Shared `--juice-tooltip-*` roles for `[tooltip-root]` / `[tooltip-panel]` (#148).
-* DOM-first hover/focus runtime (#149): `createTooltip` / `initTooltip` / `startTooltipRuntime` / `stopTooltipRuntime`, auto-boot, `show` / `hide`, pairing (`aria-describedby` preferred → root id; also `aria-controls`), show on mouseover/focusin, hide on mouseout/focusout with a 150ms grace delay, exclusive one tip, Escape (yields to open modal/drawer overlay or popover-root)
+* DOM-first hover/focus runtime (#149): `createTooltip` / `initTooltip` / `startTooltipRuntime` / `stopTooltipRuntime`, auto-boot, `show` / `hide`, pairing (`aria-describedby` preferred → root id; also `aria-controls`), show on mouseover/focusin, hide on mouseout/focusout with a 150ms grace delay, exclusive one tip, Escape (an open tip hides only itself; the 0.8 cut yielded to an open modal, drawer, or popover)
 * no focus trap (focus never moves into the tip), dependency-free placement with one-axis flip (`position: fixed` from trigger rect + gap 8), z-index 1060. Touch / first-tap later — v1 is hover and keyboard focus.
 * Distinct from popover (interactive) and native `title`. Never a bare `tooltip` attribute.
 * Runtime docs and maturity notes in #151. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover/wizard.
@@ -234,9 +234,9 @@ This is the stack that shipped in 0.8.0.
 * DOM-first dismiss runtime (#161): `createBanner` / `initBanner` / `startBannerRuntime` / `stopBannerRuntime`, auto-boot, `show` / `dismiss`, `[banner-close]` click / keyboard, `role="status"` (or `role="alert"` for error/warning), optional `banner-persist="session|local"` with `name` / `id` (`juice-banner:<key>`). No focus trap, no Escape steal, no auto-dismiss timer.
 * Distinct from toast stack and from modal/drawer. Runtime docs and maturity notes in this pass.
 * No Sig Banner factory.
-* **Eleven-runtime polish A→B→C.** Escape / layering (#166): modal/drawer → popover → combobox → toast/tooltip as implemented; banner never; accordion contextual; tabs / nav / wizard out of scope. Shared internals (#167) under `libraries/juice/src/js/src/shared/` (not a public API). Docs / Limitations / z-index / maturity consistency in this pass. The eleven stay **Emerging**.
+* **Eleven-runtime polish A→B→C.** Escape / layering (#166) shipped a ranked yield order (modal/drawer, then popover, then combobox, then toast/tooltip). That rank is retired. Current contract: [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Banner never takes Escape. Accordion stays contextual. Tabs, navigation, and wizard stay out of the stack. Shared internals (#167) under `libraries/juice/src/js/src/shared/` (not a public API). Docs / Limitations / z-index / maturity consistency in this pass. The eleven stay **Emerging**.
 * **Menu A→B→C.** Shared `--juice-menu-*` roles for `[menu-root]` / `[menu]` / `[menuitem]` (#171).
-* DOM-first APG menu-button runtime (#174): `createMenu` / `initMenu` / `startMenuRuntime` / `stopMenuRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, opener pairing (`[menu-button]` or a plain control inside the root), roving tabindex on `[menuitem]`, exclusive among menus, Escape with popover (yields to modal/drawer; combobox / toast / tooltip yield to an open menu).
+* DOM-first APG menu-button runtime (#174): `createMenu` / `initMenu` / `startMenuRuntime` / `stopMenuRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, opener pairing (`[menu-button]` or a plain control inside the root), roving tabindex on `[menuitem]`, exclusive among menus, Escape with the other stack layers (last opened wins; the 0.8 cut yielded to modal/drawer, and combobox, toast, and tooltip yielded to an open menu).
 * Boolean `[menu]` attr (no HTML global `menu`; not the `<menu>` element). Placement CSS-absolute from the root (`top|bottom|left|right`); z-index 1050.
 * Distinct from popover, combobox, native `<select>`, menubar, and context menu. No submenus, no typeahead, no Sig Menu factory.
 * Runtime docs and maturity notes in this pass. Menu is the twelfth Emerging auto-enhance runtime.
@@ -317,7 +317,7 @@ Safe area chrome shipped in 0.9.3. Safe area is CSS-only and is not a runtime.
 * One trigger toggles one panel. Pairing is `aria-controls` inside the root, otherwise the next sibling panel.
 * Orphans outside `[disclosure]` are ignored. Open/closed state is `aria-expanded` plus native `hidden` and `aria-hidden`.
 * Layout `content=` is never written. Click toggles.
-* Enter and Space toggle non-button triggers that are not anchors with `href`. Escape collapses the focused open disclosure, or the last opened one, returns focus to that trigger, and yields to an open modal, drawer, or popover.
+* Enter and Space toggle non-button triggers that are not anchors with `href`. Escape collapses the focused open disclosure, or the last opened one, returns focus to that trigger, and yields to an open modal, drawer, sheet, or popover.
 * There is no exclusive group, no arrow roving, and no global disclosure Escape. Not an accordion (`[accordion]` / `[accordion-item]` stays multi-item and multi-open).
 * No Sig Disclosure factory. Runtime docs and maturity notes in this pass.
 * Disclosure is the twentieth Emerging auto-enhance runtime. Shipped in 0.9.2.
@@ -664,7 +664,7 @@ Combobox **A→B→C shipped in 0.8.0**: theme chrome (`--juice-combobox-*`), li
 
 Banner **A→B→C shipped in 0.8.0**: theme chrome (`--juice-banner-*`), dismiss runtime, and runtime / maturity docs. Valid `[banner]` markup auto-enhances. Banner is the eleventh Emerging auto-enhance runtime.
 
-**Eleven-runtime polish A→B→C shipped in 0.8.0.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. Those eleven stay Emerging.
+**Eleven-runtime polish A→B→C shipped in 0.8.0.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. The ranked yield order from that cut is retired. Open overlays follow [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). Those eleven stay Emerging.
 
 Menu **A→B→C shipped in 0.8.0**: theme chrome (`--juice-menu-*`), APG menu-button runtime, and runtime / maturity docs. Valid `[menu-root]` markup auto-enhances. Menu is the twelfth Emerging auto-enhance runtime.
 
@@ -712,7 +712,7 @@ Disclosure **A→B→C shipped in 0.9.2**: theme chrome (`--juice-disclosure-*`)
 
 Disclosure is the twentieth Emerging auto-enhance runtime. One trigger toggles one panel (`aria-expanded`, native `hidden`, `aria-hidden`).
 
-Orphans outside the root are ignored. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover.
+Orphans outside the root are ignored. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, sheet, or popover.
 
 There is no exclusive group and no arrow roving. Distinct from accordion.
 

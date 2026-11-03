@@ -509,7 +509,7 @@ Menu is an APG menu button. It is not a popover, not a combobox, not a native `<
 
 Placement is CSS-only (absolute from the root). No submenus and no typeahead in v1.
 
-The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`); Escape sits with popover (yields to modal/drawer). There is no focus trap and no Sig Menu factory.
+The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`). Escape follows [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape). There is no focus trap and no Sig Menu factory.
 
 See [Menu Runtime](./juice-menu-runtime.md). Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
 
@@ -673,7 +673,7 @@ Inline chrome — no overlay z-index. The runtime auto-enhances `[disclosure]` (
 
 Orphans outside the root are ignored. Click toggles.
 
-Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover.
+Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, sheet, or popover.
 
 There is no exclusive group, no arrow roving, and no layout `content=`. No Sig Disclosure factory.
 

@@ -83,8 +83,8 @@ A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavi
 - When the menu is open, ArrowDown and ArrowUp move `menuitem="active"` among enabled items and wrap. Focus moves onto the menuitem. This is roving tabindex, not `aria-activedescendant`.
 - Home and End move to the first and last enabled item while the menu is open.
 - Enter and Space activate the focused menuitem. On a non-native opener they toggle the menu. A native button uses click.
-- Escape closes and returns focus to the opener, unless an open `[modal-overlay]` or `[drawer-overlay]` exists. Menu sits with popover in that band. Combobox, toast, and tooltip yield to an open menu. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
-- Tab closes without activating. Focus returns to the opener so Tab continues from there. There is no focus trap.
+- Escape closes and returns focus to the opener when this menu is the top layer. A `'cascade'` close does not return focus. Activating an item still does. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+- Tab closes without activating only while this menu is the top layer. Focus returns to the opener so Tab continues from there. There is no focus trap.
 - Disabled items (`aria-disabled="true"`, or a disabled `button` or `input`) and hidden items are skipped. A disabled item click is cancelled before author handlers run.
 - Sync fills `role="menu"`, `role="menuitem"`, and `role="separator"`, plus `aria-haspopup="menu"`, `aria-controls`, and `aria-expanded`. It does not set `aria-modal`. A non-native opener gets `role="button"` and `tabindex="0"` when `tabindex` is missing.
 - `[menu]` is painted at z-index 1050, the same band as popover and combobox, below tooltip 1060 and toast 1100. See [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
@@ -96,7 +96,7 @@ A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavi
 3. Fill missing roles, ids, `aria-haspopup`, `aria-controls`, and `aria-expanded`.
 4. Toggle native `hidden` on `[menu]`, and close other open menus when one opens.
 5. Move focus to an enabled menuitem on open, with roving tabindex.
-6. Open from the opener, and close on Escape, outside click, Tab, or item activation.
+6. Open from the opener, and close on Escape when this menu is the top layer, on an outside pointer when it is the top layer, on Tab while it is the top layer, or after item activation. A `'cascade'` close does not return focus.
 
 A click, Enter, or Space that opens the menu focuses the previously active enabled item when it is still enabled, otherwise the first. ArrowDown and ArrowUp on a closed opener force the first and last enabled items.
 
@@ -108,7 +108,7 @@ Placement is CSS absolute from `[menu-root]`. Values are `top`, `bottom`, `left`
 <summary>Edge cases</summary>
 
 - Opening one menu also closes other open menus found in the document.
-- Exclusive open is among menus. This runtime does not close a modal, drawer, or popover.
+- Exclusive open is among menus. Opening a menu does not close a modal, drawer, or popover. Closing a layer opened before this menu dismisses the menu with reason `'cascade'` and does not return focus.
 - When no enabled item exists, the panel receives `tabindex="-1"` and takes focus.
 - Escape does nothing when the event default is already prevented.
 - The observer watches child list changes and `hidden`, `aria-controls`, `aria-expanded`, `aria-disabled`, `aria-haspopup`, `disabled`, `menu-root`, `menu-button`, `menu`, `menuitem`, `menu-separator`, and `menu-label`.

@@ -84,8 +84,8 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
 ## Accessibility
 
-- Escape closes the open popover and returns focus to the opener only when no `[modal-overlay]` or `[drawer-overlay]` is open; menu shares that band, and combobox, toast, and tooltip yield. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
-- Tab and Shift+Tab wrap inside the open panel, and the background is not inert.
+- Escape closes the open popover and returns focus to the opener when this popover is the top layer. A combobox list opened after it, or an open tooltip, takes the first Escape. A `'cascade'` close does not return focus. [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+- Tab and Shift+Tab wrap inside the open panel only while this popover is the top layer. The background stays interactive.
 - Enter and Space activate non-button openers and `[popover-close]` controls.
 - Prefer `role="dialog"` and a labelled heading, which the runtime fills along with opener `aria-expanded`, `aria-haspopup="dialog"`, and an empty close name `aria-label="Close"`, without setting `aria-modal`.
 - `[popover-root]` is `z-index: 1050`, above modal and drawer `1000` and below toast `1100`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
@@ -98,16 +98,16 @@ An unchanged `open` write does not dispatch, and this surface stays Emerging.
 3. Fill missing root, panel, and title ids, plus `role="dialog"` and `aria-labelledby` from the header heading, and do not set `aria-modal`.
 4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[popover-close]` name (`aria-label="Close"`).
 5. Enter removes native `hidden`, places the panel, then plays; exit plays first, and `hidden` plus placement cleanup run only after it finishes, while opening one managed popover closes any other open popover.
-6. On open, focus moves to `[autofocus]`, else the first focusable, else `tabindex="-1"` on the panel; Tab and Escape apply while open, including during exit, and focus returns to the opener after `hidden` is set.
+6. On open, focus moves to `[autofocus]`, else the first focusable, else `tabindex="-1"` on the panel. Tab and Escape apply while this popover is the top layer, including during exit. Escape and an explicit close return focus to the opener after `hidden` is set. A `'cascade'` close does not.
 7. Place the root with `position: fixed` from the opener's `getBoundingClientRect` plus an 8px gap, flip once if the preferred side overflows, and reposition on open, window resize, and capture scroll.
-8. Handle opener toggle, close, and outside clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
+8. Handle opener toggle, close, and outside clicks when this popover is the top layer, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes. The click that follows an outside pointer does not close the layer underneath.
 
 - Orphan `aria-controls` that do not target a `[popover-root]` are ignored.
 - A `name` or `id` on `[popover-root]` is the slug for generated ids (`help-panel`, `help-title`), and a missing root id is `${slug}-root`.
 - Opening is exclusive among popovers, so only one managed popover is open at a time.
-- This runtime does not close a modal, drawer, or toast, and those runtimes do not close a popover.
+- Opening a popover does not close a modal, drawer, menu, or toast. Closing a layer opened before this popover dismisses the popover with reason `'cascade'` and does not return focus.
 - Roots use native `hidden`, never layout `content="active"` or `content="hidden"`.
-- Clicks inside the root stay open; a click outside the open root and outside its opener closes.
+- Clicks inside the root stay open. An outside pointer closes the popover when it is the top layer. The click that follows does not close the layer underneath.
 - The floating surface is `[popover-panel]`; a bare `popover` attribute starts the native Popover API.
 - The panel is a non-modal dialog: `role="dialog"` without `aria-modal`, and the background stays interactive.
 - Placement has no Floating UI.
@@ -130,7 +130,7 @@ Exit sets `data-motion-state="exiting"` before `hidden`. The root fades out and 
 <details>
 <summary>Edge cases</summary>
 
-- The focus trap and Escape still apply during exit.
+- The focus trap and Escape still apply during exit while this popover is the top layer.
 - A second Escape does not start a second close.
 - Reduced motion, or a computed duration of `0`, does the same steps in the same turn.
 - A new open cancels an in-flight exit.
