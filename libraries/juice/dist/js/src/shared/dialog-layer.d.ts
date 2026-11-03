@@ -4,9 +4,11 @@
  *
  * Each open overlay is one stack slot. push happens on open. pop happens
  * when the close commits (hidden is set), so an in-flight exit stays the
- * open dialog until then. Destroy and exclusive replacement drop the slot
- * with no dismiss. Layers above a real pop are dismissed top-down with
- * reason 'cascade' by the stack itself.
+ * open dialog until then. Destroy drops the slot with no dismiss.
+ * Replacing an open dialog pops it, so layers above dismiss top-down with
+ * reason 'cascade'. The focus trap belongs to a runtime only when its
+ * overlay is the top of the stack and that layer is modal. A non-modal
+ * sheet on top suspends the trap until it closes.
  *
  * A backdrop press is a pointer whose target is the overlay element.
  * The stack treats that press as outside every layer that does not

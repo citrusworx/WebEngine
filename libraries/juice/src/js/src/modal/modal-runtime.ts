@@ -12,7 +12,10 @@
  * open cancels it. Escape and backdrop presses follow open order on the
  * internal layer stack. This runtime does not handle Escape itself, so a
  * defaultPrevented Escape never closes the dialog. Tab and focus-in trap
- * only when this overlay is the top modal layer. Focus return stays here.
+ * only when this overlay is the top of the stack and that layer is modal.
+ * A non-modal layer on top suspends the trap until it closes. Replacing
+ * another open modal pops it, so layers above that modal dismiss with
+ * reason 'cascade'. Focus return stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[modal-overlay]` id. `[modal-close]` closes the containing overlay.
@@ -30,7 +33,7 @@ import {
 import { createEventClaim } from '../shared/events.js';
 import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
-import { topLayer, topModalLayer } from '../shared/layer-stack.js';
+import { topLayer } from '../shared/layer-stack.js';
 import { createElementMotion } from '../shared/motion.js';
 
 export type ModalOptions = {
@@ -337,17 +340,12 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
     changes.note(overlay, { open: isOverlayOpen(overlay) }, { baseline });
   };
 
-  const hideOverlay = (
-    overlay: HTMLElement,
-    restore: boolean,
-    unstack: 'pop' | 'drop'
-  ) => {
+  const hideOverlay = (overlay: HTMLElement, restore: boolean) => {
     if (!isOverlayOpen(overlay) || isClosing(overlay)) return;
 
     ensureDialogAccessibility(overlay);
     motion.exit(overlay, () => {
-      if (unstack === 'pop') layers.pop(overlay);
-      else layers.drop(overlay);
+      layers.pop(overlay);
       setOpenState(overlay, false);
       setOpenerState(overlay, false);
       if (restore) {
@@ -370,7 +368,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
       )
       .forEach((other) => {
         if (other === overlay || !isOverlayOpen(other) || isClosing(other)) return;
-        hideOverlay(other, false, 'drop');
+        hideOverlay(other, false);
       });
 
     rememberRestorer(overlay, opener);
@@ -408,7 +406,7 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
   const close = (target?: HTMLElement | null) => {
     const overlay = resolveOverlay(target);
     if (!overlay || !isOverlayOpen(overlay) || isClosing(overlay)) return;
-    hideOverlay(overlay, true, 'pop');
+    hideOverlay(overlay, true);
   };
 
   const toggle = (target?: HTMLElement | null) => {
@@ -497,8 +495,8 @@ export const createModal = (options: ModalOptions = {}): ModalController => {
   };
 
   const focusTrapOverlay = () => {
-    const top = topModalLayer();
-    if (!top || top.kind !== 'modal' || !top.modal) return null;
+    const top = topLayer();
+    if (!top?.modal || top.kind !== 'modal') return null;
     if (!isManagedOverlay(top.el) || !isOverlayOpen(top.el)) return null;
     return top.el;
   };

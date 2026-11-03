@@ -12,7 +12,10 @@
  * open cancels it. Escape and backdrop presses follow open order on the
  * internal layer stack. This runtime does not handle Escape itself, so a
  * defaultPrevented Escape never closes the dialog. Tab and focus-in trap
- * only when this overlay is the top modal layer. Focus return stays here.
+ * only when this overlay is the top of the stack and that layer is modal.
+ * A non-modal layer on top suspends the trap until it closes. Replacing
+ * another open drawer pops it, so layers above that drawer dismiss with
+ * reason 'cascade'. Focus return stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[drawer-overlay]` id. `[drawer-close]` closes the containing overlay.

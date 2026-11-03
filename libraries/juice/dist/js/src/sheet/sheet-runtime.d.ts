@@ -13,8 +13,11 @@
  * a new open of that same overlay cancels it. Escape and backdrop presses
  * follow open order on the internal layer stack. This runtime does not
  * handle Escape itself, so a defaultPrevented Escape never closes the
- * sheet. Tab and focus-in trap only when this overlay is the top modal
- * layer. `sheet-overlay="none"` never traps. Focus return stays here.
+ * sheet. Tab and focus-in trap only when this overlay is the top of the
+ * stack and that layer is modal. `sheet-overlay="none"` never traps, and
+ * while that non-modal sheet is the top layer it suspends the trap of a
+ * modal underneath. The trap resumes when the sheet closes. Focus return
+ * stays here.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[sheet-overlay]` id. `[sheet-close]` closes the containing overlay.
