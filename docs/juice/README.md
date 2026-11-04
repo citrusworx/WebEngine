@@ -185,7 +185,7 @@ The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm l
 ### Practice and roadmap
 
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.6` live on npm)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.6` live on npm. The shared overlay stack ships in **0.9.7**, on master and not yet on npm.)
 
 ## Status
 
