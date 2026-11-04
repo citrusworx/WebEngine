@@ -4,6 +4,8 @@ A sheet is a bottom-anchored dialog rooted at `[sheet-overlay]`.
 
 Emerging. The thirty-second runtime. Shipped in `@citrusworx/juiceui@0.9.6` (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`).
 
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+
 `createSheet`, `initSheet`, `startSheetRuntime`, and `stopSheetRuntime` shipped in 0.9.6. npm `@citrusworx/sigjs` **1.1.2** `bind` names `sheet`. Sheet binds on juiceui **0.9.6** or newer and throws on **0.9.5**. `juice:change` comes from `[sheet-overlay]`. **1.1.1** does not name `sheet`.
 
 Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).

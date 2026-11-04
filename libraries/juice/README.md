@@ -84,6 +84,8 @@ The top-level JS entry is small. Thirty-two runtimes stay Emerging.
 
 Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6.
 
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging. The CDN pin below is the published 0.9.6 tarball and does not include that stack.
+
 The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
 ### Overlays
@@ -92,7 +94,7 @@ The full index, including how to choose between similar components, is [Runtime 
 | --- | --- | --- | --- |
 | Modal | `[modal-overlay]` | Dialog. Open and close, Escape, focus trap, one open at a time. | [Modal](../../docs/juice/juice-modal-runtime.md) |
 | Drawer | `[drawer-overlay]` | Edge dialog (`left` or `right`, optional `drawer-size` of `sm` or `lg`). Escape, focus trap, exclusive. | [Drawer](../../docs/juice/juice-drawer-runtime.md) |
-| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. The thirty-second runtime. Shipped in 0.9.6. A `JuiceRuntimeName` in workspace Sig 1.1.0. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. | [Sheet](../../docs/juice/juice-sheet-runtime.md) |
+| Sheet | `[sheet-overlay]` | Bottom dialog. Detents `peek`, `half`, `full`. The thirty-second runtime. Shipped in 0.9.6. A `JuiceRuntimeName` in npm `@citrusworx/sigjs` **1.1.2**. Binds on juiceui 0.9.6+. On 0.9.5 `bind` throws. **1.1.1** does not name sheet. | [Sheet](../../docs/juice/juice-sheet-runtime.md) |
 | Popover | `[popover-root]` | Anchored non-modal dialog. The surface is `[popover-panel]`, never a bare `popover` attribute. | [Popover](../../docs/juice/juice-popover-runtime.md) |
 | Tooltip | `[tooltip-root]` | Hover and focus tip. The surface is `[tooltip-panel]`, never a bare `tooltip` attribute or native `title`. | [Tooltip](../../docs/juice/juice-tooltip-runtime.md) |
 | Toast | `[toast-region]` | Non-modal stack (default `top-right`). Not a dialog: no focus trap, no `aria-modal`, stacking is allowed. | [Toast](../../docs/juice/juice-toast-runtime.md) |
@@ -151,7 +153,7 @@ The full index, including how to choose between similar components, is [Runtime 
 
 | Component | Markup | What it is | Docs |
 | --- | --- | --- | --- |
-| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Shipped in 0.9.5. npm `@citrusworx/sigjs` **1.1.2** names it. npm **1.0.0** does not. **1.1.1** names thirty-one, through keyboard-avoider. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
 
 ### Auto-start
 
@@ -201,10 +203,10 @@ Select, input, and textarea publish through native `input` and `change`. They st
 
 The contract covers all thirty-two runtimes. `juice:change` and `JUICE_CHANGE_EVENT` shipped in 0.9.3. Pressable and touchable row dispatch that contract from 0.9.4. Keyboard avoider dispatches it from 0.9.5. Sheet dispatches it. It shipped in 0.9.6.
 
-npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** `bind` names twenty-eight runtimes, through `table`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names thirty-two, through sheet. `sheet` is a `JuiceRuntimeName` on that workspace tree. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. It binds on **0.9.6** or newer. On **0.9.5** it throws.
+npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** `bind` names twenty-eight runtimes, through `table`. npm and master `@citrusworx/sigjs` **1.1.2** name thirty-two, through sheet. `sheet` is a `JuiceRuntimeName` on that tree. `@citrusworx/juiceui@0.9.6` publishes `startSheetRuntime`. It binds on **0.9.6** or newer. On **0.9.5** it throws. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet.
 
 - `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values on npm **1.0.0** and on the workspace tree.
-- Pressable, touchable row, keyboard avoider, and sheet are `JuiceRuntimeName` values on workspace **1.1.0** and are not names on npm **1.0.0**.
+- Pressable, touchable row, and keyboard avoider are `JuiceRuntimeName` values on npm **1.1.1** and **1.1.2**, and are not names on npm **1.0.0**. Sheet is a name on **1.1.2** and is not a name on **1.1.1** or **1.0.0**.
 - `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 - Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. Binding sheet on **0.9.5** throws.
 

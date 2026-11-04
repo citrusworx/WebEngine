@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - 801b616: Align Juice docs with the published `@citrusworx/juiceui@0.9.6` npm cut (2026-11-03, `gitHead` `850e91bb`). Sheet, the thirty-second Emerging runtime, and `startSheetRuntime` shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. All thirty-two Emerging runtimes stay Emerging. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
+- Correction for the 801b616 note: that sentence records the 0.9.6 docs refresh as written. At commit 801b616, `bind()` did not name sheet. npm and master `@citrusworx/sigjs` **1.1.2** name all thirty-two runtimes, sheet included. **1.1.1** names thirty-one and does not bind sheet. **1.1.0** was never published.
 - 240d133: A dialog closed because a layer under it closed no longer returns focus to its opener. The dialog that actually closed still does.
 - f4eff14: Escape and outside click for modal, drawer, and sheet follow open order. The last of those dialogs to open handles Escape. A backdrop press closes only the top dialog; other outside presses do not. A non-modal sheet on top suspends the focus trap until it closes. Replacing an open dialog closes layers above it.
 - c60eaef: Document last-opened-wins nesting for modal, drawer, sheet, popover, menu, and combobox. Escape, outside pointer, `'cascade'` close, focus return, the suspended modal trap under a non-modal sheet, and tooltip and toast stay off that stack. The showcase adds a nested overlay demo.

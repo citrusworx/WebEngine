@@ -4,6 +4,8 @@ A drawer is an edge-docked dialog rooted at `[drawer-overlay]`.
 
 Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+
 Importing `@citrusworx/juiceui` enhances valid markup through [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ## Markup

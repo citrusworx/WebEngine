@@ -2,7 +2,7 @@
 
 Pressable is transient press feedback on any host. `createPressable` shows that press for the gesture and can fire an opt-in long-press.
 
-Emerging. The twenty-ninth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind` names `pressable`. npm `@citrusworx/sigjs` **1.0.0** does not.
+Emerging. The twenty-ninth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. npm `@citrusworx/sigjs` **1.1.2** `bind` names `pressable` and all thirty-two runtimes, including sheet. **1.0.0** does not name pressable.
 
 Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
@@ -276,7 +276,7 @@ Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-
 
 ## Sig
 
-npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** bind 28 runtimes through `table`. Pressable is not one of those names. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind` names `pressable`. Passing `"pressable"` is a `JuiceRuntimeName` on that workspace tree and is not a name in npm **1.0.0**. `sheet` is not a name.
+npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** bind 28 runtimes through `table`. Pressable is not one of those names. npm **1.1.2** `bind` names `pressable` and all thirty-two runtimes, including sheet. Passing `"pressable"` is a `JuiceRuntimeName` on **1.1.2** and is not a name in npm **1.0.0**. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet.
 
 This runtime does not call `bind`, and Juice does not import Sig. `juice:change` and `getState()` still work without Sig. `juice:longpress` is a separate event. `bind` does not listen for it. State stays `{ pressed: boolean, longPressed: boolean }`.
 

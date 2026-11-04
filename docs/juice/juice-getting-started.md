@@ -31,7 +31,9 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.6`:
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.6`.
+
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). The pin below is that published tarball. It does not include last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox, the `'cascade'` dismiss reason, skipped focus restore on a cascaded dialog, or a non-modal sheet suspending the modal trap. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.css" />

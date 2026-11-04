@@ -194,7 +194,7 @@ The drawer shadow points down. Set `--juice-sheet-panel-shadow` to a shadow with
 
 Layout roles (`--juice-sheet-offset`, `--juice-sheet-peek`, `--juice-sheet-half`, `--juice-sheet-full`, `--juice-sheet-max-height`, `--juice-sheet-radius`, `--juice-sheet-handle-width`, `--juice-sheet-handle-height`) stay on `:root` only. They are not restated on `[theme]`.
 
-`[sheet-overlay]` is `z-index: 1000`, the same band as modal and drawer. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Optional `surfaceTone` on `[sheet]` is allowed. The runtime auto-enhances that markup — see [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. `bind()` does not name sheet.
+`[sheet-overlay]` is `z-index: 1000`, the same band as modal and drawer. This is not the surface `overlay="frost|tint"` utility, and not `[drawer]`. Optional `surfaceTone` on `[sheet]` is allowed. The runtime auto-enhances that markup — see [Sheet](./juice-sheet-runtime.md) and the [chrome contract](./juice-sheet.md). Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet.
 
 ### Toast chrome
 
@@ -1324,7 +1324,7 @@ Muted Citrusmint copy (`p`, `span`, `li`, `label`) is 1.95:1 on the page and 2.1
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
+npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`.
 
 ### Touchable row (optional override)
 
@@ -1362,13 +1362,13 @@ A 92% mix would be 4.03:1 on the Citrusmint page. The runtime auto-enhances `[to
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
+npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`.
 
 `[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5.
 
 ### Sheet (optional override)
 
-Color falls through `--juice-sheet-*` to `--juice-drawer-*`. There is no required sheet role. Layout roles stay on `:root` only. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. The drawer fallback points down. See [Sheet](./juice-sheet-runtime.md). Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. `bind()` does not name sheet.
+Color falls through `--juice-sheet-*` to `--juice-drawer-*`. There is no required sheet role. Layout roles stay on `:root` only. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. The drawer fallback points down. See [Sheet](./juice-sheet-runtime.md). Sheet is the thirty-second Emerging auto-enhance runtime and shipped in 0.9.6. npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet.
 
 
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
@@ -1619,7 +1619,7 @@ Icon button is the twenty-sixth Emerging auto-enhance runtime and shipped in 0.9
 
 Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3. Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-two stay Emerging. Keyboard avoider is the thirty-first and shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names it. npm **1.0.0** does not. Sheet is the thirty-second, shipped in 0.9.6, and is not a `JuiceRuntimeName`.
+Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-two stay Emerging. Keyboard avoider is the thirty-first and shipped in 0.9.5. npm `@citrusworx/sigjs` **1.1.2** names it, and names sheet. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** does not name keyboard-avoider. Sheet is the thirty-second, shipped in 0.9.6, and is a `JuiceRuntimeName` in **1.1.2**.
 
 Skeleton chrome and docs shipped in 0.9.3 (CSS-only, not a runtime). `--juice-skeleton-*` stays a core default.
 

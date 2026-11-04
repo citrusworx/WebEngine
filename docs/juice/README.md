@@ -130,9 +130,11 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Overlays
 
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
-- [Sheet](./juice-sheet-runtime.md) — bottom sheet (shipped in 0.9.6; the thirty-second Emerging runtime; not a `JuiceRuntimeName`). Chrome contract: [juice-sheet.md](./juice-sheet.md)
+- [Sheet](./juice-sheet-runtime.md) — bottom sheet (shipped in 0.9.6; the thirty-second Emerging runtime; a `JuiceRuntimeName` in npm `@citrusworx/sigjs` **1.1.2**). Chrome contract: [juice-sheet.md](./juice-sheet.md)
 - [Popover Runtime](./juice-popover-runtime.md)
 - [Tooltip Runtime](./juice-tooltip-runtime.md)
 - [Toast Runtime](./juice-toast-runtime.md)
@@ -154,7 +156,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Page chrome
 
-- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime; a `JuiceRuntimeName` on workspace `@citrusworx/sigjs` **1.1.0**, not on npm **1.0.0**)
+- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime; a `JuiceRuntimeName` in npm `@citrusworx/sigjs` **1.1.2**; **1.0.0** does not name it)
 
 #### Feedback
 
