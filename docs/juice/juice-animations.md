@@ -179,7 +179,7 @@ An in-flight exit stays the open surface until that commit. A new open cancels t
 
 ### Events and focus during exit
 
-For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. While that layer is still the top of the open order, its focus trap and Escape still apply during exit. A second Escape does not start a second exit. When the close restores focus, that restore runs after `hidden` is set. A `'cascade'` close of a popover, menu, or dialog does not restore the opener. See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. While that layer is still the top of the open order, its focus trap and Escape still apply during exit. A second Escape does not start a second exit. When the close restores focus, that restore runs after `hidden` is set. A `'cascade'` close of a popover, menu, or dialog does not restore the opener. The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Toast has no focus trap. Escape dismisses the most recently shown visible toast when no stack layer and no tooltip is open. `hidden` is set after the exit finishes. Showing a toast that is exiting cancels the exit and leaves it open.
 

@@ -4,7 +4,7 @@ Keyboard avoider pads or shifts a host at `[keyboard-avoider]` when the on-scree
 
 Emerging. The thirty-first runtime. Shipped in 0.9.5.
 
-`createKeyboardAvoider`, `initKeyboardAvoider`, `startKeyboardAvoiderRuntime`, and `stopKeyboardAvoiderRuntime` shipped in 0.9.5. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind` names `keyboard-avoider`. npm `@citrusworx/sigjs` **1.0.0** does not.
+`createKeyboardAvoider`, `initKeyboardAvoider`, `startKeyboardAvoiderRuntime`, and `stopKeyboardAvoiderRuntime` shipped in 0.9.5. npm `@citrusworx/sigjs` **1.1.2** `bind` names `keyboard-avoider` and all thirty-two runtimes, including sheet. **1.0.0** does not name keyboard-avoider.
 
 Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 

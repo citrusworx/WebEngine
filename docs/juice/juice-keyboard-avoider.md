@@ -26,7 +26,7 @@ That means it should work for:
 
 The user should not need to manually initialize keyboard avoider in their app code.
 
-There is no `KeyboardAvoider()` Sig factory. Markup plus the runtime is the contract. Workspace `@citrusworx/sigjs` **1.1.0** (not published) `bind()` names pressable, touchable-row, and keyboard-avoider. npm `@citrusworx/sigjs` **1.0.0** names twenty-eight, through `table`. `bind()` does not name sheet.
+There is no `KeyboardAvoider()` Sig factory. Markup plus the runtime is the contract. npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`.
 
 This surface is Emerging, not Stable. Valid markup should lay out from core CSS, and an open keyboard should set the inset after importing the JS entry, but the API is still likely to evolve.
 
@@ -407,7 +407,7 @@ There is no `MutationObserver`. A host added after boot is not seen until the ne
 
 ## Sig `bind()`
 
-npm `@citrusworx/sigjs` **1.0.0** `bind()` does not include keyboard-avoider, pressable, or touchable-row, and `JuiceRuntimeName` on that cut stops at twenty-eight names, through `table`. Workspace `@citrusworx/sigjs` **1.1.0** (not published) names those three. `bind()` does not include sheet on either tree. Passing `"sheet"` is not a supported name. Passing `"keyboard-avoider"`, `"pressable"`, or `"touchable-row"` is a name on the workspace tree and is not a name in npm **1.0.0**. This runtime does not call `bind`, and Juice does not import Sig.
+npm `@citrusworx/sigjs` **1.0.0** `bind()` does not include keyboard-avoider, pressable, or touchable-row, and `JuiceRuntimeName` on that cut stops at twenty-eight names, through `table`. npm **1.1.2** names all thirty-two, including those three and sheet. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. Passing `"keyboard-avoider"`, `"pressable"`, or `"touchable-row"` is a name on **1.1.1** and **1.1.2**, and is not a name in npm **1.0.0**. Passing `"sheet"` is a name on **1.1.2**. This runtime does not call `bind`, and Juice does not import Sig.
 
 `juice:change` and `getState()` still work without Sig. Listen on the host, or call `getState()` on the controller.
 
@@ -480,7 +480,7 @@ A composer that should not scroll the page when a field inside it focuses:
 
 - No `KeyboardAvoider()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
 - This surface is Emerging, not Stable. Keyboard avoider is the thirty-first Emerging auto-enhance runtime. It shipped in 0.9.5. Touchable row remains the thirtieth and shipped in 0.9.4. Pressable remains the twenty-ninth and shipped in 0.9.4. Sheet is the thirty-second and shipped in 0.9.6. All thirty-two stay Emerging.
-- npm `@citrusworx/sigjs` **1.0.0** `bind()` does not name keyboard-avoider, pressable, or touchable-row. Workspace `@citrusworx/sigjs` **1.1.0** (not published) does. `bind()` does not name sheet. Do not pass `"sheet"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
+- npm `@citrusworx/sigjs` **1.0.0** `bind()` does not name keyboard-avoider, pressable, or touchable-row. npm **1.1.2** does, and it names sheet. **1.1.1** names those three and does not bind sheet. Pass `"sheet"` on **1.1.2**. See [Sig `bind()`](#sig-bind).
 - The stylesheet does not select `[keyboard-open]`. Layout follows `--juice-keyboard-inset`.
 - `open` is `inset > threshold` (default `80`) and an editable field is focused. An overlap of exactly `80` stays closed. Checkbox, radio, range, date, button, and the other non-text input types do not count as editable. A hardware keyboard stays closed.
 - `getState().inset` is the measured overlap. It can stay non-zero after blur. The inline custom property is removed while closed, so CSS sees `0px` or the `env()` fallback.

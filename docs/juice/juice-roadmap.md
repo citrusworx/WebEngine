@@ -6,6 +6,8 @@
 
 **0.9.6 is the public cut.** Sheet, the thirty-second Emerging runtime, shipped in this lane. `startSheetRuntime` is in the published package. It stays Emerging. npm `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. Sheet binds on `@citrusworx/juiceui` **0.9.6** or newer and throws on **0.9.5**. `juice:change` for sheet comes from `[sheet-overlay]`. **1.1.1** names thirty-one, through keyboard-avoider, and does not bind sheet. **1.0.0** names twenty-eight, through `table`. npm `@citrusworx/juiceui` latest is **0.9.6**.
 
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+
 **0.9.5** shipped keyboard avoider, the thirty-first Emerging runtime, and the `nav[fixed]` footer fix (published 2026-10-30). They stay Emerging.
 
 **0.9.4** shipped pressable (the twenty-ninth Emerging runtime) and touchable row (the thirtieth). Published 2026-10-29.
@@ -109,7 +111,7 @@ Consumed Juice changesets (the 0.6.0 lane):
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (npm 0.9.6):
+The visible layers today (npm 0.9.6). The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). It is not in that tarball:
 
 * layout and spacing primitives
 * token-driven color, font, and gradient systems. Motion is token-driven (`--juice-motion-*`, the shared helper, overlay enter/exit, and the P0/P1 catalog reading those tokens). That motion core shipped in `@citrusworx/juiceui@0.9.2`. The 0.9.1 tarball still has motion wave 1 as the earlier attribute catalog, not this token-driven core
@@ -1000,6 +1002,8 @@ Do not invent a next version number. The next cut happens when new Juice changes
 **0.9.1** shipped pagination A→B→C and the ten retro library themes. Pagination is the nineteenth Emerging auto-enhance runtime. It stays Emerging.
 
 **0.9.6 is the live npm cut** (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). Sheet shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3.
+
+The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 **0.9.2** shipped disclosure, spinner, select, input, textarea, field, and motion core. Disclosure A→B→C, spinner A→B→C, select A→B→C, input A→B→C, textarea A→B→C, and field A→B→C shipped in 0.9.2.
 
