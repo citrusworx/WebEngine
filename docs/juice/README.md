@@ -130,7 +130,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Overlays
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
@@ -185,7 +185,7 @@ The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm l
 ### Practice and roadmap
 
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.6` live on npm. The shared overlay stack ships in **0.9.7**, on master and not yet on npm.)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.7` live on npm. The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`).)
 
 ## Status
 

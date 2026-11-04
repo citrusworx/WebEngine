@@ -6,7 +6,7 @@ Juice does not load Sig. Observation is the DOM contract below. The optional ada
 
 Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second runtime and shipped in 0.9.6. All thirty-two stay Emerging.
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 ## Components
 
@@ -163,7 +163,7 @@ Open overlays follow [Nesting and Escape](#nesting-and-escape). Paint order is s
 
 ## Nesting and Escape
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). The published 0.9.6 tarball does not include it.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). The published 0.9.7 tarball includes it.
 
 Modal, drawer, sheet, popover, menu, and an open combobox list share one open-order stack. The last one opened owns Escape and outside pointerdown. Tooltip and toast are not stack layers.
 

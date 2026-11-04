@@ -4,7 +4,7 @@ Menu is an APG menu button. `[menu-root]` holds an opener and a `[menu]` of `[me
 
 Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 

@@ -1,8 +1,8 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.6** public cut on npm (published 2026-11-03 14:59 UTC, `gitHead` `850e91bb`). Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.7** public cut on npm (published 2026-11-03, `gitHead` `403cbdb9`). The shared overlay stack shipped in 0.9.7. Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. `juice:change` and `getState()` shipped in 0.9.3.
 
@@ -44,7 +44,7 @@ It is not a runtime and does not change that count. See [Badge](./juice-badge.md
 
 Safe area is CSS-only inset chrome (`[safe-area]`) shipped in 0.9.3. It is not a runtime and does not change that count.
 
-See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 0.9.6 is the current public cut (published 2026-11-03 14:59 UTC).
+See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 0.9.7 is the current public cut (published 2026-11-03, `gitHead` `403cbdb9`).
 
 The goal is to make it easy to answer:
 

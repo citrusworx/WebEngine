@@ -49,7 +49,7 @@ Use it when a page is mostly static and only a few values change: a counter, a f
 
 | Page | What it covers |
 |---|---|
-| [Sig.js + Juice](./sig-juice-integration.md) | Attributes, and `bind` against Juice 0.9.1–0.9.6 |
+| [Sig.js + Juice](./sig-juice-integration.md) | Attributes, and `bind` against Juice 0.9.1–0.9.7 |
 | [Juice](../juice/README.md) | Layout and themes |
 | [WebEngine](../webengine/webengine-getting-started.md) | Why the engine does not bootstrap Sig |
 
