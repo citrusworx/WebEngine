@@ -1,5 +1,21 @@
 # @citrusworx/nectarine
 
+## 0.6.0
+
+### Minor Changes
+
+- f343927: Compile COUNT, EXISTS, and JSONB `@>` / `?` / `->>` from named YAML phonics (Postgres-first; MySQL rewrites JSONB operators at query time).
+- 4a0b598: Compile INSERT `onConflict` phonics to Postgres `ON CONFLICT … DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col` (MySQL rejects this subset at query time).
+- 6fac3e4: Compile `returning` on UPDATE and DELETE (Postgres `RETURNING`; MySQL rejects it at query time, same as `ON CONFLICT`). Schema `json` / `jsonb` columns can cast bare binds, and the Postgres adapter JSON-encodes objects and arrays on `$N::json` / `$N::jsonb` so JavaScript arrays are not sent as Postgres arrays.
+- dc82995: ON CONFLICT merge
+
+### Patch Changes
+
+- ba0b206: Record published npm 0.4.0 in the workspace manifest. That publish did not commit the version bump. No new compiler surface. Pending ON CONFLICT changesets still make the next intentional publish 0.5.0.
+- 93a3bbe: MySQL-escape JSONB `@>` string constants so backslashes survive CAST(... AS JSON).
+- 53f27b5: Rebuild `libraries/nectarine/dist` so workspace hosts pick up the ON CONFLICT compiler from #81 (no new phonics surface).
+- 910b8f1: Reject COUNT with ORDER BY, rewrite MySQL JSONB `@>` string constants, and quote has_key binds with JSON_QUOTE.
+
 ## 0.3.0
 
 ### Minor Changes

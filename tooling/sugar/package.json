@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/sugar",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Sugar is a visual and node based editor for creating and managing Blueprints in the CitrusWorx ecosystem. It provides an intuitive interface for developers to design, configure, and deploy their applications using Blueprints.",
     "type": "module",
     "main": "./dist/index.js",
@@ -18,7 +18,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@citrusworx/juiceui": "^0.9.0",
+        "@citrusworx/juiceui": "^0.9.7",
         "@citrusworx/sigjs": "^1.0.0"
     },
     "devDependencies": {

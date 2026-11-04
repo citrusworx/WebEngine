@@ -1,5 +1,15 @@
 # @citrusworx/juiceui
 
+## 0.9.7
+
+### Patch Changes
+
+- 801b616: Align Juice docs with the published `@citrusworx/juiceui@0.9.6` npm cut (2026-11-03, `gitHead` `850e91bb`). Sheet, the thirty-second Emerging runtime, and `startSheetRuntime` shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. All thirty-two Emerging runtimes stay Emerging. `@citrusworx/sigjs/juice` `bind()` does not name sheet.
+- 240d133: A dialog closed because a layer under it closed no longer returns focus to its opener. The dialog that actually closed still does.
+- f4eff14: Escape and outside click for modal, drawer, and sheet follow open order. The last of those dialogs to open handles Escape. A backdrop press closes only the top dialog; other outside presses do not. A non-modal sheet on top suspends the focus trap until it closes. Replacing an open dialog closes layers above it.
+- c60eaef: Document last-opened-wins nesting for modal, drawer, sheet, popover, menu, and combobox. Escape, outside pointer, `'cascade'` close, focus return, the suspended modal trap under a non-modal sheet, and tooltip and toast stay off that stack. The showcase adds a nested overlay demo.
+- 0a9e6d6: Escape and outside click for popover, menu, and combobox follow open order. The last layer opened handles Escape. An outside pointer closes only that top layer. Closing a dialog closes popovers, menus, and listboxes that were opened above it. An open tooltip still closes on Escape without closing the layer under it, and a toast does not take Escape while a layer is open.
+
 ## 0.9.6
 
 ### Patch Changes
@@ -11,7 +21,7 @@
 - c40916c: Keep the sheet grab handle's 44px hit target inside the sheet. `[sheet] { overflow: hidden }` was clipping the part of that target above the top edge. The visible bar and the sheet layout are unchanged.
 - 8f79c90: Add the sheet runtime (`createSheet` / `initSheet` / `startSheetRuntime` / `stopSheetRuntime`). It opens and closes `[sheet-overlay]`, traps focus for modal sheets, snaps `sheet-detents`, and follows a drag on the handle, header, or top of the body. `juice:change` reports `{ open, detent, dragging, modal }`. An open sheet counts as a dialog overlay. While `html[keyboard-open]` is set, the sheet max-height still shrinks by the keyboard inset and the footer no longer pads by that inset a second time. The grab handle keeps its visible bar and gains a 44px hit target.
 
-0.9.1 through 0.9.5 below were backfilled from changesets whose introducing commits are ancestors of the published `gitHead`. `changeset version` was not run. Docs-only notes are not files in the npm tarball (`package.json` `files` is `dist`); they are listed because that commit is in the published git tree.
+  0.9.1 through 0.9.5 below were backfilled from changesets whose introducing commits are ancestors of the published `gitHead`. `changeset version` was not run. Docs-only notes are not files in the npm tarball (`package.json` `files` is `dist`); they are listed because that commit is in the published git tree.
 
 ## 0.9.5
 
