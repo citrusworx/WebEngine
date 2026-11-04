@@ -252,7 +252,7 @@ Aim the shadow up without editing a theme:
 ## Limitations
 
 - No `Sheet()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Sheet is the thirty-second Emerging auto-enhance runtime. It shipped in 0.9.6. The latest published cut is `@citrusworx/juiceui@0.9.6`. The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Keyboard avoider remains the thirty-first and shipped in 0.9.5. All thirty-two stay Emerging.
+- This surface is Emerging, not Stable. Sheet is the thirty-second Emerging auto-enhance runtime. It shipped in 0.9.6. The latest published cut is `@citrusworx/juiceui@0.9.7`. The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Keyboard avoider remains the thirty-first and shipped in 0.9.5. All thirty-two stay Emerging.
 - npm `@citrusworx/sigjs` **1.1.2** `bind()` names sheet. Pass `"sheet"` on juiceui **0.9.6** or newer. On **0.9.5** it throws. **1.1.1** does not name sheet. `juice:change` comes from `[sheet-overlay]`. See [Sheet runtime](./juice-sheet-runtime.md#sig-bind).
 - Color roles are optional. They fall through to `--juice-drawer-*`. There is no required sheet role. Layout roles stay on `:root`.
 - The drawer fallback for `--juice-sheet-panel-shadow` points down. Set `--juice-sheet-panel-shadow` when the shadow should aim up.

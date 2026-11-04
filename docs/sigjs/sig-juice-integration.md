@@ -75,7 +75,7 @@ The card is created once. Only the text node updates. The [page tutorial](./sig-
 
 `bind` copies a Juice host into a Sig signal and, for five runtimes, writes back. Juice widgets already work without this import. Listen for `juice:change` or call `getState()` yourself. That contract is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
-It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. npm **1.1.2** binds 32 names, through `sheet`. **1.1.1** binds 31, through `keyboard-avoider`, and does not name `sheet`. Published npm **1.0.0** binds 28 names, through `table`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. npm **1.1.2** names it. On **0.9.5** binding it throws. `juice:change` for sheet comes from `[sheet-overlay]`. npm `@citrusworx/juiceui` latest is **0.9.6**.
+It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. npm **1.1.2** binds 32 names, through `sheet`. **1.1.1** binds 31, through `keyboard-avoider`, and does not name `sheet`. Published npm **1.0.0** binds 28 names, through `table`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. npm **1.1.2** names it. On **0.9.5** binding it throws. `juice:change` for sheet comes from `[sheet-overlay]`. npm `@citrusworx/juiceui` latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`).
 
 ```ts
 import "@citrusworx/juiceui";
@@ -111,6 +111,7 @@ The **1.0.0** column was checked against the tarball of `@citrusworx/sigjs@1.0.0
 | 0.9.4 | Loads | All 28. Pressable and touchable row are not names | 30. Keyboard-avoider and sheet throw. Pressable and touchable row shipped in this cut |
 | 0.9.5 | Loads | All 28. Keyboard avoider is not a name | 31. Sheet throws. Keyboard avoider shipped in this cut |
 | 0.9.6 | Loads | All 28. Sheet is not a name | All 32. Sheet shipped in this cut |
+| 0.9.7 | Loads | All 28. Sheet is not a name | All 32. The shared overlay stack shipped in this cut |
 
 The 0.9.2 error is exact:
 

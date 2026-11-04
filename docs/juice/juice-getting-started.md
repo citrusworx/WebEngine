@@ -31,23 +31,23 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.6`.
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.7`.
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). The pin below is that published tarball. It does not include last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox, the `'cascade'` dismiss reason, skipped focus restore on a cascaded dialog, or a non-modal sheet suspending the modal trap. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). The pin below is that published tarball. It includes last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox, the `'cascade'` dismiss reason, skipped focus restore on a cascaded dialog, and a non-modal sheet suspending the modal trap. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/themes/kiwipress.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/themes/kiwipress.css" />
 
 <body theme="kiwipress">
   <!-- markup -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.js"></script>
 </body>
 ```
 
 The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
 
-unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.6/`.
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.7/`.
 
 If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
 

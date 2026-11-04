@@ -84,7 +84,7 @@ The top-level JS entry is small. Thirty-two runtimes stay Emerging.
 
 Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6.
 
-The shared overlay stack ships in **0.9.7**, on master and not yet on npm. npm latest remains **0.9.6** (published 2026-11-03, `gitHead` `850e91bb`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging. The CDN pin below is the published 0.9.6 tarball and does not include that stack.
+The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging. The CDN pin below is the published 0.9.7 tarball and includes that stack.
 
 The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
@@ -410,15 +410,15 @@ If you are hosting Juice assets yourself, the main built files are:
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
 
-There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.9.6`):
+There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.9.7`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/themes/kiwipress.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.6/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/themes/kiwipress.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.js"></script>
 ```
 
-The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.6/`.
+The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.7/`.
 
 ### What the build contains
 

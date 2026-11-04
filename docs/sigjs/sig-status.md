@@ -166,7 +166,7 @@ Coverage is real and still narrow. Docs examples were checked against source, no
 
 Juice works without Sig. Observable widget state is `juice:change` and `getState()` on the host.
 
-The optional adapter is `bind` from `@citrusworx/sigjs/juice`. npm **1.1.2** returns `{ state, dispose }` for 32 names, through sheet. **1.1.1** returns it for 31 and does not name sheet. npm **1.0.0** returns it for 28. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, and only when the host has `[toggle]`). Pressable, touchable-row, keyboard-avoider, sheet, avatar, and table are read-only. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. Sheet does dispatch `juice:change` from `[sheet-overlay]` with `{ open, detent, dragging, modal }`. The first observation is silent. Sheet binds on juiceui **0.9.6** and throws on **0.9.5**. npm `@citrusworx/juiceui` latest is **0.9.6**.
+The optional adapter is `bind` from `@citrusworx/sigjs/juice`. npm **1.1.2** returns `{ state, dispose }` for 32 names, through sheet. **1.1.1** returns it for 31 and does not name sheet. npm **1.0.0** returns it for 28. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, and only when the host has `[toggle]`). Pressable, touchable-row, keyboard-avoider, sheet, avatar, and table are read-only. Keyboard-avoider does dispatch `juice:change` with `{ open, inset }`. Sheet does dispatch `juice:change` from `[sheet-overlay]` with `{ open, detent, dragging, modal }`. The first observation is silent. Sheet binds on juiceui **0.9.6** and throws on **0.9.5**. npm `@citrusworx/juiceui` latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`).
 
 | Juice | Published Sig 1.1.2 |
 |---|---|
@@ -176,8 +176,9 @@ The optional adapter is `bind` from `@citrusworx/sigjs/juice`. npm **1.1.2** ret
 | 0.9.4 | 30 names bind. Keyboard-avoider and sheet throw. Pressable and touchable row shipped in this cut |
 | 0.9.5 | 31 names bind. Sheet throws. Keyboard avoider shipped in this cut |
 | 0.9.6 | All 32 names bind. Sheet shipped in this cut |
+| 0.9.7 | All 32 names bind. The shared overlay stack shipped in this cut |
 
-Published Sig 1.0.0 stops at the 28 names through table on Juice 0.9.3–0.9.6. Published Sig **1.1.1** stops at 31 names, through keyboard-avoider. `"sheet"` is not a name on that cut. The peer range still says `>=0.9.1 <1`. A bind during render disposes on unmount. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding).
+Published Sig 1.0.0 stops at the 28 names through table on Juice 0.9.3–0.9.7. Published Sig **1.1.1** stops at 31 names, through keyboard-avoider. `"sheet"` is not a name on that cut. The peer range still says `>=0.9.1 <1`. A bind during render disposes on unmount. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding).
 
 The subpath shipped in 0.4.0. Icon button, avatar, and table shipped in Sig 0.7.2 and are in 1.0.0. `juice-legacy.test.ts` mocks a Juice that has the 25 named start functions and lacks the seven. That is the 0.9.2 shape, not 0.9.1.
 
