@@ -34,22 +34,9 @@ sshkey
 citrusworx-cs-study-guide.md
 kiwipress-docker-compose.yml
 
-./apps/*
 apps/*
-!./apps/juice/
-!./apps/juice/**
-!apps/juice/
-!apps/juice/**
-!./apps/miamakes/
-!./apps/miamakes/**
-!apps/miamakes/
-!apps/miamakes/**
-!./apps/kiwipress/
-!./apps/kiwipress/**
-!apps/kiwipress/
-!apps/kiwipress/**
-apps/kiwipress/**/node_modules
-apps/kiwipress/**/node_modules/**
+!apps/.gitkeep
+!apps/README.md
 
 ./kiwipresser/*
 kiwipresser/*
