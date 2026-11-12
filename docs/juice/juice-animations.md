@@ -1,6 +1,6 @@
-# Juice Motion (Emerging)
+# Juice Motion
 
-Motion core shipped in `@citrusworx/juiceui@0.9.2` and stays **Emerging**. The 0.9.1 tarball still has the earlier attribute catalog. Token timing, the shared helper, and overlay enter/exit shipped in 0.9.2.
+Motion core shipped in `@citrusworx/juiceui@0.9.2`. The `[motion]` attribute catalog and `data-motion-state` are **Frozen** for 1.0. The JS helpers, their five types, and the `--juice-motion-*` tokens stay **Emerging**. The 0.9.1 tarball still has the earlier attribute catalog. Token timing, the shared helper, and overlay enter/exit shipped in 0.9.2. The 1.0 split is the [public contract](./juice-public-contract.md#motion).
 
 ## Canonical attribute: `motion`
 
@@ -110,7 +110,7 @@ Every `[motion]` element gets:
 
 ## `data-motion-state` and the helper API
 
-The helper is exported from `@citrusworx/juiceui` and stays Emerging. It is not a component factory.
+The helper is a public export of `@citrusworx/juiceui` and stays Emerging. It is not a component factory. The five types below are public Emerging exports from the same module.
 
 | Export | Job |
 |--------|-----|
@@ -119,6 +119,45 @@ The helper is exported from `@citrusworx/juiceui` and stays Emerging. It is not 
 | `createMotionCancelToken()` | Token whose `cancel()` abandons an in-flight enter or exit |
 | `runMotion(element, direction, token?)` | Drive one element. `direction` is `'enter'` or `'exit'` |
 | `createElementMotion()` | One cancel token per element. A later enter or exit replaces the previous one |
+
+## Motion types
+
+These aliases are exported from `libraries/juice/src/js/src/shared/motion.ts`. They are public and Emerging.
+
+```ts
+export type MotionState = 'entering' | 'entered' | 'exiting' | 'exited';
+
+export type MotionDirection = 'enter' | 'exit';
+
+export type MotionCancelToken = {
+  readonly cancelled: boolean;
+  cancel: () => void;
+};
+
+export type MotionResult = {
+  /** True when the terminal state was applied before `runMotion` returned. */
+  immediate: boolean;
+  /** Resolves when the motion finishes or is cancelled. */
+  finished: Promise<{ completed: boolean }>;
+};
+
+export type MotionPlayer = {
+  enter: (
+    element: HTMLElement,
+    onComplete?: () => void,
+    afterStart?: () => void
+  ) => void;
+  exit: (
+    element: HTMLElement,
+    onComplete?: () => void,
+    afterStart?: () => void
+  ) => void;
+  cancel: (element: HTMLElement) => void;
+  destroy: () => void;
+};
+```
+
+`MotionPlayer.enter` and `.exit` take the element, an optional completion callback, and an optional callback invoked after `runMotion` returns. `cancel(element)` abandons that element's in-flight play and does not apply the terminal state. `destroy()` cancels every play the player still holds.
 
 `runMotion` writes `data-motion-state`:
 

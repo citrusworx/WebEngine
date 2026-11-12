@@ -284,7 +284,7 @@ The hairline is `border-block-end` on the content slot, the trailing slot, and a
 
 It paints only when the next sibling is another touchable row that is also not `undivided`. The last row has none. Either side's `undivided` word removes that boundary. A title inside content does not draw a second line.
 
-The chevron is `::after`: `border-width: 0 2px 2px 0`, `rotate(-45deg)`. `::before` is not used. `:dir(rtl)` and `[dir="rtl"]` use `border-width: 0 0 2px 2px` and `rotate(45deg)`.
+The chevron is `::after`: `border-width: 0 2px 2px 0`, `rotate(-45deg)`. `::before` is not used. `:dir(rtl)` and `[dir="rtl"]` use `border-width: 0 0 2px 2px` and `rotate(45deg)`. This is the only `:dir(rtl)` handling in core CSS. Drawer `left` / `right` and toast corners stay physical. A full RTL audit is Post-v1. See the [public contract](./juice-public-contract.md#rtl).
 
 Pressable, spinner, progress, slider, and the accordion open bar keep `::before`. The mark is not on the trailing control, so `[switch]::after`, `[avatar][status]::after`, `[radio]::after`, and `[checkbox]::after` stay on those elements.
 

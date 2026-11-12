@@ -47,6 +47,8 @@ Orphan `[step]`, `[step-page]`, and `[step-nav]` nodes outside a shell are ignor
 | `[steps]` / `[step-tracker]` / `[wizard-rail]` | Tracker chrome. |
 | `--juice-wizard-*` | Theme paint for the shell. |
 
+KiwiPress checkout attributes in `wizard.scss` (`[order-summary]`, `[line-item]`, `[wizard-body]`, `[step-indicator]`, and the rest of that set) are Emerging. The runtime does not read them. The list is the [public contract](./juice-public-contract.md#wizard-checkout-chrome).
+
 Pairing, first match wins, then document order: `aria-controls` on a tracker `[step]` to a page `id`, then a shared `data-step`, `name`, `[step-page]`, or `id`, then index order.
 
 When the shell has a `name`, generated ids use that slug (`onboard-step-1`, `onboard-page-1`).

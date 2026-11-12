@@ -263,8 +263,8 @@ A fixed nav, with the inset on the bar rather than on a second inner host:
 ```html
 <nav fixed safe-area="top">
   <div container>
-    <span nav-brand>Harbor</span>
-    <span nav-actions><button btn>Tickets</button></span>
+    <span>Harbor</span>
+    <button btn>Tickets</button>
   </div>
 </nav>
 ```
@@ -274,7 +274,7 @@ A fixed nav whose inner container is the host. The nav’s padding is still ther
 ```html
 <nav fixed>
   <div container safe-area="top">
-    <span nav-brand>Harbor</span>
+    <span>Harbor</span>
   </div>
 </nav>
 ```
