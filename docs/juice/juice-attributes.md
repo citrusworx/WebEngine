@@ -1,6 +1,6 @@
 # Juice Attributes Reference
 
-This document provides a reference for the HTML attributes currently supported by Juice.
+This document provides a reference for the HTML attributes currently supported by Juice. Frozen, Emerging, and not-contract names for 1.0 are the [public contract](./juice-public-contract.md).
 
 ## Overview
 
@@ -954,7 +954,7 @@ See [Field Runtime](./juice-field-runtime.md). Theme paint uses the six `--juice
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
 - `wizard-header` — sticky header region (theme chrome)
 - `wizard-rail` — left / right rail; values `"left"` / `"right"`
-- `wizard-body` / `wizard-content` — main column. The runtime writes `data-step` on `[wizard-content]` from the current pairing token
+- `wizard-content` — main column. The runtime writes `data-step` on `[wizard-content]` from the current pairing token. `[wizard-body]` is Emerging checkout chrome in `wizard.scss`, not a runtime hook. The checkout attributes are on the [public contract](./juice-public-contract.md#wizard-checkout-chrome)
 - `step-tracker` / `steps` — optional tracker scopes for `[step]` items
 - `step` — tracker item. Values `"pending"` / `"active"` / `"completed"` (bare `[step]` paints as pending). The runtime writes these
 - `step-page` — one step panel. Hide inactive pages with the native `hidden` attribute

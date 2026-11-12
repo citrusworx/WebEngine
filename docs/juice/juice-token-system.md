@@ -21,6 +21,10 @@ src/tokens/color/green/green.scss
   -> dist/index.css
 ```
 
+## JavaScript `tokens` export
+
+`@citrusworx/juiceui` also exports a `tokens` object. It is Emerging. `tokens.themes` is currently `{}`. The keys are on the [public contract](./juice-public-contract.md#tokens-export). CSS custom properties on this page are a separate contract.
+
 ## Token types in this repo
 
 The current tree includes:

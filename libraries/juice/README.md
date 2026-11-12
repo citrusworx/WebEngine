@@ -543,6 +543,7 @@ Internal project docs live in `docs/juice/`. Start with the course. The pages un
 ### Using Juice
 
 - [Docs index](../../docs/juice/README.md)
+- [Public contract](../../docs/juice/juice-public-contract.md) — Frozen, Emerging, and not-contract surfaces for 1.0
 - [Getting started](../../docs/juice/juice-getting-started.md)
 - [Attributes](../../docs/juice/juice-attributes.md)
 - [Layout](../../docs/juice/juice-layout.md)

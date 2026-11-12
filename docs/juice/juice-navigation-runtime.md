@@ -15,7 +15,7 @@ Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](
 <nav type="sidebar">Sections</nav>
 ```
 
-These four `type` values are the hooks. Sidebar open and closed is the `hidden` attribute.
+These four `type` values are the hooks. Sidebar open and closed is the `hidden` attribute. `[nav-brand]`, `[nav-links]`, and `[nav-actions]` are layout rules in `nav.scss`. They are not hooks. See the [public contract](./juice-public-contract.md#nav-region-attributes).
 
 ## Attributes
 
