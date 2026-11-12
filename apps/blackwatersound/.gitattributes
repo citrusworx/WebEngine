@@ -1,4 +1,0 @@
-*.sh text eol=lf
-docker-entrypoint.sh text eol=lf
-*.sql text eol=lf
-docker/postgres/init.sql text eol=lf
