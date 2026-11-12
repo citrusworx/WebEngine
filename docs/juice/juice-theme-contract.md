@@ -49,6 +49,8 @@ Treat these library themes as equal references. Each lives at `libraries/juice/s
 
 **Blush** remains `_draft` (`src/themes/_draft/blush/`). It is YAML-only, unpublished, and not a reference for this contract. Package `exports` still block `@citrusworx/juiceui/themes/_draft/*`.
 
+Both published spellings are Frozen for 1.0: `@citrusworx/juiceui/themes/<id>.css` and `@citrusworx/juiceui/styles/themes/<id>`. The wildcard exports `./themes/*.css` and `./styles/themes/*` are Frozen too. A wildcard match does not require the file to exist. `@citrusworx/juiceui/themes/index.css` matches the pattern and is not one of the fourteen theme files. The classification is the [public contract](./juice-public-contract.md#frozen-theme-paths).
+
 App-owned generated themes are a second, recommended source for product branding. They use the `--jx-*` prefix. See [Theme authoring](./juice-theme-authoring.md).
 
 ## 3. Required YAML / identity
@@ -1104,7 +1106,11 @@ Core CSS owns the defaults. Shipped library themes are not required to bind thes
 
 Derived curves `--juice-motion-ease-in-out` (`ease-in-out`) and `--juice-motion-ease-steps` (`steps(2, end)`) stay on core. Generated themes do not pass them through. Component hooks `--juice-spinner-spin-duration` and `--juice-progress-indeterminate-duration` are optional overrides, not required binds.
 
-`prefers-reduced-motion: reduce` collapses the four duration tokens to `0.01ms` on `:root` and `[theme]`, with `!important`. A theme pass-through literal cannot keep a long duration. Motion core shipped in `@citrusworx/juiceui@0.9.2` and stays Emerging. See [Animations](./juice-animations.md).
+`prefers-reduced-motion: reduce` collapses the four duration tokens to `0.01ms` on `:root` and `[theme]`, with `!important`. A theme pass-through literal cannot keep a long duration. All ten `--juice-motion-*` names, including the two derived curves, are Emerging. Values remain optional overrides. See [Animations](./juice-animations.md) and the [public contract](./juice-public-contract.md#motion).
+
+### Retro color names (optional)
+
+These nine names are optional Emerging tokens. The ten retro themes declare them. Core CSS does not read them. Aquaflux, KiwiPress, Citrusmint, and Tide do not declare them. Names: `--juice-color-page`, `--juice-color-surface`, `--juice-color-text`, `--juice-color-text-muted`, `--juice-color-heading`, `--juice-color-accent`, `--juice-color-on-accent`, `--juice-color-border`, `--juice-color-highlight`. See the [public contract](./juice-public-contract.md#emerging-retro---juice-color-).
 
 ### Icon button (optional override)
 
@@ -1376,6 +1382,8 @@ Generated app themes currently bind required accordion/tabs/modal/drawer/toast/b
 They do not emit `--juice-skeleton-*`, `--juice-list-*`, `--juice-badge-*`, `--juice-safe-area-*`, `--juice-avatar-*`, `--juice-table-*`, `--juice-pressable-*`, `--juice-touchable-row-*`, `--juice-keyboard-*`, or `--juice-sheet-*`.
 
 ## 6. Identity-prefix alias convention
+
+The fallback chain in core role helpers is Frozen for 1.0: `--juice-*`, then `--aqua-*`, `--kw-*`, `--cm-*`, `--tide-*`, `--jx-*`, then the helper fallback. Retro prefixes are not in that chain. See the [public contract](./juice-public-contract.md#frozen-identity-prefix-fallback).
 
 | Source | Prefix | Example |
 |---|---|---|
