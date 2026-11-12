@@ -174,7 +174,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@citrusworx/sigjs": "^1.0.0"
+        "@citrusworx/sigjs": "^1.1.2"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^6.9.1",
