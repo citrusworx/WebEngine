@@ -2,7 +2,7 @@
 
 Classification of the `@citrusworx/juiceui` public surface for 1.0. This page records what is **Frozen**, what is **Emerging**, and what is **not contract**. It does not change runtime, CSS, themes, or package exports.
 
-The audited surface is master `7f24f46f` and npm `@citrusworx/juiceui@0.9.7` (published 2026-11-03, `gitHead` `403cbdb9`). Those two match on the public surface. Behavior stays on the pages linked below. The machine check for required theme binds is `requiredJuiceBinds()` in `libraries/juice/src/juice.theme-contract.ts`, exercised by `juice.theme-contract.test.ts`.
+The audited surface is master `7f24f46f` and npm `@citrusworx/juiceui@0.9.7` (published 2026-11-03, `gitHead` `403cbdb9`). Those two match on the public surface. Behavior stays on the pages linked below. The machine check for required theme binds is `requiredJuiceBinds()` in `libraries/juice/src/juice.theme-contract.ts`, exercised by `juice.theme-contract.test.ts`. The Frozen surface guard is `libraries/juice/src/juice.public-contract.test.ts`.
 
 ## How to read the classes
 

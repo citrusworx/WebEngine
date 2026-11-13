@@ -2178,34 +2178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@citrusworx/blackwater-sound-back@workspace:apps/blackwatersound/back":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/blackwater-sound-back@workspace:apps/blackwatersound/back"
-  dependencies:
-    "@citrusworx/kiwipress": "workspace:*"
-    "@citrusworx/nectarine": "workspace:*"
-    "@citrusworx/seltzer": "workspace:*"
-    "@citrusworx/webengine": "workspace:*"
-    "@types/node": "npm:^25.4.0"
-    "@types/pg": "npm:^8.15.2"
-    pg: "npm:^8.16.0"
-    tsx: "npm:^4.20.6"
-    typescript: "npm:~5.9.3"
-    vitest: "npm:^4.1.4"
-  languageName: unknown
-  linkType: soft
-
-"@citrusworx/blackwater-sound@workspace:apps/blackwatersound/front":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/blackwater-sound@workspace:apps/blackwatersound/front"
-  dependencies:
-    "@citrusworx/juiceui": "npm:^0.9.0"
-    "@citrusworx/sigjs": "npm:^1.0.0"
-    typescript: "npm:^5.9.3"
-    vite: "npm:^8.0.0"
-  languageName: unknown
-  linkType: soft
-
 "@citrusworx/dns@workspace:*, @citrusworx/dns@workspace:libraries/dns":
   version: 0.0.0-use.local
   resolution: "@citrusworx/dns@workspace:libraries/dns"
@@ -2260,11 +2232,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/juiceui@npm:^0.9.0, @citrusworx/juiceui@npm:^0.9.1, @citrusworx/juiceui@npm:^0.9.7, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
+"@citrusworx/juiceui@npm:^0.9.1, @citrusworx/juiceui@npm:^0.9.7, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
-    "@citrusworx/sigjs": "npm:^1.0.0"
+    "@citrusworx/sigjs": "npm:^1.1.2"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/gulp": "npm:^4.0.18"
@@ -2407,7 +2379,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/sigjs@npm:^1.0.0, @citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
+"@citrusworx/sigjs@npm:^1.0.0, @citrusworx/sigjs@npm:^1.1.2, @citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
   version: 0.0.0-use.local
   resolution: "@citrusworx/sigjs@workspace:libraries/sig"
   dependencies:
