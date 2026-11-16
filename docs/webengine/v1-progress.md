@@ -34,6 +34,14 @@ Living %-based scorecard toward a honest WebEngine v1. Recompute from [library-r
 
 `14x0.95 + 14x1.00 + 14x1.00 + 16x0.84 + 10x0.85 + 8x0.45 + 24x0.52 = 79.32`
 
+## 2026-11-16 pass
+
+- **Tip:** local `master` (`dd0ddafd`), working tree clean before the lockfile fix below.
+- **npm:** unchanged. `@citrusworx/juiceui@0.9.7` is `latest` (published 2026-11-03, `gitHead` `403cbdb9`); master `libraries/juice/package.json` is **0.9.7** and matches npm. Sig workspace **1.1.2** / npm `latest` **1.1.2** unchanged; Sig gates **8/8**.
+- **Lockfile:** `yarn install` resynced `yarn.lock`, which had gone stale after the client-app removal; the stale lockfile failed `yarn install --immutable` before the Juice verify step could run. This is why the Juice Package CI gate was not verifiable from a clean tree this pass.
+- **Gates:** Juice **7/7** ticked in [library-release-gates.md](./library-release-gates.md) after a green `yarn workspace @citrusworx/juiceui verify` (build + 839 tests / 48 files) and the docs / package-entrypoint / maturity-matrix checks the boxes rest on. Sig **8/8** and Seltzer **8/8** unchanged; Nectarine **7/8** (CI box still open) and Grapevine **0/7** unchanged. The library-side blocker for the kernel-scaffolding gate (Juice + Sig + Seltzer + Nectarine) is cleared; the remaining blocker is the kernel lifecycle stubs themselves.
+- **Not done here:** release label still says Beta until forms + nav feel settled; the 1.0 attribute-contract freeze is recorded in [juice-public-contract.md](../juice/juice-public-contract.md) (PR #334) but the package is not version-bumped or published.
+
 ## What moved since the 2026-10-20 pass (`dc904633`)
 
 - **Tip:** `dc904633` -> `4edae24a` (2026-10-21 09:14 PT), PRs through #273: Seltzer release gates 1-8 closed, outbound client hardened, no-arg `app.handler()` and `app.adapter(config)` (unreleased 0.10.0); Sig keyed `bindList`, v1 API cleanup, 0.7.0 version commit, Juice peer-range fix; Juice icon-button runtime (twenty-sixth) and CSS-only skeleton chrome (both unpublished vs 0.9.2), 0.9.2 docs refresh; WebEngine `generateRoutes` host-recipe test.
@@ -70,7 +78,7 @@ Living %-based scorecard toward a honest WebEngine v1. Recompute from [library-r
 
 ## Biggest blocker left to v1
 
-Juice's release gates are **0/7**. Seltzer (8/8 at published **0.10.0**) and Sig are fully ticked and Nectarine is one box away, so Juice is now the main library holding the kernel-scaffolding gate (Juice + Sig + Seltzer + Nectarine) closed. On Seltzer: `handleRequest` stays private, no-arg `app.handler()` shipped in 0.10.0, `app.adapter(config)` is the options stash, and `handler(config)` is a deprecated alias -- that split is not a gate miss. Next steps: land a Juice 0.9.2 version commit (manifest, changelog, consumed changesets, juice-beta.md naming 0.9.2) so npm and master agree again; start checking Juice boxes against `yarn workspace @citrusworx/juiceui verify` without inventing greens; tick the Nectarine master-CI box (cite run 37223531237) and refresh its 0.4.0 gate prose; Sig workspace is **1.0.0** (the frozen API, no change from npm **0.7.2**) and npm `latest` is **1.0.0** (published 2026-10-29); no Sig changeset was added; fix the kernel README drift. Kernel lifecycle stubs (24 weight at ~52%) remain the largest single score gap once the gate opens.
+Juice's release gates are now **7/7** (ticked 2026-11-16 after a green `yarn workspace @citrusworx/juiceui verify` and the docs / package-entrypoint / maturity-matrix checks the boxes rest on). Seltzer (8/8 at published **0.10.0**) and Sig are fully ticked and Nectarine is one box away, so the library-side blocker for the kernel-scaffolding gate (Juice + Sig + Seltzer + Nectarine) is cleared; the remaining blocker is the kernel lifecycle stubs themselves. On Seltzer: `handleRequest` stays private, no-arg `app.handler()` shipped in 0.10.0, `app.adapter(config)` is the options stash, and `handler(config)` is a deprecated alias -- that split is not a gate miss. Next steps: land the pending Juice changesets through version/publish prep if the Beta line moves; tick the Nectarine master-CI box (cite run 37223531237) and refresh its 0.4.0 gate prose; fix the kernel README drift. Kernel lifecycle stubs (24 weight at ~52%) remain the largest single score gap before kernel scaffolding.
 
 ## Method notes
 
