@@ -44,7 +44,7 @@ A boolean `[disclosure]` attribute is valid. There is no HTML global `disclosure
 | `startDisclosureRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopDisclosureRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime. Each click or key is claimed once.
+A custom-root controller can run beside the document runtime. The click or key is claimed once, so the panel toggles once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

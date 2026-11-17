@@ -2,7 +2,7 @@
 
 Juice cards are structural components. They define spacing, sizing, content flow, and internal regions while leaving color, typography, icons, and theme styling to the consumer through regular Juice attributes.
 
-Cards follow the parent/child/sibling naming rule from [Juice Naming](./juice-naming.md). Children use bare slot names; variants and scalars live on the card itself.
+`card.scss` and `plan.scss` select compound names (`card-header`, `plan-price`). Bare slot names such as `header` and `price` are not selectors. See [Juice Naming](./juice-naming.md).
 
 ## Design intent
 
@@ -64,104 +64,72 @@ Use for cards that end in a clear action area and need a little more space aroun
 
 Use for pricing tiers. Pairs naturally with a `plan` child region.
 
-### `card="large"`, `card="muted"`, `card="hero"`
-
-Sizing and surface-character variants. These replace the legacy `card-large`, `card-muted`, `hero-panel` shorthands.
+`card="large"`, `card="muted"`, and `card="hero"` are not selectors in `card.scss`. A hero band is `[hero]`. Width steps are `card-size`. `[card-large]` and `[card-small]` are legacy width shorthands in that file.
 
 Surface-depth **utility** recipes (`variant="monochromatic|glass|tinted"`) are a different attribute — they compose overlay / blur / border / shadow and are not `card="…"` values. See [Surfaces](./juice-surfaces.md). Structural `card` recipes beyond the list above stay later.
 
 ## Card sizing
 
-Sizing lives on the card itself with the bare `size` attribute.
+Sizing is `card-size`. `card.scss` says `[card-large]` and `[card-small]` are legacy shorthands and to prefer `card-size`.
 
 ```html
-<div card size="sm"></div>
-<div card size="md"></div>
-<div card size="lg"></div>
+<div card card-size="sm"></div>
+<div card card-size="md"></div>
+<div card card-size="lg"></div>
 ```
 
-Supported values:
-
-- `size="sm"`
-- `size="md"`
-- `size="lg"`
-
-Selector scoping happens through attribute combination, e.g. `[card][size="md"]`.
+Supported values: `sm`, `md`, `lg`.
 
 ## Card padding
 
+Card padding steps are `card-padding`. Numeric `padding="2rem"` is the spacing utility in [Spacing](./juice-spacing.md), not a `card-padding` step.
+
 ```html
-<div card padding="sm"></div>
-<div card padding="md"></div>
-<div card padding="lg"></div>
+<div card card-padding="sm"></div>
+<div card card-padding="md"></div>
+<div card card-padding="lg"></div>
 ```
 
-Supported values:
-
-- `padding="sm"`
-- `padding="md"`
-- `padding="lg"`
-
-`padding` also accepts numeric values like `padding="2rem"` (see [Spacing](./juice-spacing.md)).
+Supported values: `sm`, `md`, `lg`.
 
 ## Card flow
 
-Cards can explicitly change their internal flow with the bare `flow` attribute.
-
 ```html
-<div card flow="vertical"></div>
-<div card flow="horizontal"></div>
+<div card card-flow="vertical"></div>
+<div card card-flow="horizontal"></div>
 ```
 
-Supported values:
-
-- `flow="vertical"`
-- `flow="horizontal"`
+Supported values: `vertical`, `horizontal`.
 
 ## Card regions
 
-Region children use bare slot names from the universal vocabulary. Their meaning comes from the parent `card`.
+`card.scss` selects compound region names.
 
-### `header`
+- `card-header` — top section. `[card-header][row]` centers a row
+- `card-body` — main content
+- `card-actions` — action row. `[card-actions][center]` and `[card-actions][right]` set justification
+- `card-meta` — supporting row
+- `card-media` — media region
+- `card-divider` — 1px divider
 
-Top section for title, intro, toggle rows, or leading metadata.
-
-### `body`
-
-Main content region. Text, lists, or core information.
-
-### `action`
-
-Action row for buttons, links, and CTA controls.
-
-### `meta`
-
-Small supporting metadata row for pills, labels, or short supporting facts.
-
-### `media`
-
-Media region for icons, illustrations, or images.
-
-### `divider`
-
-Simple visual divider inside a card.
+Bare `header`, `body`, and `action` are not selectors.
 
 ## Example
 
 ```html
-<div card="cta" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div header row space="between" centered>
+<div card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div card-header row space="between" centered>
     <h3 font="korolev-rounded-bold" fontSize="xl">Simple Mode</h3>
     <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
   </div>
 
-  <div body stack gap="1rem">
+  <div card-body stack gap="1rem">
     <p font="korolev-rounded">
       Managed hosting and governance for teams that want clarity without losing control.
     </p>
   </div>
 
-  <div action center>
+  <div card-actions center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Click Me</button>
   </div>
 </div>
@@ -173,48 +141,34 @@ Simple visual divider inside a card.
 <div card="pricing" featured>
   <span badge="ribbon">Most Popular</span>
   <div plan>
-    <div header>
-      <div name>Pro</div>
-      <div price>
-        <span currency>$</span>
-        <span amount>20</span>
-        <span period>/month</span>
+    <div plan-header>
+      <h3>Pro</h3>
+      <div plan-price>
+        <span plan-currency>$</span>
+        <span plan-amount>20</span>
+        <span plan-period>/month</span>
       </div>
-      <p description>For professional WordPress sites</p>
+      <p plan-description>For professional WordPress sites</p>
     </div>
 
-    <ul features>
+    <ul plan-features>
       <li>10 WordPress sites</li>
       <li>1TB bandwidth</li>
       <li>Priority support</li>
     </ul>
 
-    <div action>
+    <div card-actions>
       <button full type="button">Start Free Trial</button>
     </div>
   </div>
 </div>
 ```
 
-## Legacy shorthands
+`[card="pricing"][featured]` scales the card. `plan.scss` selects `plan-header`, `plan-price`, `plan-currency`, `plan-amount`, `plan-period`, `plan-description`, and `plan-features`. Bare `name`, `price`, `currency`, `amount`, `period`, `description`, and `features` are not selectors.
 
-Previous versions of Juice used BEM-style compound names. These are deprecated; the canonical forms above should be used in all new code.
+## Names that are not selectors
 
-| Legacy | Canonical |
-| --- | --- |
-| `card-header` | `header` |
-| `card-body` | `body` |
-| `card-actions` | `action` |
-| `card-meta` | `meta` |
-| `card-media` | `media` |
-| `card-divider` | `divider` |
-| `card-size="X"` | `size="X"` |
-| `card-padding="X"` | `padding="X"` |
-| `card-flow="X"` | `flow="X"` |
-| `card-large` | `card="large"` |
-| `card-small` | `card="small"` |
-| `card-compact` | `card="compact"` |
-| `card-muted` | `card="muted"` |
+`card.scss` does not select `card="large"`, `card="muted"`, `card="hero"`, `size`, `flow`, `header`, `body`, or `action`. `[card-large]` and `[card-small]` are the legacy width shorthands in that file.
 
 ## Recommended usage
 

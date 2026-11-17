@@ -41,7 +41,7 @@ A boolean `[radio]` is valid. There is no HTML global `radio` attribute. `[radio
 | `startRadioRuntime` | Starts the document controller. A second call syncs. Returns null without a document. |
 | `stopRadioRuntime` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root `createRadio()` can run beside the document runtime, and each click, change, or key event is claimed once.
+A custom-root `createRadio()` can run beside the document runtime. The click, change, or key is claimed once, so the selection changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

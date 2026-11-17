@@ -54,13 +54,13 @@ Three identical loud hooks mean you have a fill, not a role. `article card` for 
 
 ## Lesson 05
 
-`nav` children: brand wrapper, `ul row` (layout), action `row` (layout), `btn` (structure + theme token). `card` children: `media` / `body` / `action` are **slots**. `form` children: `field` is a **scoped structural** node; the input is a control; `font` on a label is a token bearer.
+`nav` children: brand wrapper, `ul row` (layout), action `row` (layout), `btn` (structure + theme token). `card` children: `card-media`, `card-body`, and `card-actions` are the selectors. `form` children: `field` is a **scoped structural** node; the input is a control; `font` on a label is a token bearer.
 
-`card-header` is a BEM leftover. Rename to `header` under `[card]`. `field` outside `form` is undefined per Rule #001; the filename `001-Field Scrope.md` is a typo for scope. A strip that grows a second IA is a second nav, not an announcement.
+`card-header` is the selector in `card.scss`. Bare `header` is not. `field` outside `form` is undefined per Rule #001; the filename `001-Field Scrope.md` is a typo for scope. A strip that grows a second IA is a second nav, not an announcement.
 
 ## Lesson 06
 
-Heading face: the theme config (`typography.heading`) or the library theme SCSS/YAML — not a random `h1 { font-family }` in the app, and not a new Juice attribute. Feature card slot arrangement: Juice card markup / [Cards](../juice-cards.md) — `header`, `body`, `action` stay Juice.
+Heading face: the theme config (`typography.heading`) or the library theme SCSS/YAML — not a random `h1 { font-family }` in the app, and not a new Juice attribute. Feature card regions: [Cards](../juice-cards.md) — `card-header`, `card-body`, and `card-actions`.
 
 After a swap to Tide, theme-driven surfaces and text should change. An explicit `bgColor="white-100"` will not, because you authored a token, not a role. That leftover is the usual fight between Lesson 2 teaching tokens and Lesson 6 teaching identity.
 

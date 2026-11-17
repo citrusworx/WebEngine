@@ -50,7 +50,7 @@ A page that sets `theme` and never imports a theme stylesheet has structure and 
 
 ## Themes
 
-Themes are Beta. Set `theme="<id>"` on the root and import that id.
+Themes are Emerging. Set `theme="<id>"` on the root and import that id.
 
 Core:
 
@@ -84,7 +84,7 @@ The top-level JS entry is small. Thirty-two runtimes stay Emerging.
 
 Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second and shipped in 0.9.6.
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging. The CDN pin below is the published 0.9.7 tarball and includes that stack.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging. The CDN pin below is the published 1.0.0 tarball and includes that stack.
 
 The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
@@ -197,7 +197,7 @@ Icon button, avatar, table, pressable, touchable row, keyboard avoider, and shee
 
 ### `juice:change` and `getState`
 
-Interactive runtimes dispatch a bubbling `juice:change` from the widget host when observable state changes. `detail` is `{ runtime, state }`. `getState()` reads that shape.
+Interactive runtimes dispatch a bubbling `juice:change` from the widget host when observable state changes. `detail` is `{ runtime, state }`. `getState()` reads that shape. A second controller beside the auto-started one dispatches a second `juice:change` for the same change. The click or key is still claimed once. See [Automatic behavior](../../docs/juice/juice-runtime-behavior.md#automatic-behavior).
 
 Select, input, and textarea publish through native `input` and `change`. They still expose `getState()`.
 
@@ -210,7 +210,7 @@ npm `@citrusworx/sigjs` **1.0.0** and **0.7.2** `bind` names twenty-eight runtim
 - `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 - Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet shipped in 0.9.6. Binding sheet on **0.9.5** throws.
 
-Juice works without Sig. The optional adapter is `@citrusworx/sigjs/juice` only.
+Juice works without Sig. The optional adapter is `@citrusworx/sigjs/juice` only. Published npm `@citrusworx/sigjs@1.1.2` declares an optional peer `@citrusworx/juiceui` `>=0.9.1 <1`. The workspace peer is `>=0.9.1 <2`.
 
 See [`juice:change`](../../docs/juice/juice-runtime-behavior.md#juicechange) and [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 
@@ -366,7 +366,7 @@ Built-in breakpoints, `row` collapse, and scaled spacing are documented in [Resp
 
 ## Surfaces
 
-Beta-stable: `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, `blur="sm|md"`, `shadowTone="cool|warm"`, `overlay="frost|tint"`, and `variant="monochromatic|glass|tinted"`. Themes bind `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles.
+Frozen attribute names: `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, `blur="sm|md"`, `shadowTone="cool|warm"`, `overlay="frost|tint"`, and `variant="monochromatic|glass|tinted"`. The maturity matrix does not list surfaces as a separate Stable row. Themes bind `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles.
 
 Variant recipes compose those same roles. Standalone blur uses fixed `6px` / `16px` lengths.
 
@@ -374,7 +374,7 @@ See [Surfaces](../../docs/juice/juice-surfaces.md).
 
 ## Motion
 
-Motion is Beta. Use the `motion` attribute for animations (for example `motion="fade.in"`, `motion="spin::fast"`). See [Animations](../../docs/juice/juice-animations.md).
+Motion is Emerging. The `[motion]` catalog and `data-motion-state` are Frozen. The helpers stay Emerging. Use the `motion` attribute for animations (for example `motion="fade.in"`, `motion="spin::fast"`). See [Animations](../../docs/juice/juice-animations.md).
 
 ## Package surface
 
@@ -410,15 +410,15 @@ If you are hosting Juice assets yourself, the main built files are:
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
 
-There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.9.7`):
+There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@1.0.0`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/themes/kiwipress.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/themes/kiwipress.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/index.js"></script>
 ```
 
-The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.7/`.
+The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@1.0.0/`.
 
 ### What the build contains
 

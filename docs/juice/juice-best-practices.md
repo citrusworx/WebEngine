@@ -100,16 +100,16 @@ Good:
 
 ```html
 <div card="cta" bgColor="white-100">
-  <div header row space="between" centered>
+  <div card-header row space="between" centered>
     <h3 font="korolev-rounded-bold">Simple Mode</h3>
     <i icon="toggle-on" lib="solid" iconSize="md" iconcolor="red-800"></i>
   </div>
 
-  <div body stack gap="1rem">
+  <div card-body stack gap="1rem">
     <p font="korolev-rounded">Structured content.</p>
   </div>
 
-  <div action center>
+  <div card-actions center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
   </div>
 </div>

@@ -1,8 +1,8 @@
-# Juice Beta
+# Juice 1.0
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.9.7` is the public Beta cut on npm (published 2026-11-03, `gitHead` `403cbdb9`). The shared overlay stack shipped in 0.9.7. Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress.
+`@citrusworx/juiceui@1.0.0` is the published npm release (published 2026-11-17, `gitHead` `bd5b25f8`). Workspace `libraries/juice/package.json` is still **0.9.7**. This page records what that release includes. It does not promote an area. Emerging stays Emerging. Stable rows on the [maturity matrix](./juice-maturity-matrix.md) stay the rows that were already Stable. The Beta line is the history that led here: the styling system, theme contract, and motion catalog were documented and gated before this publish. The shared overlay stack shipped in 0.9.7. Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress.
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. `juice:change` and `getState()` shipped in 0.9.3.
 
@@ -38,11 +38,11 @@ The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.
 
 It is not one of those thirty-two runtimes. See [Badge](./juice-badge.md).
 
-Safe area (`[safe-area]`) is CSS-only inset chrome shipped in 0.9.3, and is not one of those thirty-two runtimes. See [Safe Area](./juice-safe-area.md). 0.9.7 is the current public cut (published 2026-11-03, `gitHead` `403cbdb9`).
+Safe area (`[safe-area]`) is CSS-only inset chrome shipped in 0.9.3, and is not one of those thirty-two runtimes. See [Safe Area](./juice-safe-area.md). 1.0.0 is the current public cut (published 2026-11-17, `gitHead` `bd5b25f8`). Workspace `libraries/juice/package.json` is still **0.9.7**.
 
 See [juice-roadmap.md](./juice-roadmap.md).
 
-## What Beta includes
+## What 1.0.0 includes
 
 - Attribute-driven layout, spacing, color, typography, icons, gradients, and components (see [maturity matrix](./juice-maturity-matrix.md)).
 - **Modular themes:** `aquaflux`, `kiwipress`, `citrusmint`, `tide`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, and `retro-violet-parlor` ship as separate CSS entrypoints (`@citrusworx/juiceui/styles/themes/<id>`). The ten retro themes shipped in the 0.9.1 npm cut.
@@ -92,7 +92,7 @@ See [juice-roadmap.md](./juice-roadmap.md).
 - [juice-field-runtime.md](./juice-field-runtime.md), and [juice-icon-button-runtime.md](./juice-icon-button-runtime.md), and [juice-avatar.md](./juice-avatar.md)
 - and [juice-table.md](./juice-table.md), and [juice-pressable.md](./juice-pressable.md), and [juice-touchable-row.md](./juice-touchable-row.md), and [juice-keyboard-avoider-runtime.md](./juice-keyboard-avoider-runtime.md), and [juice-sheet-runtime.md](./juice-sheet-runtime.md).
 
-## What Beta does not promise yet
+## What 1.0.0 does not promise
 
 - Full animation roadmap ([juice-animations-roadmap.md](./juice-animations-roadmap.md)).
 - Config-driven theme generation from `juice.config.yaml` (optional, draft).
@@ -106,7 +106,7 @@ See [juice-roadmap.md](./juice-roadmap.md).
 - Field is a wrapper around a control, distinct from input, textarea, select, and combobox. Icon button is a square icon-only control on button chrome, distinct from switch and from checkbox, and shipped in 0.9.3.
 - Avatar is an initials-or-photo mark (`[avatar]`), distinct from a badge and from `[skeleton="circle"]`, and shipped in 0.9.3.
 - There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, Sig Pagination, Sig Disclosure, Sig Spinner, Sig Select, Sig Input, Sig Textarea, or Sig Field, Sig IconButton, Sig Avatar, Sig Table, or Sig Pressable or Sig TouchableRow factory.
-- A broad component library is not the center of Beta.
+- A broad component library is not the center of 1.0.0.
 
 ## Publish gate
 
@@ -118,4 +118,4 @@ See [release-checklist.md](./release-checklist.md).
 
 ## Positioning
 
-> Juice Beta is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes.
+> Juice 1.0.0 is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes. Emerging areas stay Emerging.

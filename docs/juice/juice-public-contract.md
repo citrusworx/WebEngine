@@ -2,7 +2,7 @@
 
 Classification of the `@citrusworx/juiceui` public surface for 1.0. This page records what is **Frozen**, what is **Emerging**, and what is **not contract**. It does not change runtime, CSS, themes, or package exports.
 
-The audited surface is master `7f24f46f` and npm `@citrusworx/juiceui@0.9.7` (published 2026-11-03, `gitHead` `403cbdb9`). Those two match on the public surface. Behavior stays on the pages linked below. The machine check for required theme binds is `requiredJuiceBinds()` in `libraries/juice/src/juice.theme-contract.ts`, exercised by `juice.theme-contract.test.ts`. The Frozen surface guard is `libraries/juice/src/juice.public-contract.test.ts`.
+The published package checked for this page is npm `@citrusworx/juiceui@1.0.0` (published 2026-11-17, `gitHead` `bd5b25f8`). Its `package.json` matches `libraries/juice/package.json` except `version`, which is still `0.9.7` in the workspace. The earlier audit baseline was master `7f24f46f` and npm `@citrusworx/juiceui@0.9.7` (published 2026-11-03, `gitHead` `403cbdb9`). Behavior stays on the pages linked below. The machine check for required theme binds is `requiredJuiceBinds()` in `libraries/juice/src/juice.theme-contract.ts`, exercised by `juice.theme-contract.test.ts`. The Frozen surface guard is `libraries/juice/src/juice.public-contract.test.ts`.
 
 ## How to read the classes
 
@@ -40,7 +40,7 @@ All thirty-two stay Emerging. The host hook in the components table is a Frozen 
 | Checkbox | `[checkbox]` | [Checkbox](./juice-checkbox-runtime.md) |
 | Radio | `[radiogroup]` | [Radio](./juice-radio-runtime.md) |
 | Switch | `[switch]` | [Switch](./juice-switch-runtime.md) |
-| Slider | `[slider]` | [Slider](./juice-slider-runtime.md) |
+| Slider | `[slider]:not([slider="vertical"])` | [Slider](./juice-slider-runtime.md) |
 | Field | `[field]` | [Field](./juice-field-runtime.md) |
 | Icon button | `[icon-button]` | [Icon button](./juice-icon-button-runtime.md) |
 | Pressable | `[pressable]` | [Pressable](./juice-pressable.md) |
@@ -56,6 +56,8 @@ All thirty-two stay Emerging. The host hook in the components table is a Frozen 
 | Keyboard avoider | `[keyboard-avoider]` | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
 
 Navigation's contract is those four `type` values plus sidebar `hidden`. `[nav-brand]`, `[nav-links]`, and `[nav-actions]` are [not contract](#not-contract).
+
+Slider's host hook is the default `sliderSelector` in `libraries/juice/src/js/src/slider/slider-runtime.ts`: `[slider]:not([slider="vertical"])`. `slider="vertical"` is not enhanced.
 
 Choosing between similar components stays on [Runtime behavior](./juice-runtime-behavior.md#choosing-between-similar-components).
 
@@ -91,6 +93,8 @@ Skeleton, list, badge, and safe area are not JS exports.
 ### Frozen: `[motion]` catalog and `data-motion-state`
 
 The `[motion]` attribute catalog is Frozen: naming (`family`, `family.variant`, `family::speed`, `family:modifier`), the deprecated blink-only `animation` / `animate` aliases, and the P0 and P1 values. The catalog text is [Animations](./juice-animations.md#canonical-attribute-motion). Planned names in [the animations roadmap](./juice-animations-roadmap.md) are not part of that catalog.
+
+`bounce:in` and `bounce:out` also match in `libraries/juice/src/styles/animations/bounce.scss`, on the same rules as `bounce.in` / `bounce-in` and `bounce.out` / `bounce-out`. They are not in the Frozen P0/P1 list. `MOTION_VALUES_IN_SOURCE_NOT_IN_CONTRACT` in `juice.public-contract.test.ts` pins them as in source and not in the contract. They are [not contract](#not-contract).
 
 `data-motion-state` is Frozen. `runMotion` writes `entering`, `entered`, `exiting`, and `exited`, as [the helper section](./juice-animations.md#data-motion-state-and-the-helper-api) describes. Accordion and disclosure set the same attribute. Overlay enter and exit for modal, drawer, sheet, popover, and toast stay on that page.
 
@@ -312,6 +316,20 @@ These six are Emerging. They have no component page of their own. File comments 
 | `search-panel` | Centered search panel, input row, result list | `[search-panel]`, `[search-panel-header]`, `[search-input-group]`, `[search-results]`, `[search-result]` |
 | `workflow` | Three-column step row. The connector's `::after` is the character `→` | `[workflow]`, `[workflow-step]`, `[workflow-step-marker]`, `[workflow-connector]` |
 
+These additional selectors are in the same SCSS and in `@citrusworx/juiceui@1.0.0` `dist/index.css`. They are Emerging with that folder or component. They are not Frozen host hooks. `architecture-overview`, `dev-categories`, `dev-install`, and `dev-resources` are not selectors in that CSS or in this source.
+
+| Source | Emerging selectors |
+| --- | --- |
+| `how-it-works.scss` | `[arch-divider]`, `[arch-feature]`, `[arch-features]`, `[arch-hero-actions]`, `[arch-hero-header]`, `[arch-layer]`, `[arch-layer-label]`, `[arch-layer-wrap]`, `[arch-summary]`, `[arch-summary-item]`, `[check-mark]`, `[engineer-item]`, `[engineers-list]`, `[final-cta-inner]`, `[philosophy-badge]`, `[philosophy-card]`, `[philosophy-card][featured]`, `[step-arrow]`, `[step-row]`, `[tier-arrow]`, `[tier-cell]`, `[tier-label]`, `[two-way]`, `[engineer-item][featured]` |
+| `developers.scss` | `[category-cta]`, `[category-icon]`, `[code-block]`, `[dev-quickstart]`, `[install-footnote]`, `[install-icon]`, `[quickstart-body]` |
+| `login.scss` | `[forgot-link]`, `[login-field-label]`, `[login-brand] [logo-suffix]` |
+| `dashboard.scss` | `[sidebar-footer] [doc-link]`, `[sidebar-brand] [logo-suffix]` |
+| `hero.scss` | `[hero]`, `[hero-actions]`, `[hero-eyebrow]`, `[hero-meta]`, `[hero-subtitle]`, `[hero-title]` |
+| `cta.scss` | `[cta]`, `[cta-title]`, `[cta-subtitle]`, `[cta-actions]`, `[cta-note]` |
+| `plan.scss` | `[plan]`, `[plan-header]`, `[plan-price]`, `[plan-currency]`, `[plan-amount]`, `[plan-period]`, `[plan-description]`, `[plan-features]` |
+| `stat.scss` | `[stats]`, `[stat]`, `[stat-value]`, `[stat-label]` |
+| `card.scss` | `[card]`, `[card="compact"]`, `[card="feature"]`, `[card="interactive"]`, `[card="split"]`, `[card="cta"]`, `[card="pricing"]`, `[card="pricing"][featured]`, `[card-size="sm"]`, `[card-size="md"]`, `[card-size="lg"]`, `[card-padding="sm"]`, `[card-padding="md"]`, `[card-padding="lg"]`, `[card-flow="horizontal"]`, `[card-flow="vertical"]`, `[card-large]`, `[card-small]`, `[card-header]`, `[card-header][row]`, `[card-body]`, `[card-media]`, `[card-actions]`, `[card-actions][center]`, `[card-actions][right]`, `[card-meta]`, `[card-divider]`. `[card-large]` and `[card-small]` are the legacy sizing shorthands in that file. `[card-size]` is the sizing hook. `card="large"`, `card="muted"`, `card="hero"`, and bare `header`, `body`, `action`, `size`, and `flow` are not selectors. |
+
 ## Behavior that stays Emerging
 
 [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape) is Emerging. That is the shared overlay stack shipped in 0.9.7: last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox; dismiss reason `'cascade'`; tooltip and toast off that stack. The order on that page is the description. This classification does not copy it.
@@ -342,15 +360,21 @@ A full RTL audit is Post-v1.
 
 Safe-area insets are a different fact. `env(safe-area-inset-*)` is a physical viewport inset, already stated on [Safe area](./juice-safe-area.md). That is not an RTL contract.
 
+### `bounce:in` and `bounce:out`
+
+`[motion="bounce:in"]` and `[motion="bounce:out"]` ship in `bounce.scss` beside the Frozen spellings `bounce.in` / `bounce-in` and `bounce.out` / `bounce-out`. The colon spellings are not Frozen and not Emerging. They are not a promise.
+
 ### Unreachable `.d.ts` files
 
-These files are in the package `dist/` tree and are not keys in `package.json` `exports`:
+These paths are not part of the public contract. No `package.json` `exports` key points at them, and `dist/index.d.ts` does not re-export them:
 
 - `dist/js/juice.d.ts`
 - `dist/components/index.d.ts`
 - `dist/components/form/cc/cc.d.ts`
 
-They will stop shipping before 1.0, in a separate packaging change. This page does not change packaging. They are not part of the public contract.
+Removing them is a separate packaging change. This page does not say whether a build emits the files.
+
+`dist/components/accordion/accordion.d.ts` is a different file. `dist/index.d.ts` re-exports `Accordion` from `./components/accordion/accordion.js`, so that declaration is part of the Emerging `Accordion` factory.
 
 `dist/js/src/shared/*.d.ts` can be present because the runtime build emits them. No `exports` subpath reaches them. They stay internal.
 
@@ -367,10 +391,11 @@ Every item from the 2026-11-12 contract decisions, and the class this page gives
 | `MotionCancelToken`, `MotionResult`, `MotionState`, `MotionPlayer`, `MotionDirection` | Emerging |
 | `tokens` JS export | Emerging |
 | `[motion]` catalog and `data-motion-state` | Frozen |
+| `bounce:in`, `bounce:out` | Not contract. In `bounce.scss`, not in the Frozen P0/P1 list |
 | `--juice-color-page`, `--juice-color-surface`, `--juice-color-text`, `--juice-color-text-muted`, `--juice-color-heading`, `--juice-color-accent`, `--juice-color-on-accent`, `--juice-color-border`, `--juice-color-highlight` | Emerging |
 | `--juice-motion-duration-instant`, `--juice-motion-duration-fast`, `--juice-motion-duration-base`, `--juice-motion-duration-slow`, `--juice-motion-ease-standard`, `--juice-motion-ease-enter`, `--juice-motion-ease-exit`, `--juice-motion-ease-linear`, `--juice-motion-ease-in-out`, `--juice-motion-ease-steps` | Emerging |
 | `./themes/*.css` and `./styles/themes/*` | Frozen |
-| `dist/js/juice.d.ts`, `dist/components/index.d.ts`, `dist/components/form/cc/cc.d.ts` | Not contract. Packaging change is separate |
+| `dist/js/juice.d.ts`, `dist/components/index.d.ts`, `dist/components/form/cc/cc.d.ts` | Not contract. No `exports` key and no re-export from `dist/index.d.ts`. Packaging change is separate. This page does not say whether a build emits them |
 | Identity-prefix fallback `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` | Frozen |
 | Button `theme="citrusmint-300"` | Emerging. Rename is Post-v1 |
 | Portal | Not a current contract. 1.0 work is planned separately. No API is described here |

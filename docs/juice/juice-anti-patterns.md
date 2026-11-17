@@ -85,9 +85,11 @@ If a pattern should be native to Juice, do not keep it in a half-class, half-att
 
 Icon sizing is now first-class (`iconSize`, with `width` / `height` as the custom-size escape hatch). Do not reintroduce class-based icon size helpers.
 
-## 8. BEM-Style Compound Child Names
+## 8. Bare child names the package does not select
 
-Bad:
+`plan.scss` selects `plan-header`, `plan-price`, `plan-amount`, and `plan-features`. `card.scss` selects `card-header`, `card-body`, and `card-actions`. Bare `header`, `price`, and `amount` are not selectors.
+
+Selectors in 1.0.0:
 
 ```html
 <div card="pricing">
@@ -102,14 +104,7 @@ Bad:
 </div>
 ```
 
-Why it is bad:
-
-* the parent attribute already establishes scope
-* CSS selectors like `[card="pricing"] [plan] [header]` handle context natively
-* compound names like `plan-header` and `plan-price` repeat the scope the selector already gives you
-* the universal slot vocabulary (`header`, `body`, `action`, `name`, `price`) becomes unusable across components
-
-Better:
+Not selectors:
 
 ```html
 <div card="pricing">
@@ -124,7 +119,7 @@ Better:
 </div>
 ```
 
-See [Naming](./juice-naming.md) for the full rule.
+See [Naming](./juice-naming.md).
 
 ## 9. Putting Brand Colors or Fonts in Juice
 
@@ -143,10 +138,10 @@ Bad:
 Better:
 
 ```html
-<section card="hero" theme="aquaflux">...</section>
+<section hero theme="aquaflux">...</section>
 ```
 
-Themes can add new *values* to existing structural attributes (`card="aqua-hero"` if a theme-specific hero is needed). Themes should not introduce parallel top-level attributes that replace `card`, `btn`, or other Juice structural primitives.
+`card="hero"` and `card="aqua-hero"` are not selectors in `card.scss`. `[hero]` is the hero hook in `hero.scss`. Themes should not introduce a parallel attribute that replaces `[hero]` or `[card]`.
 
 ## Summary
 
@@ -156,7 +151,7 @@ The most common Juice failures come from:
 * over-constrained widths
 * incorrect primitive choice
 * over-painted surfaces
-* BEM-style compound names instead of parent-scoped bare slots
+* bare slot names that `card.scss` and `plan.scss` do not select
 * brand expression leaking into Juice instead of staying in the theme
 
 Most of the time, the fix is to simplify the structure and trust the system more.

@@ -60,7 +60,7 @@ Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surf
 | `startPaginationRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopPaginationRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
+A custom-root controller can run beside the document runtime. The click or key is claimed once, so the page changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 
