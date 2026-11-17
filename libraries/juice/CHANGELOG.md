@@ -1,5 +1,16 @@
 # @citrusworx/juiceui
 
+## 1.0.0
+
+Published to npm **2026-11-17** at 4:13 PM CT (`gitHead` `bd5b25f8ed8c3210dcf41ea5448e025e38354668`).
+
+### Patch Changes
+
+- f51262b6: Align Juice docs with the published `@citrusworx/juiceui@0.9.7` npm cut (published 2026-11-03, `gitHead` `403cbdb9`). The shared overlay stack (last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox; `'cascade'` close; cascaded dialogs skip focus restore; a non-modal sheet suspends the modal trap; tooltip and toast stay off the stack) shipped in 0.9.7. npm latest is **0.9.7**. npm and master `@citrusworx/sigjs` **1.1.2** `bind()` names all thirty-two runtimes, including sheet. The 801b616 changelog sentence that said `bind()` does not name sheet stays as history; a correction sits under the 0.9.7 entry. All thirty-two Emerging runtimes stay Emerging. (#332)
+- f9218262: Document the 1.0 public contract: Frozen names, Emerging surfaces, and what is not contract. Motion helpers and their five types are public Emerging. The `[motion]` catalog and `data-motion-state` are Frozen. Navigation's contract is `nav[type="bar|links|mobile|sidebar"]` plus sidebar `hidden`. (#333)
+- e550e070: Depend on `@citrusworx/sigjs` `^1.1.2`. The range in the published 0.9.7 manifest was `^1.0.0`.
+- 1f4f26f1: Guard the frozen 1.0 public contract. The test pins the built entry's value exports, the package exports map, required `--juice-*` binds, the identity-prefix chain, host hooks, the `[motion]` catalog, and `juice:change`. (#334)
+
 ## 0.9.7
 
 ### Patch Changes

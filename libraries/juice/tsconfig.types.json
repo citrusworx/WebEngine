@@ -11,9 +11,6 @@
   },
   "include": [
     "src/index.ts",
-    "src/components/**/*.ts",
-    "src/components/**/*.tsx",
-    "src/js/juice.ts",
     "src/js/src/nav/navigation.ts",
     "src/js/src/accordion/accordion-runtime.ts",
     "src/js/src/tabs/tabs-runtime.ts",
@@ -63,6 +60,9 @@
     "node_modules",
     "src/native/**/*",
     "src/**/*.test.ts",
-    "src/**/*.test.tsx"
+    "src/**/*.test.tsx",
+    "src/js/juice.ts",
+    "src/components/index.ts",
+    "src/components/form/cc/cc.tsx"
   ]
 }
