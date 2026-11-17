@@ -83,32 +83,32 @@ Use this when you want to compare two operating modes, product tiers, or team co
   </div>
 
   <div row gap="2rem" space="between">
-    <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div header row space="between" centered>
+    <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div card-header row space="between" centered>
         <h3 font="korolev-rounded-bold" fontSize="lg">Simple Mode</h3>
         <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
       </div>
 
-      <div body stack gap="1rem">
+      <div card-body stack gap="1rem">
         <p font="korolev-rounded">Stable defaults for teams that want fast clarity.</p>
       </div>
 
-      <div action center>
+      <div card-actions center>
         <button btn="outline" theme="citrusmint-300" scale="lg">Explore</button>
       </div>
     </div>
 
-    <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div header row space="between" centered>
+    <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div card-header row space="between" centered>
         <h3 font="korolev-rounded-bold" fontSize="lg">Advanced Mode</h3>
         <i icon="toggle-off" width="2rem" height="2rem" iconcolor="blue-800"></i>
       </div>
 
-      <div body stack gap="1rem">
+      <div card-body stack gap="1rem">
         <p font="korolev-rounded">More control for teams that need deeper configuration.</p>
       </div>
 
-      <div action center>
+      <div card-actions center>
         <button btn="outline" theme="citrusmint-300" scale="lg">Compare</button>
       </div>
     </div>
@@ -123,40 +123,40 @@ Use this for benefits, services, or capability highlights.
 ```html
 <section grid="2x2" gap="2" padding="2rem">
   <div card="feature" bgColor="white-100" rounded="md">
-    <div media center>
+    <div card-media center>
       <i icon="shield-halved" width="2rem" height="2rem" iconcolor="green-700"></i>
     </div>
-    <div body center>
+    <div card-body center>
       <h3 font="korolev-rounded-bold">Governed Access</h3>
       <p font="korolev-rounded">Keep teams aligned with clear boundaries and control.</p>
     </div>
   </div>
 
   <div card="feature" bgColor="white-100" rounded="md">
-    <div media center>
+    <div card-media center>
       <i icon="cloud" width="2rem" height="2rem" iconcolor="blue-700"></i>
     </div>
-    <div body center>
+    <div card-body center>
       <h3 font="korolev-rounded-bold">Managed Infrastructure</h3>
       <p font="korolev-rounded">Operate on a platform that stays maintained for you.</p>
     </div>
   </div>
 
   <div card="feature" bgColor="white-100" rounded="md">
-    <div media center>
+    <div card-media center>
       <i icon="chart-line" width="2rem" height="2rem" iconcolor="orange-700"></i>
     </div>
-    <div body center>
+    <div card-body center>
       <h3 font="korolev-rounded-bold">Operational Visibility</h3>
       <p font="korolev-rounded">See the signals that matter without losing focus.</p>
     </div>
   </div>
 
   <div card="feature" bgColor="white-100" rounded="md">
-    <div media center>
+    <div card-media center>
       <i icon="rocket" width="2rem" height="2rem" iconcolor="red-700"></i>
     </div>
-    <div body center>
+    <div card-body center>
       <h3 font="korolev-rounded-bold">Fast Deployment</h3>
       <p font="korolev-rounded">Go from intent to launch without unnecessary friction.</p>
     </div>
@@ -172,59 +172,59 @@ Use this for pricing pages with multiple tiers. The `featured` flag marks the re
 <section grid="3x1" gap="comfortable" padding="2rem">
   <div card="pricing">
     <div plan>
-      <div header>
-        <div name>Hobby</div>
-        <div price>
-          <span currency>$</span>
-          <span amount>0</span>
-          <span period>/month</span>
+      <div plan-header>
+        <h3>Hobby</h3>
+        <div plan-price>
+          <span plan-currency>$</span>
+          <span plan-amount>0</span>
+          <span plan-period>/month</span>
         </div>
-        <p description>Perfect for personal sites</p>
+        <p plan-description>Perfect for personal sites</p>
       </div>
-      <ul features>
+      <ul plan-features>
         <li>1 site</li>
         <li>Community support</li>
       </ul>
-      <div action><button btn="outline" full type="button">Start for Free</button></div>
+      <div card-actions><button btn="outline" full type="button">Start for Free</button></div>
     </div>
   </div>
 
   <div card="pricing" featured>
     <span badge="ribbon">Most Popular</span>
     <div plan>
-      <div header>
-        <div name>Pro</div>
-        <div price>
-          <span currency>$</span>
-          <span amount>20</span>
-          <span period>/month</span>
+      <div plan-header>
+        <h3>Pro</h3>
+        <div plan-price>
+          <span plan-currency>$</span>
+          <span plan-amount>20</span>
+          <span plan-period>/month</span>
         </div>
-        <p description>For professional teams</p>
+        <p plan-description>For professional teams</p>
       </div>
-      <ul features>
+      <ul plan-features>
         <li>10 sites</li>
         <li>Priority support</li>
       </ul>
-      <div action><button full type="button">Start Free Trial</button></div>
+      <div card-actions><button full type="button">Start Free Trial</button></div>
     </div>
   </div>
 
   <div card="pricing">
     <div plan>
-      <div header>
-        <div name>Enterprise</div>
-        <div price>
-          <span currency>$</span>
-          <span amount>200</span>
-          <span period>/month</span>
+      <div plan-header>
+        <h3>Enterprise</h3>
+        <div plan-price>
+          <span plan-currency>$</span>
+          <span plan-amount>200</span>
+          <span plan-period>/month</span>
         </div>
-        <p description>For high-traffic applications</p>
+        <p plan-description>For high-traffic applications</p>
       </div>
-      <ul features>
+      <ul plan-features>
         <li>Unlimited sites</li>
         <li>Dedicated team</li>
       </ul>
-      <div action><button btn="outline" full type="button">Contact Sales</button></div>
+      <div card-actions><button btn="outline" full type="button">Contact Sales</button></div>
     </div>
   </div>
 </section>
@@ -233,8 +233,8 @@ Use this for pricing pages with multiple tiers. The `featured` flag marks the re
 Notes:
 
 - `card="pricing"` is the parent variant; `plan` is the child container.
-- `header`, `price`, `features`, `action` are bare slot names — the universal vocabulary from [Naming](./juice-naming.md).
-- `featured` is a state flag that the theme renders visually (gradient, scale-up, border — theme's choice).
+- `plan-header`, `plan-price`, `plan-features`, and `card-actions` are the selectors. Bare `header`, `price`, `features`, and `action` are not. See [Naming](./juice-naming.md).
+- `[card="pricing"][featured]` scales the card in `card.scss`. KiwiPress also paints that selector.
 
 ## Auth Form Pattern
 
@@ -242,12 +242,12 @@ Use this for sign-in and sign-up flows.
 
 ```html
 <section stack gap="2" padding="2rem">
-  <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-    <div header center>
+  <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+    <div card-header center>
       <h2 font="korolev-rounded-bold" fontSize="xl">Sign In</h2>
     </div>
 
-    <div body>
+    <div card-body>
       <form type="signin" stack gap="1">
         <div field stack label>
           <label>Email</label>
@@ -259,7 +259,7 @@ Use this for sign-in and sign-up flows.
           <input type="password" scale="lg" rounded />
         </div>
 
-        <div action right>
+        <div card-actions right>
           <button btn="flat" theme="citrusmint-300" scale="lg">Sign In</button>
         </div>
       </form>
@@ -294,18 +294,18 @@ Use this for strong calls to action near the middle or end of a page.
 
 ```html
 <section padding="2rem">
-  <div card="cta" size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
-    <div header center>
+  <div card="cta" card-size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
+    <div card-header center>
       <h2 font="korolev-rounded-bold" fontSize="xl">Ready to launch?</h2>
     </div>
 
-    <div body center>
+    <div card-body center>
       <p font="korolev-rounded">
         Start with your domain, deploy faster, and keep the whole stack governed from day one.
       </p>
     </div>
 
-    <div action center>
+    <div card-actions center>
       <button btn="flat" theme="citrusmint-300" scale="lg">Get Started</button>
       <button btn="text" theme="citrusmint-300" scale="lg">Contact Sales</button>
     </div>

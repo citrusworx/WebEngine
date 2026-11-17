@@ -62,7 +62,7 @@ When the shell has a `name`, generated ids use that slug (`onboard-step-1`, `onb
 | `startWizardRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopWizardRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime. Each click or key is claimed once.
+A custom-root controller can run beside the document runtime. The click or key is claimed once, so the step changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

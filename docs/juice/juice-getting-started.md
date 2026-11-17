@@ -31,23 +31,23 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.7`.
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@1.0.0`.
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). The pin below is that published tarball. It includes last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox, the `'cascade'` dismiss reason, skipped focus restore on a cascaded dialog, and a non-modal sheet suspending the modal trap. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). The pin below is that published tarball. It includes last-opened-wins Escape and outside pointer for modal, drawer, sheet, popover, menu, and combobox, the `'cascade'` dismiss reason, skipped focus restore on a cascaded dialog, and a non-modal sheet suspending the modal trap. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/themes/kiwipress.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/themes/kiwipress.css" />
 
 <body theme="kiwipress">
   <!-- markup -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.7/dist/index.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@1.0.0/dist/index.js"></script>
 </body>
 ```
 
 The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
 
-unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.7/`.
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@1.0.0/`.
 
 If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
 
@@ -105,8 +105,8 @@ That split is healthier than trying to push every visual decision into either ut
 
 ```html
 <main stack gap="2rem">
-  <section hero surface="brand-stage" padding="2rem" stack gap="1rem">
-    <p muted>Publishing</p>
+  <section hero padding="2rem" stack gap="1rem">
+    <p>Publishing</p>
     <h1>Attribute-first UI with app-owned identity</h1>
     <p>
       Juice keeps layout in markup. The theme defines type, color, and surface tone.
@@ -119,7 +119,7 @@ That split is healthier than trying to push every visual decision into either ut
       <p>Use `stack`, `row`, `grid`, `gap`, and spacing attributes first.</p>
     </article>
 
-    <aside panel surface="brand-panel" padding="1.25rem" stack gap="0.75rem">
+    <aside panel padding="1.25rem" stack gap="0.75rem">
       <h2>Identity</h2>
       <p>Use the generated theme for typography, colors, and semantic defaults.</p>
     </aside>

@@ -1,8 +1,8 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.7** public cut on npm (published 2026-11-03, `gitHead` `403cbdb9`). The shared overlay stack shipped in 0.9.7. Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
+This document tracks the current maturity of Juice across its major system areas. It reflects published npm **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Workspace `libraries/juice/package.json` is still **0.9.7**. Ratings below are unchanged by that publish. The shared overlay stack shipped in 0.9.7. Sheet, the thirty-second Emerging runtime, shipped in 0.9.6. Keyboard avoider and the `nav[fixed]` footer fix shipped in 0.9.5. Pressable and touchable row shipped in 0.9.4. Icon button, avatar, table, skeleton, list, safe area, the `--juice-badge-*` roles, and `juice:change` / `getState()` shipped in 0.9.3. 0.9.2 shipped disclosure, spinner, select, input, textarea, field, and motion core on top of the 0.9.1 stack. 0.9.0 shipped eighteen Emerging runtimes, navigation through progress (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C).
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. `juice:change` and `getState()` shipped in 0.9.3.
 
@@ -44,7 +44,7 @@ It is not a runtime and does not change that count. See [Badge](./juice-badge.md
 
 Safe area is CSS-only inset chrome (`[safe-area]`) shipped in 0.9.3. It is not a runtime and does not change that count.
 
-See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 0.9.7 is the current public cut (published 2026-11-03, `gitHead` `403cbdb9`).
+See [Safe Area](./juice-safe-area.md). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable. 1.0.0 is the current public cut (published 2026-11-17, `gitHead` `bd5b25f8`). Workspace `libraries/juice/package.json` is still **0.9.7**.
 
 The goal is to make it easy to answer:
 
@@ -136,7 +136,7 @@ These are already useful, but still need refinement before they feel fully settl
 - rules engine formalization
 - documentation as product surface
 
-These areas are what will most directly move Juice from strong alpha to more mature system status.
+These areas are what will most directly move the Emerging rows toward more settled labels. The 1.0.0 publish did not promote them.
 
 ### Early or draft areas
 
@@ -177,7 +177,7 @@ Select, input, and textarea publish value changes through the native `input` and
 
 If Juice is being described externally or internally, the most honest current positioning is:
 
-`Juice Beta is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes.`
+`Juice 1.0.0 is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes. Emerging rows stay Emerging.`
 
 That framing matches the strongest current reality. The JS entry is an Emerging extra: importing it auto-enhances nav, accordion, tabs, modal, drawer, sheet, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider.
 

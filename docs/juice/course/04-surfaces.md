@@ -44,7 +44,7 @@ These are boolean (or valued) attributes that mark a region. Themes and utilitie
 
 Core files: `libraries/juice/src/components/hero/hero.scss`, `panel/panel.scss`, `cta/cta.scss`, plus card/badge/stat. Themes add identity on top, for example `[theme="kiwipress"] [hero]`.
 
-`card` is more than a box. It has variants (`feature`, `cta`, `pricing`, …) and **slots** (`header`, `body`, `action`, …). Lesson 5. For this lesson, `card` means “this is a content unit,” optionally with `surfaceTone`.
+`card` is more than a box. Variants in `card.scss` include `feature`, `cta`, and `pricing`. Regions are `card-header`, `card-body`, and `card-actions`. Lesson 5. For this lesson, `card` means “this is a content unit,” optionally with `surfaceTone`.
 
 ### Paint utilities (Juice)
 
@@ -63,9 +63,7 @@ Core files: `libraries/juice/src/components/hero/hero.scss`, `panel/panel.scss`,
 ### Theme recipes
 
 - `theme="..."` on an ancestor
-- `surface="brand-stage"` (or a theme’s named surface) for a specific branded moment
-
-Named surfaces are optional recipes (`bw-stage`, `tide-card`). They are not a layout API. Juice still owns `hero` / `card` / `panel`. The theme owns what `surface="..."` looks like.
+`surface="brand-stage"` is not a selector in core CSS or in the fourteen shipped theme stylesheets. Juice still owns `hero`, `card`, and `panel`. A branded surface name is app CSS.
 
 `[theme] [surfaceTone]` wins over theme defaults on `section` / `article` / `aside`, so authors can locally override paint without abandoning the hook.
 

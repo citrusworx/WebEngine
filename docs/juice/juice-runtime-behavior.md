@@ -6,7 +6,7 @@ Juice does not load Sig. Observation is the DOM contract below. The optional ada
 
 Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. Sheet is the thirty-second runtime and shipped in 0.9.6. All thirty-two stay Emerging. The 1.0 classification of names, exports, and tokens is the [public contract](./juice-public-contract.md).
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. The dismiss reason is `'cascade'`. A cascaded dialog skips focus restore. A non-modal sheet suspends the modal trap under it. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 ## Components
 
@@ -134,7 +134,7 @@ The same markup works in raw HTML, server templates, Sig, and React, because the
 
 `stopNavigationRuntime()` does not cancel a deferred boot. That `DOMContentLoaded` listener is anonymous. Every other `stop*Runtime()` cancels its deferred boot.
 
-Each runtime also exports `create*` and `init*`. `init*` is the same call as `create*`. A custom-root controller can run beside the document runtime. Where a runtime claims clicks or keys, each event is claimed once.
+Each runtime also exports `create*` and `init*`. `init*` is the same call as `create*`. A custom-root controller can run beside the document runtime. `createEventClaim` in `libraries/juice/src/js/src/shared/events.ts` is created once per runtime module, so a click or key is handled once and the host state changes once. `createJuiceChanges` in `libraries/juice/src/js/src/shared/change.ts` is constructed inside each `create*` call, so each controller keeps its own snapshot. `note` dispatches `juice:change` when that snapshot differs from the host. The controller that did not handle the event still reads the new state from its `sync` after the mutation and dispatches its own `juice:change`. The auto-started controller and one custom-root controller both covering the host publish two `juice:change` events for one state change.
 
 <details>
 <summary>What a runtime owns</summary>
@@ -163,7 +163,7 @@ Open overlays follow [Nesting and Escape](#nesting-and-escape). Paint order is s
 
 ## Nesting and Escape
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). The published 0.9.7 tarball includes it.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). The published 1.0.0 tarball includes it. The stack shipped in 0.9.7.
 
 Modal, drawer, sheet, popover, menu, and an open combobox list share one open-order stack. The last one opened owns Escape and outside pointerdown. Tooltip and toast are not stack layers.
 
@@ -185,9 +185,17 @@ An exiting layer stays in the order until `hidden` is set. A second Escape does 
 
 ### Cascade
 
-Closing a layer dismisses every layer opened above it, from the top down, with dismiss reason `'cascade'`. Each of those layers dispatches `juice:change` once, and then the layer that closed dispatches its own. `'cascade'` is that internal dismiss reason. It is not a field on `juice:change`.
+Closing a layer dismisses every layer opened above it, from the top down, with dismiss reason `'cascade'`. `popLayer` in `libraries/juice/src/js/src/shared/layer-stack.ts` calls `dismiss('cascade')` on those upper layers from the top down. `'cascade'` is that internal dismiss reason. It is not a field on `juice:change`.
 
-Closing a dialog that has an open combobox list and popover above it publishes the combobox, then the popover, then the dialog.
+Modal, drawer, and sheet publish in the `motion.exit` callback, and that callback calls `layers.pop` before the publish (`hideOverlay` in `modal-runtime.ts`, `drawer-runtime.ts`, and `sheet-runtime.ts`). Popover does the same in its hide (`popover-runtime.ts`). `runMotion` in `libraries/juice/src/js/src/shared/motion.ts` finishes immediately when `prefers-reduced-motion: reduce` matches or the computed duration is `0`. Otherwise the callback runs when the exit animation ends.
+
+With motion on, the closer publishes in that callback after `pop` has started the exits above it. A cascaded modal, drawer, sheet, or popover publishes when its own exit ends. Those exit rules use `--juice-motion-duration-fast`. The default is `0.2s`, so those `juice:change` events follow the closer by about 200ms.
+
+Under reduced motion, those exits finish inside `pop`. The cascaded layers publish from the top down, and the closer publishes after `pop` returns.
+
+Menu and combobox do not wait on an exit animation. `hideMenu` publishes, then pops (`menu-runtime.ts`). `hideCombobox` pops, then publishes, inside the dismiss call (`combobox-runtime.ts`). A cascaded menu or combobox publishes during the closer's `pop`, before the closer publishes. A menu that is the closer publishes before the layers above it.
+
+Closing a dialog that has an open combobox list and a popover above it, with the combobox opened last: under reduced motion the order is the combobox, then the popover, then the dialog. With motion on, the combobox publishes during the dialog's `pop`, the dialog publishes next, and the popover publishes when its exit ends, about 200ms later at the default fast duration.
 
 Opening a modal that replaces another open modal cascades the layers above the old modal, closes the old modal, then opens the new one. Opening a drawer that replaces another open drawer does the same for layers above the old drawer.
 
@@ -254,9 +262,9 @@ Tabs, accordion, and disclosure do not set a stacking band.
 
 ## juice:change
 
-Interactive runtimes dispatch a bubbling, composed `juice:change` `CustomEvent` from the widget host when observable state changes. Clicks, keys, and programmatic writes all count.
+Interactive runtimes dispatch a bubbling, composed `juice:change` `CustomEvent` from the widget host when observable state changes. Clicks, keys, and programmatic writes all count. Each controller has its own snapshot, so the auto-started controller and one custom-root controller both covering the host dispatch two events for one change. The click or key is still claimed once. See [Automatic behavior](#automatic-behavior).
 
-A write that leaves the previous state unchanged does not dispatch. The first observation of a host is recorded and does not dispatch, so init can normalize ARIA without looking like a change.
+A write that leaves that controller's previous snapshot unchanged does not dispatch. The first observation of a host is recorded and does not dispatch, so init can normalize ARIA without looking like a change.
 
 ```ts
 type JuiceChangeDetail<TState> = {

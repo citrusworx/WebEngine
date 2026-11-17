@@ -1405,7 +1405,7 @@ The fallback chain in core role helpers is Frozen for 1.0: `--juice-*`, then `--
 
 `--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values.
 
-Core accordion/tabs/modal/drawer/toast/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Retro identity prefixes stay on the theme stylesheet.
+Core accordion, banner, breadcrumb, checkbox, combobox, disclosure, drawer, field, input, menu, modal, pagination, popover, progress, radio, select, slider, spinner, switch, tabs, textarea, toast, tooltip, and wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Retro identity prefixes stay on the theme stylesheet. Accordion uses short names (`--aqua-trigger`, not an `--aqua-accordion-` infix). The same list is [Frozen: identity-prefix fallback](./juice-public-contract.md#frozen-identity-prefix-fallback).
 
 Do not add them to that core fallback chain.
 

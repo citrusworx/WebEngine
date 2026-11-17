@@ -100,7 +100,7 @@ Visible text is the host's own text, with whitespace collapsed. Hidden and `aria
 | `startIconButtonRuntime()` | Starts the document singleton. A second call syncs and returns it. Returns `null` without `document`. |
 | `stopIconButtonRuntime()` | Destroys the singleton and cancels a deferred boot. |
 
-`createIconButton()` can run beside the document runtime. Each click or key is claimed once, so the two do not double-fire.
+`createIconButton()` can run beside the document runtime. Each click or key is claimed once, so the action runs once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

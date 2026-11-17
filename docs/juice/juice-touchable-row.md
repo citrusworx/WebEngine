@@ -136,7 +136,7 @@ Core CSS does not give `[touchable-row]` a z-index. Position is not set. See [Z-
 | `startTouchableRowRuntime()` | Starts the document singleton. A second call syncs and returns it. Returns `null` without `document`. |
 | `stopTouchableRowRuntime()` | Destroys the singleton and cancels a deferred boot. |
 
-`createTouchableRow()` can run beside the document runtime. Each click and key is claimed once, so the two do not double-toggle. The entry re-exports this module, so the boot runs on import.
+`createTouchableRow()` can run beside the document runtime. Each click and key is claimed once, so the row does not double-toggle. Each controller dispatches its own `juice:change`. The entry re-exports this module, so the boot runs on import. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

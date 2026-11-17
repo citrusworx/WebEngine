@@ -22,9 +22,9 @@ Juice and Themes are two distinct layers with non-overlapping responsibilities. 
 
 The names that describe what a thing *is* and how its parts relate.
 
-- Parent variants: `card="pricing"`, `card="feature"`, `card="cta"`, `card="hero"`, `btn="outline"`, `badge="ribbon"`
-- Child slots: `heading`, `content`, `action`, `header`, `body`, `footer`, `media`, `meta`, `name`, `price`, `description`, `features`, etc.
-- State flags: `featured`, `active`, `warm`, `full`, `disabled`
+- Parent variants that `card.scss` selects: `card="pricing"`, `card="feature"`, `card="cta"`, `card="compact"`, `card="interactive"`, `card="split"`. `card="hero"` is not a selector. A hero band is `[hero]`.
+- Child hooks that ship: `card-header`, `card-body`, `card-actions`, `plan-header`, `plan-price`, `plan-currency`, `plan-amount`, `plan-period`, `plan-description`, `plan-features`, `cta-title`, `cta-actions`, `hero-title`, `stat-value`. Bare `header`, `price`, `currency`, `amount`, `period`, and `description` are not selectors.
+- State flags the package selects: `featured` on `[card="pricing"]`, `[tab][active]`, `button[full]`. `recommended` is not a selector.
 
 The *names* and their *structural meaning* are Juice's responsibility. A `<div card="pricing" featured>` has a known shape no matter which theme is loaded.
 
@@ -62,16 +62,17 @@ The same markup, two themes:
 <div card="pricing" featured>
   <span badge="ribbon">Most Popular</span>
   <div plan>
-    <div header>
-      <div name>Pro</div>
-      <div price>
-        <span currency>$</span>
-        <span amount>20</span>
-        <span period>/month</span>
+    <div plan-header>
+      <h3>Pro</h3>
+      <div plan-price>
+        <span plan-currency>$</span>
+        <span plan-amount>20</span>
+        <span plan-period>/month</span>
       </div>
+      <p plan-description>For professional WordPress sites</p>
     </div>
-    <ul features>...</ul>
-    <div action><button full>Start Free Trial</button></div>
+    <ul plan-features>...</ul>
+    <div card-actions><button full>Start Free Trial</button></div>
   </div>
 </div>
 ```

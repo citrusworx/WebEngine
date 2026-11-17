@@ -41,7 +41,7 @@ A boolean `[slider]` is valid. There is no HTML global `slider` attribute. `[sli
 | `startSliderRuntime` | Starts the document controller. A second call syncs. Returns null without a document. |
 | `stopSliderRuntime` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root `createSlider()` can run beside the document runtime, and each pointer or key event is claimed once.
+A custom-root `createSlider()` can run beside the document runtime. The pointer or key is claimed once, so the value changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

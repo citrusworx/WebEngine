@@ -69,7 +69,7 @@ import { mount } from "@citrusworx/sigjs";
 function Desk() {
   return (
     <main stack gap="2rem" padding="2rem">
-      <section hero surface="brand-stage" padding="2rem" stack gap="1rem">
+      <section hero padding="2rem" stack gap="1rem">
         <p muted>Operations</p>
         <h1>Operator desk</h1>
         <p>
@@ -104,7 +104,7 @@ function Desk() {
 
   return (
     <main stack gap="2rem" padding="2rem">
-      <section hero surface="brand-stage" padding="2rem" stack gap="1rem">
+      <section hero padding="2rem" stack gap="1rem">
         <p muted>Operations</p>
         <h1>Operator desk</h1>
       </section>
@@ -495,7 +495,7 @@ function Desk() {
 
   return (
     <main stack gap="2rem" padding="2rem">
-      <section hero surface="brand-stage" padding="2rem" stack gap="1rem">
+      <section hero padding="2rem" stack gap="1rem">
         <p muted>Operations</p>
         <h1>Operator desk</h1>
         <p>

@@ -4,7 +4,7 @@ Menu is an APG menu button. `[menu-root]` holds an opener and a `[menu]` of `[me
 
 Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
@@ -48,7 +48,7 @@ A boolean `[menu]` attribute is enough. There is no HTML global `menu` attribute
 | `startMenuRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopMenuRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
+A custom-root controller can run beside the document runtime. The click or key is claimed once, so the menu changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 
