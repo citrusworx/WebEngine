@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
 import { SHIPPED_LIBRARY_THEMES } from "./juice.theme-contract.js";
 
@@ -20,6 +20,132 @@ function readPackageJson() {
         sideEffects?: string[] | boolean;
         dependencies?: Record<string, string>;
     };
+}
+
+const UNREACHABLE_DECLARATIONS = [
+    "dist/js/juice.d.ts",
+    "dist/components/index.d.ts",
+    "dist/components/form/cc/cc.d.ts",
+] as const;
+
+const ACCORDION_DECLARATION = "dist/components/accordion/accordion.d.ts";
+
+function toPosix(path: string) {
+    return path.split("\\").join("/");
+}
+
+function walkDeclarations(dir: string): string[] {
+    const files: string[] = [];
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) files.push(...walkDeclarations(path));
+        else if (entry.name.endsWith(".d.ts")) files.push(path);
+    }
+    return files;
+}
+
+/** `package.json` `files` negations. Only the patterns this package uses. */
+function packageOmits(relativePath: string, files: string[] | undefined) {
+    const posix = toPosix(relativePath);
+    for (const pattern of files ?? []) {
+        if (!pattern.startsWith("!")) continue;
+        const negated = pattern.slice(1);
+        if (negated.endsWith("/**")) {
+            const prefix = negated.slice(0, -3);
+            if (posix === prefix || posix.startsWith(`${prefix}/`)) return true;
+        } else if (posix === negated) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function declarationSpecifiers(source: string) {
+    const specs = new Set<string>();
+    for (const match of source.matchAll(/\bfrom\s+["']([^"']+)["']/g)) {
+        if (match[1]) specs.add(match[1]);
+    }
+    for (const match of source.matchAll(/\bimport\s+["']([^"']+)["']/g)) {
+        if (match[1]) specs.add(match[1]);
+    }
+    for (const match of source.matchAll(/\bimport\s*\(\s*["']([^"']+)["']\s*\)/g)) {
+        if (match[1]) specs.add(match[1]);
+    }
+    return [...specs];
+}
+
+function resolveDeclaration(fromFile: string, spec: string) {
+    if (!spec.startsWith(".")) return null;
+    const withoutExt = spec.endsWith(".js")
+        ? spec.slice(0, -3)
+        : spec.endsWith(".d.ts")
+          ? spec.slice(0, -5)
+          : spec;
+    const resolved = join(dirname(fromFile), withoutExt);
+    const candidates = [`${resolved}.d.ts`, join(resolved, "index.d.ts")];
+    return candidates.find((candidate) => existsSync(candidate)) ?? null;
+}
+
+function typeEntryPoints(pkg: ReturnType<typeof readPackageJson>) {
+    const entries = new Set<string>();
+    if (pkg.types) entries.add(pkg.types);
+    for (const target of Object.values(pkg.exports ?? {})) {
+        if (typeof target === "string") {
+            if (target.endsWith(".d.ts")) entries.add(target);
+            continue;
+        }
+        if (target?.types && !target.types.includes("*")) entries.add(target.types);
+    }
+    return [...entries];
+}
+
+/** `dist/foo/bar.d.ts` is emitted from `src/foo/bar.ts` (or `.tsx`). */
+function sourceForDeclaration(declarationPath: string) {
+    const rel = toPosix(relative(PACKAGE_ROOT, declarationPath));
+    if (!rel.startsWith("dist/") || !rel.endsWith(".d.ts")) return null;
+    const stem = join(PACKAGE_ROOT, "src", rel.slice("dist/".length, -".d.ts".length));
+    for (const candidate of [`${stem}.ts`, `${stem}.tsx`]) {
+        if (existsSync(candidate)) return candidate;
+    }
+    return null;
+}
+
+function reachableDeclarations(pkg: ReturnType<typeof readPackageJson>) {
+    const reachable = new Set<string>();
+    const pending = typeEntryPoints(pkg).map((entry) => join(PACKAGE_ROOT, entry));
+    const missing: string[] = [];
+
+    while (pending.length > 0) {
+        const file = pending.pop();
+        if (!file) break;
+        const rel = toPosix(relative(PACKAGE_ROOT, file));
+        if (reachable.has(rel)) continue;
+        if (!existsSync(file)) {
+            missing.push(rel);
+            continue;
+        }
+        reachable.add(rel);
+
+        // Follow the declaration graph, then the implementation imports of that
+        // module. Public runtime `.d.ts` files inline internal helpers, so
+        // `dist/js/src/shared/*.d.ts` is reachable only from the `.ts` source
+        // that the exported runtime actually imports.
+        const sources = [file];
+        const implementation = sourceForDeclaration(file);
+        if (implementation) sources.push(implementation);
+
+        for (const source of sources) {
+            const fromDeclaration = source === file;
+            for (const spec of declarationSpecifiers(readFileSync(source, "utf-8"))) {
+                if (!spec.startsWith(".")) continue;
+                const next = resolveDeclaration(file, spec);
+                if (!next && fromDeclaration) missing.push(`${rel} -> ${spec}`);
+                if (next) pending.push(next);
+            }
+        }
+    }
+
+    return { reachable, missing };
 }
 
 function readBundledThemeIds() {
@@ -3934,5 +4060,28 @@ describe("Juice package contract", () => {
                 )
             ).toBe(true);
         }
+    });
+});
+
+describe("published declaration files", () => {
+    it("omits declaration files no export or types entry can reach", () => {
+        const pkg = readPackageJson();
+        const onDisk = walkDeclarations(DIST_DIR).map((file) => toPosix(relative(PACKAGE_ROOT, file)));
+        const published = onDisk.filter((file) => !packageOmits(file, pkg.files)).sort();
+        const { reachable, missing } = reachableDeclarations(pkg);
+
+        for (const file of UNREACHABLE_DECLARATIONS) {
+            expect(existsSync(join(PACKAGE_ROOT, file)), file).toBe(false);
+            expect(published, file).not.toContain(file);
+        }
+
+        expect(existsSync(join(PACKAGE_ROOT, ACCORDION_DECLARATION)), ACCORDION_DECLARATION).toBe(true);
+        expect(reachable.has(ACCORDION_DECLARATION), ACCORDION_DECLARATION).toBe(true);
+
+        expect(missing, "a types entry or relative declaration import does not resolve").toEqual([]);
+        expect(
+            published.filter((file) => !reachable.has(file)),
+            "a declaration file in the package is not reachable from exports or types"
+        ).toEqual([]);
     });
 });
