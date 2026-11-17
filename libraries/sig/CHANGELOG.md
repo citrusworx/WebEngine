@@ -1,5 +1,11 @@
 # @citrusworx/sigjs
 
+## Unreleased
+
+Workspace `package.json` stays **1.1.2**. Drew sets Sig versions by hand. This entry is not a publish. No Sig changeset was added. `yarn version-packages` was not used.
+
+The optional `@citrusworx/juiceui` peer is `>=0.9.1 <2`. Published npm **1.1.2**, and every published cut back through **0.7.0**, still declare `>=0.9.1 <1`. The peer stays optional. `bind` is unchanged. It already covers the thirty-two runtimes `@citrusworx/juiceui@1.0.0` ships. Start functions, state shapes, and `juice:change` detail are unchanged from **0.9.6**. Under the 1.x semver policy, widening this peer is a minor. Narrowing it would be a major.
+
 ## 1.1.2
 
 Published to npm **2026-11-03** (`gitHead` `e4c4a0fc`, the PR #324 merge, 16:11 UTC). npm `latest` is **1.1.2**. Workspace `package.json` is **1.1.2**.

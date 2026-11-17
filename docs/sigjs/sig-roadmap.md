@@ -67,7 +67,7 @@ The split — Juice for structure, Sig for behavior — is the product story. Th
 
 Juice 0.9.1 does not load this module. Juice 0.9.2 loads it and throws if you bind any of the seven newer names. Icon button, avatar, and table shipped in juiceui 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5, which binds 31 and throws on sheet. Sheet shipped in 0.9.6, which is the first published Juice that can bind all 32.
 
-The peer range still says `>=0.9.1 <1`. The checked table is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). Juice’s own event table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in 0.4.0.
+The workspace optional peer is `>=0.9.1 <2`. Published npm through **1.1.2** still declares `>=0.9.1 <1`. `bind` covers `@citrusworx/juiceui` **1.0.0** with the same thirty-two names as **0.9.6**. The checked table is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). Juice’s own event table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in 0.4.0.
 
 Juice works without that module. The main Sig entry does not import Juice.
 

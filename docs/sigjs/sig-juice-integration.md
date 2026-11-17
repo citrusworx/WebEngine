@@ -75,7 +75,7 @@ The card is created once. Only the text node updates. The [page tutorial](./sig-
 
 `bind` copies a Juice host into a Sig signal and, for five runtimes, writes back. Juice widgets already work without this import. Listen for `juice:change` or call `getState()` yourself. That contract is [juice:change](../juice/juice-runtime-behavior.md#juicechange).
 
-It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. npm **1.1.2** binds 32 names, through `sheet`. **1.1.1** binds 31, through `keyboard-avoider`, and does not name `sheet`. Published npm **1.0.0** binds 28 names, through `table`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <1`), so installing Sig does not install Juice. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. npm **1.1.2** names it. On **0.9.5** binding it throws. `juice:change` for sheet comes from `[sheet-overlay]`. npm `@citrusworx/juiceui` latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`).
+It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. npm **1.1.2** binds 32 names, through `sheet`. **1.1.1** binds 31, through `keyboard-avoider`, and does not name `sheet`. Published npm **1.0.0** binds 28 names, through `table`. `@citrusworx/juiceui` is an optional peer (`>=0.9.1 <2`), so installing Sig does not install Juice. Published npm through **1.1.2** still declares `>=0.9.1 <1`. The main entry does not import Juice. `sheet` is the thirty-second Juice runtime. It shipped in `@citrusworx/juiceui` **0.9.6**. npm **1.1.2** names it. On **0.9.5** binding it throws. `juice:change` for sheet comes from `[sheet-overlay]`. npm `@citrusworx/juiceui` latest is **1.0.0**. Workspace `libraries/juice/package.json` is still **0.9.7**. On **1.0.0**, `bind` covers the same 32 names as **0.9.6**. Start functions, state shapes, and `juice:change` detail are unchanged.
 
 ```ts
 import "@citrusworx/juiceui";
@@ -101,7 +101,7 @@ A `bind` call during a Sig component function disposes with that view. A bind ou
 
 ### Juice versions
 
-The **1.0.0** column was checked against the tarball of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The **1.1.2** column is that same feature detection with sheet included. A missing start function throws, and the module still loads when the named imports of the original 25 succeed. **1.1.1** is the 31-name tarball (`gitHead` `850e91bb`): sheet is not a name on any Juice version. The optional peer range is still `>=0.9.1 <1`.
+The **1.0.0** column was checked against the tarball of `@citrusworx/sigjs@1.0.0` and `@citrusworx/juiceui` 0.9.1 through 0.9.5. The **1.1.2** column is that same feature detection with sheet included. A missing start function throws, and the module still loads when the named imports of the original 25 succeed. **1.1.1** is the 31-name tarball (`gitHead` `850e91bb`): sheet is not a name on any Juice version. The workspace optional peer is `>=0.9.1 <2`. Published npm through **1.1.2** still declares `>=0.9.1 <1`. On **1.0.0**, `bind` covers the same thirty-two names as **0.9.6**. Start functions, state shapes, and `juice:change` detail are unchanged.
 
 | Juice | `import "@citrusworx/sigjs/juice"` | Published Sig 1.0.0 | Published Sig 1.1.2 |
 |---|---|---|---|
@@ -112,6 +112,7 @@ The **1.0.0** column was checked against the tarball of `@citrusworx/sigjs@1.0.0
 | 0.9.5 | Loads | All 28. Keyboard avoider is not a name | 31. Sheet throws. Keyboard avoider shipped in this cut |
 | 0.9.6 | Loads | All 28. Sheet is not a name | All 32. Sheet shipped in this cut |
 | 0.9.7 | Loads | All 28. Sheet is not a name | All 32. The shared overlay stack shipped in this cut |
+| 1.0.0 | Loads | All 28. Sheet is not a name | All 32. Start functions, state shapes, and `juice:change` detail match 0.9.6 |
 
 The 0.9.2 error is exact:
 

@@ -13,9 +13,11 @@ The default branch matches that tarball. There is no master-only public API.
 | `Signal.set` | Still always notifies, including when the value is unchanged. That behavior is part of the contract |
 | `bindList`, `ListItem` | Still experimental |
 | SSR, virtual DOM, `<For>`, `<Show>` | Still non-goals |
-| Juice peer | Still optional `@citrusworx/juiceui` `>=0.9.1 <1` |
+| Juice peer | Optional `@citrusworx/juiceui` `>=0.9.1 <1` on this release |
 
 The written policy is [Semver](./release-checklist.md#semver). How to move off 0.x is [Migrating from 0.x](./sig-migrating.md).
+
+That Juice peer row is the **1.0.0** range. Published npm through **1.1.2** still declares `>=0.9.1 <1`. The workspace peer is `>=0.9.1 <2` and stays optional. The version field stays **1.1.2**. `bind` is unchanged and covers `@citrusworx/juiceui` **1.0.0**.
 
 ## What you already have if you are on 0.7.2
 

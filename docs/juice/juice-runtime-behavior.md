@@ -370,11 +370,11 @@ notes.dispose();
 
 Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 
-Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, because the named import `startDisclosureRuntime` is missing. On **0.9.2** the module loads, and binding icon-button, avatar, or table throws. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On a build that loads, binding one of those seven when its start function is missing throws the same way. On **0.9.5** sheet throws. On **0.9.6** all thirty-two bind. The other runtimes still bind.
+Importing the adapter against `@citrusworx/juiceui@0.9.1` throws before `bind`, because the named import `startDisclosureRuntime` is missing. On **0.9.2** the module loads, and binding icon-button, avatar, or table throws. Those three exports shipped in 0.9.3. Pressable and touchable-row shipped in 0.9.4. Keyboard-avoider shipped in 0.9.5. Sheet shipped in 0.9.6. On a build that loads, binding one of those seven when its start function is missing throws the same way. On **0.9.5** sheet throws. On **0.9.6** all thirty-two bind. On **1.0.0** all thirty-two bind the same way. Start functions, state shapes, and `juice:change` detail are unchanged from **0.9.6**. The other runtimes still bind.
 
 `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts.
 
-`@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
+`@citrusworx/juiceui` is an optional peer of Sig (`>=0.9.1 <2` in the workspace package; published npm through **1.1.2** still declares `>=0.9.1 <1`). The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
 
 `juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5. Sheet dispatches it from `[sheet-overlay]`. It shipped in 0.9.6.
 

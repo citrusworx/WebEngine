@@ -17,7 +17,7 @@ If you are on **0.7.2**, change the range to `^1.0.0`. No call site has to move.
 
 ## 0.7.2 to 1.0.0
 
-No public change. `Signal.set` still always notifies. `bindList` stays experimental. The peer stays `@citrusworx/juiceui` `>=0.9.1 <1`.
+No public change. `Signal.set` still always notifies. `bindList` stays experimental. The peer on those two tarballs is `@citrusworx/juiceui` `>=0.9.1 <1`. Published npm through **1.1.2** still declares that range. The workspace peer is `>=0.9.1 <2`.
 
 ## 0.7.1
 
@@ -43,7 +43,7 @@ This is the cleanup that 1.0 keeps.
 
 ## 0.4.0 and the Juice adapter
 
-0.4.0 added `@citrusworx/sigjs/juice` and `bind`. The main entry still does not import Juice. The peer on that tarball was `^0.9.1`. 0.7.0 widened the written range to `>=0.9.1 <1`, which is the 1.0 range.
+0.4.0 added `@citrusworx/sigjs/juice` and `bind`. The main entry still does not import Juice. The peer on that tarball was `^0.9.1`. 0.7.0 widened the written range to `>=0.9.1 <1`, which is the published range through **1.1.2**. The workspace peer is `>=0.9.1 <2`.
 
 Icon button, avatar, and table were not in 0.4.0, 0.6.0, 0.7.0, or 0.7.1. They arrived in 0.7.2.
 

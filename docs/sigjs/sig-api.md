@@ -1044,7 +1044,7 @@ notes.dispose();
 
 ### Notes
 
-- The main entry does not import Juice. This module does. The peer is optional: `@citrusworx/juiceui` `>=0.9.1 <1`.
+- The main entry does not import Juice. This module does. The peer is optional: `@citrusworx/juiceui` `>=0.9.1 <2`. Published npm through **1.1.2** still declares `>=0.9.1 <1`. `bind` covers `@citrusworx/juiceui` **1.0.0**. Start functions, state shapes, and `juice:change` detail match **0.9.6**.
 - Importing this module against Juice **0.9.1** throws. The named import `startDisclosureRuntime` is missing. **0.9.2** loads and binds 25 names. Icon button, avatar, and table need **0.9.3**. Pressable and touchable row need **0.9.4**. Keyboard avoider needs **0.9.5**, which binds 31. Sheet needs **0.9.6**, which binds all 32. On **0.9.5** sheet throws. The table is [Runtime binding](./sig-juice-integration.md#runtime-binding).
 - Omit `runtime` to infer from the host. The first matcher in source order wins. `[icon-button]` wins over `[pressable]`. `[pressable]` wins over `[touchable-row]`.
 - `getState()` of `null` throws `Sig juice bind: <runtime> getState() returned null for this host.`
