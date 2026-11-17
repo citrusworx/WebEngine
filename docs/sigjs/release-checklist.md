@@ -54,7 +54,7 @@ The public API is every documented export of these entries, including the behavi
 
 `^0.7.0` is `>=0.7.0 <0.8.0`. It installs npm **0.7.2** and never installs **1.0.0**. Older 0.x carets stay inside one minor: `^0.4.0` is `>=0.4.0 <0.5.0`, and `^0.6.0` does not install `0.7.0` or later.
 
-The optional peer `@citrusworx/juiceui` stays `>=0.9.1 <1`. Widening that range, with `bind` unchanged, is a minor. Narrowing it is a major, because an install that worked can start failing.
+The optional peer `@citrusworx/juiceui` is `>=0.9.1 <2`. Published npm through **1.1.2** still declares `>=0.9.1 <1`. Widening that range, with `bind` unchanged, is a minor. Narrowing it is a major, because an install that worked can start failing.
 
 The peer stays optional. The main entry does not import Juice.
 
