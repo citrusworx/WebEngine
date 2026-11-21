@@ -586,8 +586,11 @@
 }
 
 [theme="kiwipress"] :where(div) {
-    background-color: transparent;
     color: inherit;
+}
+
+[theme="kiwipress"] :where(div:not([bgColor])) {
+    background-color: transparent;
 }
 
 /* Semantic element defaults */

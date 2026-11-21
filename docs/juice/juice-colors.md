@@ -131,12 +131,16 @@ Colors can be used in the following Juice attributes:
 <p fontColor="citrusmint-300">Mint text</p>
 ```
 
+`fontColor="cornflower-500"` applies the `cornflower-500` swatch, `hsl(223, 73%, 50%)`.
+
 ### Background Color
 ```html
 <div bgColor="white-100">White background</div>
 <div bgColor="cherryred-500">Red background</div>
 <div bgColor="freshgreen-200">Light green background</div>
 ```
+
+In KiwiPress, a plain `div` has a transparent background by default. An explicit `bgColor`, such as `white-100`, applies the named swatch.
 
 ### Border Color
 ```html

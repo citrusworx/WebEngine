@@ -343,6 +343,33 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("keeps the adjacent Cornflower text swatches on their named shades", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        for (const [shade, lightness] of [[400, 55], [500, 50], [600, 45]]) {
+            const selector = `\\[fontColor=["']?cornflower-${shade}["']?\\]`;
+            expect(css).toMatch(new RegExp(
+                `${selector},\\s*\\[theme\\] ${selector}\\s*\\{\\s*color: hsl\\(223, 73%, ${lightness}%\\);`
+            ));
+        }
+    });
+
+    it("limits KiwiPress transparent div defaults to elements without an explicit swatch", () => {
+        const css = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+
+        expect(css).toMatch(/\[theme=["']?kiwipress["']?\] :where\(div:not\(\[bgColor\]\)\)\s*\{\s*background-color: transparent;/);
+        expect(css).not.toMatch(/\[theme=["']?kiwipress["']?\] :where\(div\)\s*\{[^}]*background-color:/);
+    });
+
+    it("scales explicit rem padding across the responsive spacing bands", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toMatch(/\[padding=["']?2rem["']?\]\s*\{\s*padding: 2rem;/);
+        expect(css).toMatch(/@media \(max-width: 1023px\) and \(min-width: 768px\)\s*\{\s*\[padding=["']?2rem["']?\]\s*\{\s*padding: 1\.6rem;/);
+        expect(css).toMatch(/@media \(max-width: 767px\) and \(min-width: 640px\)\s*\{\s*\[padding=["']?2rem["']?\]\s*\{\s*padding: 1\.5rem;/);
+        expect(css).toMatch(/@media \(max-width: 639px\)\s*\{\s*\[padding=["']?2rem["']?\]\s*\{\s*padding: 1rem;/);
+    });
+
     it("includes themeable surfaceTone soft, strong, and muted in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 

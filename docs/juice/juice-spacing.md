@@ -61,11 +61,11 @@ The `padding` attribute controls internal spacing within elements.
 ```
 
 **Available Units:**
-- `rem`: Relative to root font size (recommended for responsive design)
+- `rem`: Relative to the root font size and scaled by Juice’s [responsive spacing bands](./juice-responsive-reference.md#spacing-and-sizing-scale). For example, `padding="2rem"` computes to `1rem` below `640px`.
 - `px`: Fixed pixels
 - `%`: Percentage of parent width
 
-**Generated Selectors:**
+**Generated Selectors (base values):**
 ```css
 [padding="1rem"] { padding: 1rem; }
 [padding="2rem"] { padding: 2rem; }

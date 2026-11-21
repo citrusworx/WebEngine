@@ -15,7 +15,7 @@ Defined in `libraries/juice/src/core/breakpoints/breakpoints.scss`:
 | xl | 1280px |
 | xxl | 1536px |
 
-Juice uses **max-width** bands for scaling utilities and a **min-width** rule for `row` collapse (see below).
+Juice uses **max-width** bands for scaling utilities and for `row` collapse.
 
 ## Layout primitives
 
@@ -23,7 +23,7 @@ Juice uses **max-width** bands for scaling utilities and a **min-width** rule fo
 
 From `libraries/juice/src/core/layout/layout.scss`:
 
-- **Below 768px (`md`)**: `[row]` and `[row][centered]` switch to `flex-direction: column` with wrap.
+- **At 768px (`md`) and below**: `[row]` and `[row][centered]` switch to `flex-direction: column` with wrap.
 
 Authors should prefer `row` + `gap` and avoid fixed child widths unless intentional.
 
@@ -41,7 +41,7 @@ Opt-in responsive section: `display: flex`, column direction, `gap: 1rem`. Plain
 
 ## Spacing and sizing scale
 
-Padding, margin, gap, width, and height attributes generated with `responsive-attribute-generator` in `libraries/juice/src/core/mixins.scss` scale **rem / vw / vh** values at smaller viewports:
+Numeric `gap` steps, explicit `rem` padding, and `rem` width and height utilities scale at smaller viewports. Named spacing values follow the same bands:
 
 | Band | Approximate viewport | Scale factor |
 |------|----------------------|--------------|
@@ -50,7 +50,7 @@ Padding, margin, gap, width, and height attributes generated with `responsive-at
 | Small tablet (sm–md) | 640px – 767px | 75% |
 | Mobile (below sm) | &lt; 640px | 50% |
 
-**Note:** `%` and other units are not auto-scaled by this generator.
+For example, `padding="2rem"` scales from `2rem` on desktop to `1rem` on mobile, and `gap="1"` scales from `1rem` to `0.5rem`. Explicit `px` padding and numeric `margin` lengths keep their declared values. Percentages and viewport units scale through their usual CSS behavior.
 
 ## What is not automatic
 
