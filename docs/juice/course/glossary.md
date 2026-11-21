@@ -22,7 +22,7 @@ Everyday language for this course. API lists stay in the [Juice reference](../RE
 
 **Role (surface).** What a region *is* — hero, card, panel, CTA — independent of its fill.
 
-**Slot.** A bare region name (`header`, `body`, `action`) whose meaning comes from its parent. Not `card-header`.
+**Slot.** In `@citrusworx/juiceui@1.0.0`, card and plan regions are compound selectors (`card-header`, `plan-price`). Bare `header` and `price` are not selectors.
 
 **Structure.** How parts relate and nest. Juice’s primary job.
 

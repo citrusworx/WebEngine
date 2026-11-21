@@ -29,8 +29,8 @@ There is no HTML global `badge` attribute, and there is no `<badge>` element. `[
 <div card="pricing" featured>
   <span badge="ribbon">Most Popular</span>
   <div plan>
-    <div header>
-      <div name>Pro</div>
+    <div plan-header>
+      <h3>Pro</h3>
     </div>
   </div>
 </div>

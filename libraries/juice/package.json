@@ -1,6 +1,13 @@
 {
     "name": "@citrusworx/juiceui",
-    "version": "0.9.7",
+    "version": "1.0.0",
+    "description": "Attribute-first styling library for CitrusWorx apps. Structure lives in markup, and themes own identity.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/citrusworx/WebEngine.git",
+        "directory": "libraries/juice"
+    },
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -141,8 +148,12 @@
     },
     "files": [
         "dist",
+        "LICENSE",
         "!dist/themes/_draft",
-        "!dist/themes/_draft/**"
+        "!dist/themes/_draft/**",
+        "!dist/js/juice.d.ts",
+        "!dist/components/index.d.ts",
+        "!dist/components/form/cc/cc.d.ts"
     ],
     "browserslist": [
         "last 2 Chrome versions",

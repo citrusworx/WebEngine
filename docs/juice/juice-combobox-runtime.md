@@ -4,7 +4,7 @@ Combobox is an editable input plus a listbox popup on `[combobox]`, with `[combo
 
 It is Emerging and shipped in `@citrusworx/juiceui@0.9.2`.
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Importing `@citrusworx/juiceui` enhances valid markup ([Automatic behavior](./juice-runtime-behavior.md#automatic-behavior)).
 
@@ -45,7 +45,7 @@ Closed and open is the native `hidden` attribute on `[combobox-list]`. Authors n
 | `startComboboxRuntime` | Starts the document controller. A second call syncs. Returns null without a document. |
 | `stopComboboxRuntime` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root `createCombobox()` can run beside the document runtime, and each click, focus, input, or key event is claimed once.
+A custom-root `createCombobox()` can run beside the document runtime. The click, focus, input, or key is claimed once, so the combobox changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

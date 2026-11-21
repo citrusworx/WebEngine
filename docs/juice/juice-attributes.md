@@ -319,35 +319,40 @@ See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout cont
 
 ### Cards
 
-- `card`
-  Values: boolean, `"compact"`, `"feature"`, `"interactive"`, `"split"`, `"cta"`, `"pricing"`, `"large"`, `"muted"`, `"hero"`
-- `size`
-  Values: `"sm"`, `"md"`, `"lg"` (on a `[card]`, scoped via `[card][size="md"]`)
-- `padding`
-  Values: `"sm"`, `"md"`, `"lg"`, or numeric (`"2rem"`, `"24px"`)
-- `flow`
-  Values: `"vertical"`, `"horizontal"`
+`card.scss` selects these names. Bare `header`, `body`, `action`, `size`, and `flow` are not card selectors. `padding="1rem"` is the spacing utility. Card padding steps are `card-padding`.
 
-Card region children use bare slot names. Their meaning is scoped through the parent `[card]` selector.
+- `card` — boolean, or `"compact"`, `"feature"`, `"interactive"`, `"split"`, `"cta"`, `"pricing"`
+- `card-size` — `"sm"`, `"md"`, `"lg"`
+- `card-padding` — `"sm"`, `"md"`, `"lg"`
+- `card-flow` — `"horizontal"`, `"vertical"`
+- `card-large`, `card-small` — legacy widths. The file comment says to prefer `card-size`
+- `card-header`, `card-body`, `card-media`, `card-actions`, `card-meta`, `card-divider`
+- `card-header` with `row` — centers the row
+- `card-actions` with `center` or `right`
+- `featured` on `[card="pricing"]` — scales the card
 
-- `header` — top region
-- `body` — main content region
-- `action` — action row for buttons and CTAs
-- `meta` — supporting metadata row
-- `media` — icons, illustrations, or images
-- `divider` — visual divider
+`card="large"`, `card="muted"`, and `card="hero"` are not selectors. See [Cards](./juice-cards.md).
 
-For more detail, see [Cards](./juice-cards.md) and [Naming](./juice-naming.md).
+### Hero, CTA, plan, and stat
+
+- `[hero]`, `[hero-eyebrow]`, `[hero-title]`, `[hero-subtitle]`, `[hero-actions]`, `[hero-meta]`
+- `[cta]`, `[cta-title]`, `[cta-subtitle]`, `[cta-actions]`, `[cta-note]`
+- `[plan]`, `[plan-header]`, `[plan-price]`, `[plan-currency]`, `[plan-amount]`, `[plan-period]`, `[plan-description]`, `[plan-features]`
+- `[stats]`, `[stat]`, `[stat-value]`, `[stat-label]`
+
+### Marketing chrome
+
+Emerging child hooks in `how-it-works.scss`, `developers.scss`, `login.scss`, and `dashboard.scss` are listed on the [public contract](./juice-public-contract.md#css-folders-in-core). That list includes `[arch-divider]`, `[arch-feature]`, `[arch-features]`, `[arch-hero-actions]`, `[arch-hero-header]`, `[arch-layer]`, `[arch-layer-label]`, `[arch-layer-wrap]`, `[arch-summary]`, `[arch-summary-item]`, `[check-mark]`, `[engineer-item]`, `[engineers-list]`, `[final-cta-inner]`, `[philosophy-card]`, `[step-arrow]`, `[step-row]`, `[tier-arrow]`, `[tier-cell]`, `[tier-label]`, `[two-way]`, `[category-cta]`, `[category-icon]`, `[code-block]`, `[dev-quickstart]`, `[install-footnote]`, `[install-icon]`, `[quickstart-body]`, `[forgot-link]`, `[login-field-label]`, `[logo-suffix]`, and `[doc-link]`. `architecture-overview`, `dev-categories`, `dev-install`, and `dev-resources` are not selectors.
 
 ### State flags
 
 Boolean attributes that mark structural state. Themes decide their visual treatment.
 
-- `featured` — emphasized element (e.g. the highlighted pricing tier)
-- `active` — currently selected
-- `warm` — softer visual emphasis
-- `full` — full-width control
-- `recommended` — promoted item in a list
+- `featured` — selected as `[card="pricing"][featured]`, `[philosophy-card][featured]`, and `[engineer-item][featured]`
+- `active` — tab selection (`[tab][active]` and the tablist button rules)
+- `warm` — not a core value. `badge.scss` says themes that paint `[badge][warm]` keep that paint
+- `full` — `button[full]`
+- `recommended` — not a selector in the package
 
 ### Forms
 
@@ -987,15 +992,15 @@ See [Wizard Runtime](./juice-wizard-runtime.md). Theme paint uses `--juice-wizar
   </div>
 </section>
 
-<div card="cta" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div header row space="between" centered>
+<div card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div card-header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card Title</h3>
     <i icon="toggle-on" lib="solid" iconSize="md" iconcolor="red-800"></i>
   </div>
-  <div body stack gap="1rem">
+  <div card-body stack gap="1rem">
     <p font="korolev-rounded">Structured card content.</p>
   </div>
-  <div action center>
+  <div card-actions center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
   </div>
 </div>

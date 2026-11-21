@@ -42,7 +42,7 @@ Selection is exclusive. The runtime does not write layout `content`. Prefer ship
 | `startTabsRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopTabsRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
+A custom-root controller can run beside the document runtime. The click or key is claimed once, so the selected tab changes once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

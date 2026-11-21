@@ -58,7 +58,7 @@ Core CSS does not give `[pressable]` a z-index. See [Z-index bands](./juice-runt
 | `startPressableRuntime()` | Starts the document singleton. A second call syncs and returns it. Returns `null` without `document`. |
 | `stopPressableRuntime()` | Destroys the singleton and cancels a deferred boot. |
 
-`createPressable()` can run beside the document runtime. Each pointer and key is claimed once, so the two do not double-fire. The entry re-exports this module, so the boot runs on import.
+`createPressable()` can run beside the document runtime. Each pointer and key is claimed once, so the gesture runs once. Each controller dispatches its own `juice:change`. The entry re-exports this module, so the boot runs on import. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

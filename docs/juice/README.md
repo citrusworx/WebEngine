@@ -32,7 +32,7 @@ import "./generated/my-theme.css";
 ```html
 <body theme="my-theme">
   <main stack gap="2rem">
-    <section hero surface="brand-stage" padding="2rem">
+    <section hero padding="2rem">
       <h1>Brand headline</h1>
       <p>Juice owns structure. The theme owns identity.</p>
     </section>
@@ -131,7 +131,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Overlays
 
-The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
+The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). Last-opened-wins Escape and outside pointer cover modal, drawer, sheet, popover, menu, and combobox. Tooltip and toast stay off that stack. All thirty-two Emerging runtimes stay Emerging.
 
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
@@ -186,7 +186,7 @@ The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (publishe
 ### Practice and roadmap
 
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.7` live on npm. The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`).)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@1.0.0` live on npm, published 2026-11-17, `gitHead` `bd5b25f8`. The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0**.)
 
 ## Status
 

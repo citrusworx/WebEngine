@@ -149,7 +149,7 @@ Outside a browser, `startAvatarRuntime()` returns `null` and `createAvatar()` re
 | `startAvatarRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopAvatarRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime. Each `load` and `error` is claimed once.
+A custom-root controller can run beside the document runtime. Each `load` and `error` is claimed once, so the fallback runs once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Options
 

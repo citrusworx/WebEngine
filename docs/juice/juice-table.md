@@ -222,7 +222,7 @@ Outside a browser, `startTableRuntime()` returns `null` and `createTable()` retu
 | `startTableRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
 | `stopTableRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-A custom-root controller can run beside the document runtime. Each click is claimed once. The header is wrapped once.
+A custom-root controller can run beside the document runtime. Each click is claimed once, and the header is wrapped once. Each controller dispatches its own `juice:change`. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ### Events
 

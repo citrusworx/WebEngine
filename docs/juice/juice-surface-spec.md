@@ -22,15 +22,15 @@ Structural attributes answer:
 
 They live on the element itself, as either a boolean (`card`, `hero`) or a variant value (`card="pricing"`, `card="cta"`, `card="feature"`).
 
-Children of structural elements use **bare slot names** from the universal vocabulary (`header`, `body`, `action`, `media`, etc.) — see [Naming](./juice-naming.md). Selectors are always scoped through the parent.
+Hero, card, and plan children use the compound selectors in those stylesheets. See [Naming](./juice-naming.md).
 
 ### Example
 
 ```html
-<section card="hero">
-  <div heading>Stewarded Infrastructure</div>
-  <div content>Governed execution for modern platforms.</div>
-  <div action>
+<section hero>
+  <h2 hero-title>Stewarded Infrastructure</h2>
+  <p hero-subtitle>Governed execution for modern platforms.</p>
+  <div hero-actions>
     <button btn="flat">Get Started</button>
   </div>
 </section>
@@ -79,7 +79,7 @@ Utility attributes should:
 
 ```html
 <section
-  card="hero"
+  hero
   bgColor="white-100"
   rounded="xl"
   shadow
@@ -87,8 +87,8 @@ Utility attributes should:
   variant="monochromatic"
   lineHeight="2rem"
 >
-  <h3 heading>Account Health</h3>
-  <p content>Usage, retention, and support pressure in one place.</p>
+  <h3 hero-title>Account Health</h3>
+  <p hero-subtitle>Usage, retention, and support pressure in one place.</p>
 </section>
 ```
 
@@ -98,7 +98,7 @@ Themes own the visual realization of every structural and utility attribute Juic
 
 A theme can decide:
 
-- what `card="hero"` actually looks like (background, gradient, padding texture)
+- what `[hero]` looks like (background, gradient, padding texture)
 - what `featured` does (gradient? border? scale-up? glow?)
 - how `surfaceTone="soft|strong|muted"` translates to actual colors via `--juice-surface-*` roles
 - which font `heading` uses inside a card
@@ -108,9 +108,9 @@ A theme can also add **brand-specific structural variants** by extending the `ca
 ### Example: same markup, themed
 
 ```html
-<section card="hero" surfaceTone="soft">
-  <div heading>Customer Health</div>
-  <div content>Accounts with declining usage are surfaced here.</div>
+<section hero surfaceTone="soft">
+  <h2 hero-title>Customer Health</h2>
+  <p hero-subtitle>Accounts with declining usage are surfaced here.</p>
 </section>
 ```
 
@@ -150,20 +150,20 @@ Reading order in markup:
 
 ```html
 <section
-  card="hero"
+  hero
   paddingX="2rem"
   paddingY="2rem"
   variant="monochromatic"
   lineHeight="2rem"
 >
-  <div heading>Customer Health</div>
-  <div content>Accounts with declining usage are surfaced here.</div>
+  <h2 hero-title>Customer Health</h2>
+  <p hero-subtitle>Accounts with declining usage are surfaced here.</p>
 </section>
 ```
 
 In this model:
 
-- `card="hero"` provides the structural identity
+- `hero` provides the structural identity
 - `paddingX` and `paddingY` provide spacing (Juice layout layer)
 - `variant` and `lineHeight` adjust the visual treatment (Juice utility layer)
 - the active theme renders all of it
@@ -187,7 +187,7 @@ Not ideal:
 
 Structural attributes go on the element as variants:
 
-- `card="hero"`, `card="pricing"`, `card="cta"`
+- `hero`, `card="pricing"`, `card="cta"`
 - `btn="outline"`, `btn="flat"`
 - `badge="ribbon"`
 
@@ -233,22 +233,11 @@ This model keeps Juice structured and themes swappable.
 - Authors learn one vocabulary; theme variation does not require relearning component shapes.
 - Juice stays opinionated about layout, spacing, and naming. It stays unopinionated about color, type, and surface tone.
 
-## Legacy Compound Surface Attributes
+## Card and hero selectors in 1.0.0
 
-Earlier drafts of this spec proposed compound surface names like `card-large`, `card-muted`, `hero-panel`, `promo-banner`, `dashboard-panel`. These are deprecated. The canonical forms are:
+`card.scss` selects `card="compact"`, `card="feature"`, `card="interactive"`, `card="split"`, `card="cta"`, and `card="pricing"`. It also selects `card-size`, `card-padding`, `card-flow`, `card-large`, and `card-small`. `card="large"`, `card="muted"`, `card="hero"`, `card="promo"`, `card="dashboard"`, and `card="aqua-hero"` are not selectors. A hero band is `[hero]` in `hero.scss`. `[card-large]` and `[card-small]` are the legacy width shorthands in `card.scss`. The file comment says to prefer `card-size`.
 
-| Legacy | Canonical |
-| --- | --- |
-| `card-large` | `card="large"` |
-| `card-muted` | `card="muted"` |
-| `card-compact` | `card="compact"` |
-| `hero-panel` | `card="hero"` or `<section hero>` |
-| `promo-banner` | `card="promo"` or `<section promo>` |
-| `dashboard-panel` | `card="dashboard"` |
-| `aqua-card` | `card` inside `theme="aquaflux"`, optionally `card="aqua-*"` for theme-specific variants |
-| `aqua-hero` | `card="hero"` inside `theme="aquaflux"`, optionally `card="aqua-hero"` |
-
-See [Naming](./juice-naming.md) for the underlying rule.
+See [Naming](./juice-naming.md) and [Cards](./juice-cards.md).
 
 ## Summary
 

@@ -218,7 +218,7 @@ An in-flight exit stays the open surface until that commit. A new open cancels t
 
 ### Events and focus during exit
 
-For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. While that layer is still the top of the open order, its focus trap and Escape still apply during exit. A second Escape does not start a second exit. When the close restores focus, that restore runs after `hidden` is set. A `'cascade'` close of a popover, menu, or dialog does not restore the opener. The shared overlay stack shipped in **0.9.7**. npm latest is **0.9.7** (published 2026-11-03, `gitHead` `403cbdb9`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
+For modal, drawer, sheet, and popover, the surface stays open until `hidden` is set. While that layer is still the top of the open order, its focus trap and Escape still apply during exit. A second Escape does not start a second exit. When the close restores focus, that restore runs after `hidden` is set. A `'cascade'` close of a popover, menu, or dialog does not restore the opener. The shared overlay stack shipped in **0.9.7**. npm latest is **1.0.0** (published 2026-11-17, `gitHead` `bd5b25f8`). See [Nesting and Escape](./juice-runtime-behavior.md#nesting-and-escape).
 
 Toast has no focus trap. Escape dismisses the most recently shown visible toast when no stack layer and no tooltip is open. `hidden` is set after the exit finishes. Showing a toast that is exiting cancels the exit and leaves it open.
 
@@ -276,6 +276,8 @@ P1 is not part of the P0 CSS gate.
 | `bounce` | Subtle vertical bounce |
 | `bounce.in` / `bounce-in` | Enter from off-screen left |
 | `bounce.out` / `bounce-out` | Exit to off-screen left |
+
+`bounce.scss` also matches `[motion="bounce:in"]` and `[motion="bounce:out"]` on those same enter and exit rules. Those colon spellings are not in this Frozen P0/P1 catalog. They are not contract. The guard list is `MOTION_VALUES_IN_SOURCE_NOT_IN_CONTRACT` in `libraries/juice/src/juice.public-contract.test.ts`.
 | `wiggle` | Wiggle |
 | `tilt` | Tilt (hover-enhanced) |
 | `turn` | Turn (hover-enhanced) |

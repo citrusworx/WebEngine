@@ -26,7 +26,7 @@ Composition in a design system usually follows four jobs:
 
 If the card also tries to center itself on the page, you will fight the next grid you drop it into. If the form’s `field` escapes onto the marketing page, “field” stops meaning “form control region.”
 
-**Slots** are how structure stays a small vocabulary. A card has a header, a body, an action row. Those names do not include the parent (`card-header`). The parent already scopes them. That is the opposite of BEM. [Naming](../juice-naming.md).
+`card.scss` selects `card-header`, `card-body`, and `card-actions`. Bare `header`, `body`, and `action` are not selectors. [Naming](../juice-naming.md).
 
 **Scoped attributes** are legal only in a context. `[field]` is form-scoped. Using it on a catalog card is undefined. That rule lives in `docs/juice/rules/001-Field Scrope.md` (the filename typo is *scope*). You do not need the rules engine as a spine; you do need to respect the form boundary.
 
@@ -40,22 +40,21 @@ Patterns are collected in [Patterns](../juice-patterns.md). They copy current pr
 
 [Cards](../juice-cards.md) — emerging, but the structure is real.
 
-- `card` boolean, or `card="compact|feature|interactive|split|cta|pricing|large|muted|hero"`
-- `size="sm|md|lg"` on the card
-- `flow="vertical|horizontal"`
-- slots: `header`, `body`, `action`, `meta`, `media`, `divider`
-- pricing adds `plan` with `name`, `price`, `features`
+- `card` boolean, or `card="compact|feature|interactive|split|cta|pricing"`
+- `card-size="sm|md|lg"` and `card-flow="vertical|horizontal"`
+- regions: `card-header`, `card-body`, `card-actions`, `card-meta`, `card-media`, `card-divider`
+- pricing uses `plan-header`, `plan-price`, `plan-features`. `card="large"`, `card="muted"`, and `card="hero"` are not selectors
 
 ```html
-<div card="feature" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div media center>
+<div card="feature" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div card-media center>
     <i icon="book" lib="solid" iconSize="md" iconcolor="gray-700"></i>
   </div>
-  <div body stack gap="0.75rem">
+  <div card-body stack gap="0.75rem">
     <h3 font="oswald">The Inlet</h3>
     <p font="lato">Essays on harbors and tide tables.</p>
   </div>
-  <div action>
+  <div card-actions>
     <button btn="outline" theme="citrusmint-300" scale="lg">View title</button>
   </div>
 </div>
@@ -135,38 +134,38 @@ Harbor Press becomes a small site slice: bar, hero, feature cards, subscribe for
       </div>
       <div grid="3x1" gap="1">
         <article card="feature" bgColor="white-100" rounded="md">
-          <div media center>
+          <div card-media center>
             <i icon="water" lib="solid" iconSize="md" iconcolor="blue-700"></i>
           </div>
-          <div body center>
+          <div card-body center>
             <h3 font="oswald">The Inlet</h3>
             <p font="lato">Essays on harbors and tide tables.</p>
           </div>
-          <div action center>
+          <div card-actions center>
             <button btn="outline" theme="citrusmint-300" scale="lg">View title</button>
           </div>
         </article>
         <article card="feature" bgColor="white-100" rounded="md">
-          <div media center>
+          <div card-media center>
             <i icon="clock" lib="solid" iconSize="md" iconcolor="brown-700"></i>
           </div>
-          <div body center>
+          <div card-body center>
             <h3 font="oswald">Letterpress Hours</h3>
             <p font="lato">A shop diary from a one-room bindery.</p>
           </div>
-          <div action center>
+          <div card-actions center>
             <button btn="outline" theme="citrusmint-300" scale="lg">View title</button>
           </div>
         </article>
         <article card="feature" bgColor="white-100" rounded="md">
-          <div media center>
+          <div card-media center>
             <i icon="cloud" lib="solid" iconSize="md" iconcolor="gray-700"></i>
           </div>
-          <div body center>
+          <div card-body center>
             <h3 font="oswald">Fog Index</h3>
             <p font="lato">Poems that refuse a larger type size.</p>
           </div>
-          <div action center>
+          <div card-actions center>
             <button btn="outline" theme="citrusmint-300" scale="lg">View title</button>
           </div>
         </article>
@@ -174,11 +173,11 @@ Harbor Press becomes a small site slice: bar, hero, feature cards, subscribe for
     </section>
 
     <section id="list" padding="2rem">
-      <div card="cta" size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
-        <div header center>
+      <div card="cta" card-size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
+        <div card-header center>
           <h2 font="oswald" fontSize="xl">The list</h2>
         </div>
-        <div body center>
+        <div card-body center>
           <form type="search">
             <div row gap="1" centered>
               <div field>
@@ -198,13 +197,13 @@ Compare this with [Page tutorial](../juice-page-tutorial.md). That tutorial buil
 
 ## Exercises
 
-1. Convert one feature card into `card="pricing"` with a `plan`, `price`, and `featured` on a second tier. Use bare slot names only.
+1. Convert one feature card into `card="pricing"` with `plan`, `plan-price`, and `featured` on a second tier. Use the selectors in `plan.scss`.
 2. Build a stacked sign-in form (`type="signin"`, `field stack label`) in a separate `section`. Put `field` *outside* the form once, observe that the docs call it undefined, then delete it.
 3. Add an announcement `nav type="strip"` above the bar with one sentence. If it grows a second link list, you have invented a second nav.
 
 ## Checkpoint
 
-Point at three parents on your page (`nav`, `card`, `form`). For each child, say whether it is a **slot**, a **layout wrapper**, or a **token bearer**. If any child name repeats the parent (`card-header`), rename it.
+Point at three parents on your page (`nav`, `card`, `form`). For each child, say whether it is a **selector in the package**, a **layout wrapper**, or a **token bearer**. `card-header` is the card region selector. Bare `header` is not.
 
 [Answers](./answers.md#lesson-05)
 
