@@ -357,7 +357,6 @@ describe('createSheet', () => {
     stopSheetRuntime();
 
     const controller = createSheet({ root: document.body });
-    const close = document.querySelector<HTMLElement>('[sheet-close]');
     const action = document.getElementById('demo-action');
 
     document
@@ -368,10 +367,10 @@ describe('createSheet', () => {
     action?.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Tab' })
     );
-    expect(document.activeElement).toBe(close);
+    const handle = document.querySelector<HTMLElement>('[sheet-handle]');
+    expect(document.activeElement).toBe(handle);
 
-    close?.focus();
-    close?.dispatchEvent(
+    handle?.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Tab', shiftKey: true })
     );
     expect(document.activeElement).toBe(action);
@@ -395,6 +394,43 @@ describe('createSheet', () => {
     last?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Tab' }));
     expect(document.activeElement).toBe(last);
     none.destroy();
+  });
+
+  it('names the resize handle and cycles through the allowed detents on activation', () => {
+    document.body.innerHTML = `
+      <button type="button" id="open" aria-controls="resizable">Open</button>
+      <div sheet-overlay id="resizable" hidden>
+        <div sheet sheet-detents="peek full">
+          <button type="button" sheet-handle></button>
+          <div sheet-handle aria-label="Change details height"></div>
+        </div>
+      </div>`;
+    const controller = createSheet({ root: document.body });
+    try {
+      const opener = document.getElementById('open')!;
+      const [button, custom] = document.querySelectorAll<HTMLElement>('[sheet-handle]');
+      opener.click();
+      expect(document.activeElement).toBe(button);
+      expect(button.getAttribute('aria-label')).toBe('Resize sheet');
+      expect(custom.getAttribute('aria-label')).toBe('Change details height');
+      expect(custom.getAttribute('role')).toBe('button');
+      expect(custom.tabIndex).toBe(0);
+      expect(controller.getState()?.detent).toBe('full');
+
+      button.click();
+      expect(controller.getState()?.detent).toBe('peek');
+      expect(document.activeElement).toBe(button);
+      const space = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' });
+      custom.dispatchEvent(space);
+      expect(space.defaultPrevented).toBe(true);
+      expect(controller.getState()?.detent).toBe('full');
+
+      custom.setAttribute('aria-disabled', 'true');
+      custom.click();
+      expect(controller.getState()?.detent).toBe('full');
+    } finally {
+      controller.destroy();
+    }
   });
 
   it('keeps a scroll-lock counter across nested modal sheets and skips non-modal', () => {
