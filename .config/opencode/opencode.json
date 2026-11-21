@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen35-16k:latest",
+  "instructions": [
+	"~/.config/opencode/instructions/citrusworx.md",
+	"~/.config/opencode/instructions/javascript.md",
+	"~/.config/opencode/instructions/typescript.md",
+	"~/.config/opencode/instructions/architecture.md",
+	"~/.config/opencode/instructions/testing.md"
+  ],
+  "mcp": {
+    "servers": {
+      "blender": {
+        "type": "local",
+        "command": [
+          "uvx",
+          "mcp-for-blender"
+        ]
+      }
+    }
+  }
+}

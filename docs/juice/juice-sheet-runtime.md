@@ -41,7 +41,7 @@ Closed vs open is the native `hidden` attribute on `[sheet-overlay]`.
 | `[sheet-detents]` | Allowed detents, `~=` words: `peek`, `half`, `full`. Absent, or with no known word, the set is `half full`. |
 | `[detent]` | Current detent: `peek`, `half`, or `full`. The runtime writes it. |
 | `[dragging]` | Set on `[sheet]` during a committed drag. CSS also honors it on the overlay. |
-| `[sheet-handle]` | Drag origin. `44px` hit target inside the sheet. |
+| `[sheet-handle]` | Resize control and drag origin. `44px` hit target inside the sheet. |
 | `[sheet-header]` | Drag origin, and the heading that names the dialog. |
 | `[sheet-body]` | Scrollport. Hands a downward drag to the sheet only when `scrollTop` is `0`. |
 | `[sheet-footer]` | Action row. Owns the bottom inset when it is present. |
@@ -115,6 +115,7 @@ The first observation is silent. Later events fire when that shape changes. Ther
 - Opener `aria-expanded` stays in sync. A missing `aria-haspopup` becomes `"dialog"`. An empty close name becomes `aria-label="Close"`.
 - Overlay chrome is `z-index: 1000`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 - The handle hit target is `44px` tall and stays inside the sheet. [Sheet chrome](./juice-sheet.md#handle-hit-target).
+- With multiple allowed heights, activate the handle with Enter, Space, a click, or a tap to cycle from the current height to the next allowed height, wrapping from the tallest to the shortest. An unnamed handle control gets the accessible name `Resize sheet`. The resize control keeps focus, and the software keyboard's inset takes precedence while it is open.
 
 ## Behavior
 

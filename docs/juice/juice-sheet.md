@@ -49,7 +49,7 @@ There is no HTML global `sheet` attribute, and there is no `<sheet>` element. `[
 
 <div sheet-overlay id="filters-sheet" hidden>
   <div sheet role="dialog" aria-modal="true" sheet-detents="peek half full">
-    <button type="button" sheet-handle aria-label="Drag"></button>
+    <button type="button" sheet-handle aria-label="Resize sheet"></button>
     <button type="button" sheet-close aria-label="Close">×</button>
     <div sheet-header>
       <h2>Filters</h2>

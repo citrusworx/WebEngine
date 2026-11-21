@@ -232,6 +232,12 @@ $_juice-sheet-close-hover: -juice-sheet-role(close-hover, #{$gray-100});
     user-select: none;
 }
 
+[sheet-handle]:focus-visible,
+[theme] [sheet-handle]:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
 // The visible bar stays --juice-sheet-handle-height. This pseudo is
 // only a hit target, 44px tall, and does not paint. It is shifted up
 // by the handle's margin-top (0.75rem) so the top of the target meets

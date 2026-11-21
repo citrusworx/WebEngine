@@ -520,6 +520,23 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
       }
     }
 
+    asArray(dialog.querySelectorAll<HTMLElement>(settings.handleSelector))
+      .filter((handle) => resolveContainingOverlay(handle) === overlay)
+      .forEach((handle) => {
+        if (allowedDetents(dialog).length > 1 && !(handle instanceof HTMLButtonElement)) {
+          if (!handle.hasAttribute('role')) handle.setAttribute('role', 'button');
+          if (!handle.hasAttribute('tabindex')) handle.tabIndex = 0;
+        }
+        if (
+          (handle instanceof HTMLButtonElement || handle.getAttribute('role') === 'button') &&
+          !handle.getAttribute('aria-label')?.trim() &&
+          !handle.getAttribute('aria-labelledby')?.trim() &&
+          !handle.textContent?.trim()
+        ) {
+          handle.setAttribute('aria-label', 'Resize sheet');
+        }
+      });
+
     asArray(overlay.querySelectorAll<HTMLElement>(settings.closeSelector))
       .filter((close) => resolveContainingOverlay(close) === overlay)
       .forEach((close) => {
@@ -575,6 +592,22 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     if (sheet.getAttribute('detent') !== detent) {
       sheet.setAttribute('detent', detent);
     }
+  };
+
+  const resizeFromHandle = (handle: HTMLElement, event: Event) => {
+    const overlay = resolveContainingOverlay(handle);
+    if (!overlay || !isManagedOverlay(overlay)) return;
+    const sheet = findSheet(overlay);
+    if (!sheet?.contains(handle) || !isOverlayOpen(overlay) || isClosing(overlay)) return;
+    if (!isActiveHost(overlay) || isDisabled(handle) || drag?.committed) return;
+    if (!claimEvent(event)) return;
+    event.preventDefault();
+
+    const allowed = allowedDetents(sheet);
+    if (allowed.length < 2 || keyboardIsOpen()) return;
+    const current = allowed.indexOf(resolvedDetent(sheet));
+    writeDetent(sheet, allowed[(current + 1) % allowed.length]);
+    publish(overlay);
   };
 
   const clearInlineMotion = (sheet: HTMLElement) => {
@@ -897,7 +930,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   };
 
   const handleRootClick = (event: Event) => {
-    if (suppressClick) {
+    if (suppressClick && event instanceof MouseEvent && event.detail > 0) {
       suppressClick = false;
       if (claimEvent(event)) {
         event.preventDefault();
@@ -923,6 +956,12 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
         if (!isActiveHost(overlay)) return;
         if (!claimEvent(event)) return;
         close(overlay);
+        return;
+      }
+
+      const handle = target.closest(settings.handleSelector);
+      if (handle instanceof HTMLElement && resolveContainingOverlay(handle) === overlay) {
+        resizeFromHandle(handle, event);
         return;
       }
 
@@ -972,6 +1011,13 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
     }
 
     if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    const handle = target.closest(settings.handleSelector);
+    if (handle instanceof HTMLElement && !(handle instanceof HTMLButtonElement)) {
+      if (!event.repeat) resizeFromHandle(handle, event);
+      else event.preventDefault();
+      return;
+    }
 
     const closeControl = target.closest(settings.closeSelector);
     if (
@@ -1057,6 +1103,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
   const handlePointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent) || event.button !== 0) return;
     if (drag) return;
+    suppressClick = false;
     const target = event.target;
     if (!(target instanceof Element)) return;
     const originNode =
@@ -1218,6 +1265,7 @@ export const createSheet = (options: SheetOptions = {}): SheetController => {
         'sheet-overlay',
         'sheet',
         'sheet-close',
+        'sheet-handle',
         'sheet-detents',
         'detent',
         'dragging',

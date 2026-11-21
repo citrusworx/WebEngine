@@ -1808,7 +1808,7 @@ describe("Juice build artifacts", () => {
     });
 
     it("includes touchable-row structural chrome in core CSS", () => {
-        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8").replaceAll("\r\n", "\n");
         const reduced = reducedMotionBlocks(css);
 
         const ruleAt = (selector: string) => {
