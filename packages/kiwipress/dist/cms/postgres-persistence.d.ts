@@ -4,6 +4,7 @@ export type SqlQueryResult = {
 };
 export type SqlExecutor = {
     query(sql: string, params?: unknown[]): Promise<SqlQueryResult | undefined>;
+    transaction?(work: (executor: SqlExecutor) => Promise<void>): Promise<void>;
 };
 export type PostgresPersistenceOptions = {
     database?: string;

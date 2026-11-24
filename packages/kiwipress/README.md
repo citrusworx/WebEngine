@@ -35,9 +35,20 @@ const kiwi = KiwiPress.connect({
 await kiwi.native.posts.create({ title: "Hello", status: "published" });
 ```
 
+Native `create` reads `id` (string or number), `title`, `content`, `slug`, `status`, `authorId`, and `featuredImage` (strings), and `meta` (object). `update` reads `title`, `content`, `slug`, and `status` and shallow-merges `meta`. Native writes ignore other payload keys. On create, a missing or non-string title becomes `"Untitled"`. For WordPress REST data, use `WPSync.transfer()` or normalize the record with `normalizeWordPressItem` before calling `store.upsert()`.
+
 KiwiPress reads configuration from constructor arguments or from `process.env` (`WP_URL`, `WP_API`, `WP_USER`, `WP_APP_PASSWORD`, `WP_TOKEN`, `WP_API_KEY`). Native CMS persistence is opt-in via `persistence` (`KIWIPRESS_CMS_FILE` for JSON, `PG_DB` / `KIWIPRESS_PG_DB` for Nectarine Postgres). Default is in-memory.
 
 Dependencies are `@citrusworx/nectarine` and `@citrusworx/seltzer` only. This package does not import `@citrusworx/webengine` or `@citrusworx/types`.
+
+For `createPostgresPersistence({ database })`, install Nectarine's optional driver in your project with `npm install pg@8`. Set `PG_USER`, `PG_PASS` (or `PG_PASSWORD`), and `PG_HOST`. `PG_PORT` defaults to `5432`. In-memory and file persistence work without the driver.
+
+## Content integrity
+
+- `WPSync.transfer()` reads WordPress and writes normalized records to the KiwiPress store. An import replaces an existing record with the same collection and ID, including native edits to that record. If a later collection fails to load, earlier changes stay in memory and the transfer skips its final save. A subsequent save can persist those changes.
+- Native mutations update the in-memory store before saving. If persistence fails, the call rejects and the change stays in memory. Inspect the store before retrying a write, and use `kiwi.persist()` to retry saving the current snapshot.
+- File persistence replaces one JSON snapshot by renaming a temporary file. Use one writer per file. Power-loss durability requires additional measures.
+- The unreleased default PostgreSQL adapter replaces the snapshot inside one transaction. Version 0.5.0 and custom executors that supply only `query` still save with separate delete and insert statements. A failed save in either of those cases can leave an empty or partial table.
 
 ## Raw vs rendered WordPress fields
 

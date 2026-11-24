@@ -5,11 +5,11 @@ import { authorizeKiwiPressGateway } from "./auth.js";
 function json(status, body) {
     return { status, body };
 }
-function asObject(value) {
+function readObjectBody(value) {
     if (value && typeof value === "object" && !Array.isArray(value)) {
         return value;
     }
-    return {};
+    throw new Error("Request body must be a JSON object.");
 }
 function errorMessage(error, fallback = "KiwiPress request failed.") {
     return error instanceof Error ? error.message : fallback;
@@ -126,7 +126,7 @@ function registerCollectionRoutes(app, kiwi, options) {
             if (rejected) {
                 return rejected;
             }
-            const payload = asObject(ctx.body);
+            const payload = readObjectBody(ctx.body);
             if (kiwi.mode === "nectarine" || isCustomTypeSlug(kind)) {
                 const created = await kiwi.native.collection(kind).create(payload);
                 await kiwi.persist();
@@ -147,10 +147,10 @@ function registerCollectionRoutes(app, kiwi, options) {
                 return rejected;
             }
             const id = queryId(ctx);
-            if (!id) {
+            if (!id.trim()) {
                 return json(400, { error: "id query parameter is required." });
             }
-            const payload = asObject(ctx.body);
+            const payload = readObjectBody(ctx.body);
             if (kiwi.mode === "nectarine" || isCustomTypeSlug(kind)) {
                 const updated = await kiwi.native.collection(kind).update(id, payload);
                 await kiwi.persist();
@@ -169,7 +169,7 @@ function registerCollectionRoutes(app, kiwi, options) {
                 return rejected;
             }
             const id = queryId(ctx);
-            if (!id) {
+            if (!id.trim()) {
                 return json(400, { error: "id query parameter is required." });
             }
             if (kiwi.mode === "nectarine" || isCustomTypeSlug(kind)) {
@@ -195,7 +195,7 @@ function registerTypeRoutes(app, kiwi, options) {
         path: "/__kiwipress/types",
         handler: guard(options, async (ctx) => {
             await kiwi.ready();
-            const created = kiwi.store.registerType(asObject(ctx.body));
+            const created = kiwi.store.registerType(readObjectBody(ctx.body));
             await kiwi.persist();
             return json(201, created);
         })
@@ -222,7 +222,7 @@ function registerTypeRoutes(app, kiwi, options) {
             if (!kiwi.store.getType(slug)) {
                 return json(404, { error: `Custom type "${slug}" was not found.` });
             }
-            const updated = kiwi.store.updateType(slug, asObject(ctx.body));
+            const updated = kiwi.store.updateType(slug, readObjectBody(ctx.body));
             await kiwi.persist();
             return json(200, updated);
         })
@@ -269,11 +269,14 @@ export function registerKiwiPressGateway(app, kiwi, options = {}) {
         method: "POST",
         path: "/__kiwipress/cms",
         handler: guard(options, async (ctx) => {
-            const body = asObject(ctx.body);
+            const body = readObjectBody(ctx.body);
             if (body.mode === "nectarine") {
                 kiwi.promote();
             }
             else if (body.mode === "wordpress") {
+                if (!kiwi.sync) {
+                    return json(400, { error: "WordPress mode requires a WordPress URL." });
+                }
                 kiwi.useWordPress();
             }
             else {
@@ -286,7 +289,10 @@ export function registerKiwiPressGateway(app, kiwi, options = {}) {
         method: "POST",
         path: "/__kiwipress/transfer",
         handler: guard(options, async (ctx) => {
-            const body = asObject(ctx.body);
+            const body = ctx.body === undefined ? {} : readObjectBody(ctx.body);
+            if (Object.keys(body).some((key) => key !== "collections")) {
+                return json(400, { error: "Transfer body only supports the collections field." });
+            }
             const collections = transferCollections(body.collections);
             if (!kiwi.sync) {
                 return json(400, { error: "Transfer requires a WordPress URL." });

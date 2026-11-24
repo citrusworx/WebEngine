@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { normalizeDocument } from "./persistence.js";
 export function createFilePersistence(filePath) {
@@ -18,10 +19,17 @@ export function createFilePersistence(filePath) {
             }
         },
         async save(document) {
+            const contents = `${JSON.stringify({ version: 1, types: document.types, collections: document.collections }, null, 2)}\n`;
             await mkdir(path.dirname(resolved), { recursive: true });
-            const tmp = `${resolved}.${process.pid}.${Date.now()}.tmp`;
-            await writeFile(tmp, `${JSON.stringify({ version: 1, types: document.types, collections: document.collections }, null, 2)}\n`, "utf8");
-            await rename(tmp, resolved);
+            const tmp = `${resolved}.${randomUUID()}.tmp`;
+            try {
+                await writeFile(tmp, contents, "utf8");
+                await rename(tmp, resolved);
+            }
+            catch (error) {
+                await rm(tmp, { force: true }).catch(() => undefined);
+                throw error;
+            }
         }
     };
 }

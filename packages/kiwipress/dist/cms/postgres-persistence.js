@@ -72,10 +72,31 @@ async function createNectarinePgExecutor(database) {
         port,
         database
     });
-    await pg.connect();
+    const pool = await pg.connect();
     return {
         query(sql, params) {
             return pg.query(sql, params);
+        },
+        async transaction(work) {
+            const client = await pool.connect();
+            let discard = false;
+            try {
+                await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
+                await work({ query: (sql, params) => client.query(sql, params) });
+                await client.query("COMMIT");
+            }
+            catch (error) {
+                try {
+                    await client.query("ROLLBACK");
+                }
+                catch {
+                    discard = true;
+                }
+                throw error;
+            }
+            finally {
+                client.release(discard);
+            }
         }
     };
 }
@@ -94,7 +115,10 @@ export function createPostgresPersistence(options = {}) {
             if (!database) {
                 throw new Error("KiwiPress Postgres persistence requires options.database or an injected executor.");
             }
-            executorPromise = createNectarinePgExecutor(database);
+            executorPromise = createNectarinePgExecutor(database).catch((error) => {
+                executorPromise = undefined;
+                throw error;
+            });
         }
         return executorPromise;
     }
@@ -106,6 +130,21 @@ export function createPostgresPersistence(options = {}) {
                 updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 PRIMARY KEY (collection, id)
             )`);
+    }
+    async function replaceSnapshot(sql, document) {
+        await runQuery(sql, `DELETE FROM ${table}`);
+        const insert = `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`;
+        for (const [collection, records] of collectionEntries(document.collections)) {
+            if (collection === PERSISTED_TYPES_COLLECTION) {
+                continue;
+            }
+            for (const record of records) {
+                await runQuery(sql, insert, [collection, record.id, JSON.stringify(record)]);
+            }
+        }
+        for (const definition of document.types) {
+            await runQuery(sql, insert, [PERSISTED_TYPES_COLLECTION, definition.slug, JSON.stringify(definition)]);
+        }
     }
     return {
         kind: "postgres",
@@ -141,17 +180,14 @@ export function createPostgresPersistence(options = {}) {
         async save(document) {
             const sql = await executor();
             await ensureSchema(sql);
-            await runQuery(sql, `DELETE FROM ${table}`);
-            for (const [collection, records] of collectionEntries(document.collections)) {
-                if (collection === PERSISTED_TYPES_COLLECTION) {
-                    continue;
-                }
-                for (const record of records) {
-                    await runQuery(sql, `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`, [collection, record.id, JSON.stringify(record)]);
-                }
+            if (sql.transaction) {
+                await sql.transaction(async (transaction) => {
+                    await runQuery(transaction, `LOCK TABLE ${table} IN SHARE ROW EXCLUSIVE MODE`);
+                    await replaceSnapshot(transaction, document);
+                });
             }
-            for (const definition of document.types) {
-                await runQuery(sql, `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`, [PERSISTED_TYPES_COLLECTION, definition.slug, JSON.stringify(definition)]);
+            else {
+                await replaceSnapshot(sql, document);
             }
         }
     };

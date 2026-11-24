@@ -8,6 +8,7 @@ export type SqlQueryResult = {
 
 export type SqlExecutor = {
     query(sql: string, params?: unknown[]): Promise<SqlQueryResult | undefined>;
+    transaction?(work: (executor: SqlExecutor) => Promise<void>): Promise<void>;
 };
 
 export type PostgresPersistenceOptions = {
@@ -104,11 +105,29 @@ async function createNectarinePgExecutor(database: string): Promise<SqlExecutor>
         port,
         database
     });
-    await pg.connect();
+    const pool = await pg.connect();
 
     return {
         query(sql, params) {
             return pg.query(sql, params);
+        },
+        async transaction(work) {
+            const client = await pool.connect();
+            let discard = false;
+            try {
+                await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
+                await work({ query: (sql, params) => client.query(sql, params) });
+                await client.query("COMMIT");
+            } catch (error) {
+                try {
+                    await client.query("ROLLBACK");
+                } catch {
+                    discard = true;
+                }
+                throw error;
+            } finally {
+                client.release(discard);
+            }
         }
     };
 }
@@ -132,7 +151,10 @@ export function createPostgresPersistence(options: PostgresPersistenceOptions = 
                 throw new Error("KiwiPress Postgres persistence requires options.database or an injected executor.");
             }
 
-            executorPromise = createNectarinePgExecutor(database);
+            executorPromise = createNectarinePgExecutor(database).catch((error: unknown) => {
+                executorPromise = undefined;
+                throw error;
+            });
         }
 
         return executorPromise;
@@ -149,6 +171,23 @@ export function createPostgresPersistence(options: PostgresPersistenceOptions = 
                 PRIMARY KEY (collection, id)
             )`
         );
+    }
+
+    async function replaceSnapshot(sql: SqlExecutor, document: CmsDocument) {
+        await runQuery(sql, `DELETE FROM ${table}`);
+
+        const insert = `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`;
+        for (const [collection, records] of collectionEntries(document.collections)) {
+            if (collection === PERSISTED_TYPES_COLLECTION) {
+                continue;
+            }
+            for (const record of records) {
+                await runQuery(sql, insert, [collection, record.id, JSON.stringify(record)]);
+            }
+        }
+        for (const definition of document.types) {
+            await runQuery(sql, insert, [PERSISTED_TYPES_COLLECTION, definition.slug, JSON.stringify(definition)]);
+        }
     }
 
     return {
@@ -189,28 +228,13 @@ export function createPostgresPersistence(options: PostgresPersistenceOptions = 
         async save(document: CmsDocument) {
             const sql = await executor();
             await ensureSchema(sql);
-            await runQuery(sql, `DELETE FROM ${table}`);
-
-            for (const [collection, records] of collectionEntries(document.collections)) {
-                if (collection === PERSISTED_TYPES_COLLECTION) {
-                    continue;
-                }
-
-                for (const record of records) {
-                    await runQuery(
-                        sql,
-                        `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`,
-                        [collection, record.id, JSON.stringify(record)]
-                    );
-                }
-            }
-
-            for (const definition of document.types) {
-                await runQuery(
-                    sql,
-                    `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`,
-                    [PERSISTED_TYPES_COLLECTION, definition.slug, JSON.stringify(definition)]
-                );
+            if (sql.transaction) {
+                await sql.transaction(async (transaction) => {
+                    await runQuery(transaction, `LOCK TABLE ${table} IN SHARE ROW EXCLUSIVE MODE`);
+                    await replaceSnapshot(transaction, document);
+                });
+            } else {
+                await replaceSnapshot(sql, document);
             }
         }
     };

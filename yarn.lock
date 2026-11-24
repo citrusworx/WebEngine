@@ -2289,6 +2289,7 @@ __metadata:
     "@citrusworx/seltzer": "npm:^0.11.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^6.0.3"
+    vitest: "npm:^4.1.4"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
