@@ -3,8 +3,8 @@ export class WPDelete extends WPClient {
     constructor(config) {
         super(config);
     }
-    delete(route, params) {
-        return this.mutate(route, undefined, params);
+    delete(route, params, body) {
+        return this.mutate(route, body, params);
     }
 }
 //# sourceMappingURL=WPDelete.js.map

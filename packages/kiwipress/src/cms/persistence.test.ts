@@ -1,7 +1,7 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rmdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { KiwiPress } from "./KiwiPress.js";
 import { persistenceFromEnv } from "./env-persistence.js";
 import { createFilePersistence } from "./file-persistence.js";
@@ -70,6 +70,25 @@ function memoryExecutor() {
 }
 
 describe("KiwiPress persistence", () => {
+    it("keeps a native edit in memory after a failed save and permits retrying persistence", async () => {
+        const save = vi.fn()
+            .mockRejectedValueOnce(new Error("Save failed"))
+            .mockResolvedValueOnce(undefined);
+        const kiwi = KiwiPress.connect({
+            mode: "nectarine",
+            persistence: { load: async () => null, save }
+        });
+
+        await expect(kiwi.native.posts.create({ id: "1", title: "Kept in memory" })).rejects.toThrow("Save failed");
+        await expect(kiwi.native.posts.getById("1")).resolves.toMatchObject({ title: "Kept in memory" });
+
+        await expect(kiwi.persist()).resolves.toBeUndefined();
+        expect(save).toHaveBeenCalledTimes(2);
+        expect(save).toHaveBeenLastCalledWith(expect.objectContaining({
+            collections: expect.objectContaining({ posts: [expect.objectContaining({ id: "1" })] })
+        }));
+    });
+
     it("round-trips a native CMS through a JSON file without WebEngine", async () => {
         const dir = await mkdtemp(path.join(os.tmpdir(), "kiwipress-cms-"));
         tempDirs.push(dir);
@@ -143,6 +162,43 @@ describe("KiwiPress persistence", () => {
         });
     });
 
+    it("writes complete snapshots when separate adapters save in the same millisecond", async () => {
+        const dir = await mkdtemp(path.join(os.tmpdir(), "kiwipress-cms-"));
+        tempDirs.push(dir);
+        const file = path.join(dir, "cms.json");
+        const first = { types: [], collections: { ...emptySnapshot(), posts: [post("first")] } };
+        const second = { types: [], collections: { ...emptySnapshot(), posts: [post("second")] } };
+
+        const clock = vi.spyOn(Date, "now").mockReturnValue(0);
+        try {
+            await Promise.all([
+                createFilePersistence(file).save(first),
+                createFilePersistence(file).save(second)
+            ]);
+        } finally {
+            clock.mockRestore();
+        }
+
+        expect([first, second]).toContainEqual(await createFilePersistence(file).load());
+        expect(await readdir(dir)).toEqual(["cms.json"]);
+    });
+
+    it("cleans up after a failed replacement and allows a retry", async () => {
+        const dir = await mkdtemp(path.join(os.tmpdir(), "kiwipress-cms-"));
+        tempDirs.push(dir);
+        const file = path.join(dir, "cms.json");
+        await mkdir(file);
+        const persistence = createFilePersistence(file);
+        const document = { types: [], collections: emptySnapshot() };
+
+        await expect(persistence.save(document)).rejects.toThrow();
+        expect(await readdir(dir)).toEqual(["cms.json"]);
+
+        await rmdir(file);
+        await persistence.save(document);
+        expect(await persistence.load()).toEqual(document);
+    });
+
     it("uses a Nectarine Postgres executor when one is injected", async () => {
         const { executor, rows } = memoryExecutor();
         const persistence = createPostgresPersistence({ executor });
@@ -158,6 +214,65 @@ describe("KiwiPress persistence", () => {
         hydrated.usePersistence(persistence);
         await hydrated.hydrate();
         expect(hydrated.list("posts")).toMatchObject([{ id: "42", title: "Hello" }]);
+    });
+
+    it("shares an initial PostgreSQL connection attempt and retries after failure", async () => {
+        const { PgSql } = await import("@citrusworx/nectarine/adapters/pg");
+        const failure = new Error("Database offline");
+        const connect = vi.spyOn(PgSql.prototype, "connect")
+            .mockRejectedValueOnce(failure)
+            .mockResolvedValueOnce({} as Awaited<ReturnType<PgSql["connect"]>>);
+        const query = vi.spyOn(PgSql.prototype, "query").mockResolvedValue({
+            command: "SELECT", rowCount: 0, oid: 0, rows: [], fields: []
+        });
+        vi.stubEnv("PG_USER", "fixture");
+        vi.stubEnv("PG_PASS", "fixture");
+        vi.stubEnv("PG_HOST", "127.0.0.1");
+        vi.stubEnv("PG_PORT", "5432");
+
+        try {
+            const persistence = createPostgresPersistence({ database: "fixture" });
+            const kiwi = KiwiPress.connect({ mode: "nectarine", persistence });
+            await Promise.all([
+                expect(kiwi.ready()).rejects.toBe(failure),
+                expect(persistence.load()).rejects.toBe(failure)
+            ]);
+            expect(connect).toHaveBeenCalledTimes(1);
+            expect(query).not.toHaveBeenCalled();
+
+            await expect(kiwi.ready()).resolves.toBe(kiwi);
+            expect(connect).toHaveBeenCalledTimes(2);
+            await persistence.load();
+            expect(connect).toHaveBeenCalledTimes(2);
+        } finally {
+            connect.mockRestore();
+            query.mockRestore();
+            vi.unstubAllEnvs();
+        }
+    });
+
+    it("locks and replaces the snapshot through the supplied transaction executor", async () => {
+        const query = vi.fn().mockResolvedValue({ rows: [] });
+        const transactionQuery = vi.fn()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce(undefined);
+        const persistence = createPostgresPersistence({
+            executor: {
+                query,
+                transaction: (work) => work({ query: transactionQuery })
+            }
+        });
+
+        await expect(persistence.save({ types: [], collections: { ...emptySnapshot(), posts: [post()] } }))
+            .rejects.toThrow("KiwiPress Postgres query failed: INSERT");
+        expect(query).toHaveBeenCalledTimes(1);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/^CREATE TABLE/), undefined);
+        expect(transactionQuery.mock.calls.map(([sql]) => sql)).toEqual([
+            "LOCK TABLE kiwipress_content IN SHARE ROW EXCLUSIVE MODE",
+            "DELETE FROM kiwipress_content",
+            expect.stringMatching(/^INSERT INTO kiwipress_content/)
+        ]);
     });
 
     it("round-trips custom types through the Postgres adapter", async () => {

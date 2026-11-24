@@ -134,4 +134,26 @@ describe("WPDelete collaborators", () => {
             method: "DELETE"
         });
     });
+
+    it("sends WordPress user deletion parameters when a replacement author is supplied", async () => {
+        const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+            const body = JSON.parse(String(init.body));
+            if (body.force !== true || body.reassign !== 12) {
+                return new Response(null, { status: 400, statusText: "Bad Request" });
+            }
+            return Response.json({ deleted: true, previous: { id: 7 } });
+        });
+        vi.stubGlobal("fetch", fetchMock);
+        const users = new Users(wordpressConfig);
+
+        await expect(users.delete(7, { reassign: 12 })).resolves.toEqual({ deleted: true, previous: { id: 7 } });
+        expect(fetchMock).toHaveBeenCalledWith("http://example.com/wp-json/wp/v2/users/7", expect.objectContaining({
+            method: "DELETE",
+            headers: expect.objectContaining({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ force: true, reassign: 12 })
+        }));
+
+        await expect(users.delete(7, { reassign: 0 })).rejects.toThrow(/positive WordPress user ID/);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
 });

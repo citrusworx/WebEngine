@@ -22,6 +22,16 @@ function encodeBase64(value: string): string {
     throw new Error("Unable to encode WordPress credentials.");
 }
 
+function setAuthHeader(headers: Record<string, string>, name: string, value: string): void {
+    const normalizedName = name.toLowerCase();
+    for (const key of Object.keys(headers)) {
+        if (key.toLowerCase() === normalizedName) {
+            delete headers[key];
+        }
+    }
+    headers[name] = value;
+}
+
 export class WPAuth {
     constructor(private readonly credentials: WPAuthCredentials = {}) {}
 
@@ -61,13 +71,14 @@ export class WPAuth {
         };
 
         if (this.credentials.username && this.credentials.appPassword) {
-            headers.Authorization = `Basic ${encodeBase64(`${this.credentials.username}:${this.credentials.appPassword}`)}`;
+            const credentials = encodeBase64(`${this.credentials.username}:${this.credentials.appPassword}`);
+            setAuthHeader(headers, "Authorization", `Basic ${credentials}`);
         } else if (this.credentials.token) {
-            headers.Authorization = `Bearer ${this.credentials.token}`;
+            setAuthHeader(headers, "Authorization", `Bearer ${this.credentials.token}`);
         }
 
         if (this.credentials.apiKey) {
-            headers["X-API-Key"] = this.credentials.apiKey;
+            setAuthHeader(headers, "X-API-Key", this.credentials.apiKey);
         }
 
         return headers;

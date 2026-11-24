@@ -14,8 +14,11 @@ class UserUpdate extends WPUpdate {
     }
 }
 class UserDelete extends WPDelete {
-    deleteUser(id) {
-        return this.delete(deleteUser, { id });
+    async deleteUser(id, options) {
+        if (options && (!Number.isSafeInteger(options.reassign) || options.reassign < 1)) {
+            throw new RangeError("reassign must be a positive WordPress user ID.");
+        }
+        return this.delete(deleteUser, { id }, options && { force: true, reassign: options.reassign });
     }
 }
 export class Users extends WPRead {
@@ -49,8 +52,8 @@ export class Users extends WPRead {
     update(id, data) {
         return this.updater.updateUser(id, data);
     }
-    delete(id) {
-        return this.deleter.deleteUser(id);
+    delete(id, options) {
+        return this.deleter.deleteUser(id, options);
     }
 }
 //# sourceMappingURL=users.js.map

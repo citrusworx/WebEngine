@@ -1,8 +1,31 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { KiwiPress } from "./KiwiPress.js";
 import { NectarineStore } from "./store.js";
 
 describe("KiwiPress CMS modes", () => {
+    it.each(["posts", "pages", "users", "categories", "tags", "comments"] as const)(
+        "reads %s collections and items through the WordPress facade",
+        async (collection) => {
+            const record = { id: 7 };
+            const baseUrl = `https://example.com/wp-json/wp/v2/${collection}`;
+            const fetchMock = vi.fn()
+                .mockResolvedValueOnce(Response.json([record]))
+                .mockResolvedValueOnce(Response.json(record));
+            vi.stubGlobal("fetch", fetchMock);
+
+            try {
+                const client = KiwiPress.connect({ url: "https://example.com", apiBase: "wp-json/wp/v2" })
+                    .wordpress[collection];
+
+                await expect(client.getAll()).resolves.toEqual([record]);
+                await expect(client.getById(7)).resolves.toEqual(record);
+                expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([baseUrl, `${baseUrl}/7`]);
+            } finally {
+                vi.unstubAllGlobals();
+            }
+        }
+    );
+
     it("starts on WordPress and promotes transferred records into Nectarine", async () => {
         const kiwi = KiwiPress.connect({
             url: "https://example.com",
@@ -47,6 +70,79 @@ describe("KiwiPress CMS modes", () => {
         expect(created.source.cms).toBe("nectarine");
         expect(await kiwi.native.posts.getBySlug(created.slug)).toMatchObject({
             title: "Native post",
+            status: "published"
+        });
+    });
+
+    it("copies native create fields and only patches the documented update fields", async () => {
+        const posts = KiwiPress.connect({ mode: "nectarine" }).native.posts;
+        const created = await posts.create({
+            id: 12,
+            title: "Native post",
+            content: "<p>Original</p>",
+            slug: "native-post",
+            status: "publish",
+            authorId: "author-1",
+            featuredImage: "cover.png",
+            meta: { keep: true, settings: { featured: true, color: "red" } },
+            collection: "pages",
+            source: { cms: "wordpress", id: "99" },
+            extra: "ignored"
+        });
+        expect(created).toMatchObject({
+            id: "12",
+            collection: "posts",
+            title: "Native post",
+            content: "<p>Original</p>",
+            slug: "native-post",
+            status: "published",
+            authorId: "author-1",
+            featuredImage: "cover.png",
+            source: { cms: "nectarine", id: "12" }
+        });
+        expect(created.meta).toEqual({ keep: true, settings: { featured: true, color: "red" } });
+        expect(created).not.toHaveProperty("extra");
+
+        const updated = await posts.update(12, {
+            title: "Revised post",
+            content: "<p>Revised</p>",
+            slug: "revised-post",
+            status: " archived ",
+            authorId: "author-2",
+            featuredImage: "new-cover.png",
+            meta: { settings: { featured: false } }
+        });
+        expect(updated).toMatchObject({
+            id: "12",
+            title: "Revised post",
+            content: "<p>Revised</p>",
+            slug: "revised-post",
+            status: "archived",
+            authorId: "author-1",
+            featuredImage: "cover.png"
+        });
+        expect(updated.meta).toEqual({ keep: true, settings: { featured: false } });
+        expect(await posts.getBySlug("revised-post")).toEqual(updated);
+    });
+
+    it("uses native fallbacks for WordPress REST text objects", async () => {
+        const posts = KiwiPress.connect({ mode: "nectarine" }).native.posts;
+        const wordPressPayload = {
+            title: { rendered: "Imported title" },
+            content: { rendered: "<p>Imported content</p>" },
+            author: 8,
+            featured_media: 35
+        };
+
+        const created = await posts.create(wordPressPayload);
+        expect(created).toMatchObject({ title: "Untitled", content: "", slug: "untitled", status: "draft" });
+        expect(created.authorId).toBeUndefined();
+        expect(created.featuredImage).toBeUndefined();
+
+        const existing = await posts.create({ title: "Existing", content: "Original", status: "published" });
+        expect(await posts.update(existing.id, wordPressPayload)).toMatchObject({
+            title: "Existing",
+            content: "Original",
             status: "published"
         });
     });

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { KiwiPress } from "../cms/KiwiPress.js";
 import { NectarineStore } from "../cms/store.js";
 import { createWordPressClients, WPSync } from "./WPSync.js";
 
@@ -125,6 +126,59 @@ describe("WPSync", () => {
 
         expect(saved).toBe(1);
         expect(store.list("posts")[0]?.slug).toBe("saved");
+    });
+
+    it("leaves earlier imports in memory and skips the final save when a later read fails", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(wpPage([{ id: 7, title: "Imported" }]))
+            .mockResolvedValueOnce(new Response(null, { status: 403, statusText: "Forbidden" }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const save = vi.fn().mockResolvedValue(undefined);
+        const store = new NectarineStore().usePersistence({ load: async () => null, save });
+        const sync = new WPSync(wordpressClients(), store);
+
+        await expect(sync.transfer(["posts", "pages"])).rejects.toThrow(
+            "WPSync failed to read WordPress pages: WordPress request failed: 403 Forbidden"
+        );
+        expect(store.get("posts", 7)).toMatchObject({ title: "Imported" });
+        expect(store.list("pages")).toEqual([]);
+        expect(save).not.toHaveBeenCalled();
+
+        await store.flush();
+        expect(save).toHaveBeenCalledWith(expect.objectContaining({
+            collections: expect.objectContaining({ posts: [expect.objectContaining({ id: "7" })] })
+        }));
+    });
+
+    it("counts paginated preview records without hydrating or mutating the native store", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(wpPage([{ id: 1 }], 2))
+            .mockResolvedValueOnce(wpPage([{ id: 2 }], 2))
+            .mockResolvedValueOnce(wpPage([{ id: 3 }]))
+            .mockResolvedValueOnce(new Response(null, { status: 403, statusText: "Forbidden" }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const load = vi.fn().mockResolvedValue(null);
+        const save = vi.fn().mockResolvedValue(undefined);
+        const kiwi = KiwiPress.connect({
+            url: "https://example.com",
+            apiBase: "wp-json/wp/v2",
+            persistence: { load, save }
+        });
+        kiwi.store.registerType({ slug: "recipe" });
+        const before = kiwi.store.document();
+
+        await expect(kiwi.sync?.preview({ collections: ["posts"], cpts: ["books"] })).resolves.toMatchObject({
+            collections: ["posts"], cpts: ["books"], taxonomies: [], counts: { posts: 2, books: 1, pages: 0 }
+        });
+        expect(String(fetchMock.mock.calls[1]?.[0])).toContain("page=2");
+        await expect(kiwi.sync?.preview(["pages"])).rejects.toThrow("WPSync failed to read WordPress pages:");
+
+        expect(kiwi.mode).toBe("wordpress");
+        expect(kiwi.store.document()).toEqual(before);
+        expect(load).not.toHaveBeenCalled();
+        expect(save).not.toHaveBeenCalled();
     });
 
     it("previews the default six collections without media or CPTs", async () => {

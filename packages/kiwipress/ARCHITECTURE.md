@@ -60,10 +60,10 @@ WordPress (headless REST)          optional — skip with mode: "nectarine"
  NectarineStore / NativeCollection
         │  CmsPersistence (file or Nectarine PgSql)
         ▼
- Durable native CMS in this process — or any host that imports the library
+ Native CMS snapshot saved through the configured adapter
 ```
 
-WordPress is the usual entry, not a required runtime. Transfer is explicit: nothing overwrites WordPress until `sync.transfer()` runs. Persistence is also explicit: without `persistence`, the store stays in memory.
+WordPress is an optional source. `sync.transfer()` reads it and upserts the normalized records into the native store by collection and ID. A failed transfer can leave earlier imports in memory. Configure a persistence adapter to save the snapshot outside the process. See [Content integrity](./README.md#content-integrity) for write and recovery behavior.
 
 `Blueprint.adapters.cms = "kiwipress"` is Types / WebEngine vocabulary for a future kernel. KiwiPress does not import it.
 

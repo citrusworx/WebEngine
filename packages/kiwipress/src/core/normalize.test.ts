@@ -48,6 +48,33 @@ describe("extract text helpers", () => {
 });
 
 describe("normalize WordPress payloads", () => {
+    it("maps WordPress statuses and narrows the Nectarine Post status", () => {
+        const statuses = [
+            ["posts", "PuBliSh", "published", "published"],
+            ["posts", "published", "published", "published"],
+            ["posts", "private", "archived", "archived"],
+            ["posts", "future", "archived", "archived"],
+            ["posts", "trash", "archived", "archived"],
+            ["posts", "archived", "archived", "archived"],
+            ["comments", "pending", "pending", "draft"],
+            ["comments", "approved", "approved", "draft"],
+            ["comments", "spam", "spam", "draft"],
+            ["media", "INHERIT", "published", "published"],
+            ["posts", "inherit", "draft", "draft"],
+            ["posts", "draft", "draft", "draft"],
+            ["books", "custom", "draft", "draft"],
+            ["posts", " publish ", "draft", "draft"],
+            ["posts", undefined, "draft", "draft"]
+        ] as const;
+
+        for (const [collection, status, recordStatus, postStatus] of statuses) {
+            const record = normalizeWordPressItem(collection, { status });
+            const context = `${collection}: ${String(status)}`;
+            expect(record.status, context).toBe(recordStatus);
+            expect(toNectarinePost(record).status, context).toBe(postStatus);
+        }
+    });
+
     it("maps a WordPress post onto a Nectarine-shaped content record", () => {
         const record = normalizeWordPressItem("posts", {
             id: 12,

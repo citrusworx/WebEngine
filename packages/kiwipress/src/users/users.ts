@@ -28,10 +28,16 @@ class UserUpdate extends WPUpdate {
 }
 
 class UserDelete extends WPDelete {
-    deleteUser(id: string | number) {
-        return this.delete(deleteUser, { id });
+    async deleteUser(id: string | number, options?: UserDeleteOptions) {
+        if (options && (!Number.isSafeInteger(options.reassign) || options.reassign < 1)) {
+            throw new RangeError("reassign must be a positive WordPress user ID.");
+        }
+
+        return this.delete(deleteUser, { id }, options && { force: true, reassign: options.reassign });
     }
 }
+
+export type UserDeleteOptions = { reassign: number };
 
 export class Users extends WPRead {
     private readonly creator: UserCreate;
@@ -73,7 +79,7 @@ export class Users extends WPRead {
         return this.updater.updateUser(id, data);
     }
 
-    delete(id: string | number) {
-        return this.deleter.deleteUser(id);
+    delete(id: string | number, options?: UserDeleteOptions) {
+        return this.deleter.deleteUser(id, options);
     }
 }
